@@ -1,0 +1,63 @@
+ Introduced by Assembly Member Lowenthal
+(Coauthors: Assembly Members Connolly, Muratsuchi, and Villapudua)
+
+
+February 16, 2023
+
+
+An act to add and repeal Part 4.3 (commencing with Section 5888) of Division 5 of the Welfare and Institutions Code, relating to mental health.
+
+
+LEGISLATIVE COUNSEL'S DIGEST
+
+
+AB 1282, as amended, Lowenthal. Mental health: impacts of social media.
+
+
+Existing law, the Mental Health Services Act, an initiative measure enacted by the voters as Proposition 63 at the November 2, 2004, statewide general election, establishes the Mental Health Services Oversight and Accountability Commission, and authorizes the commission to take specified actions, including advising the Governor or the Legislature regarding actions the state may take to improve care and services for people with mental illness.
+
+
+This bill would require the commission to report to specified policy committees of the Legislature, on or before July 1, 2025, a statewide strategy to understand, communicate, and mitigate mental health risks associated with the use of social media by children and youth. The bill would require the report to include, among other things, (1) the degree to which individuals negatively impacted by social media are accessing and receiving mental health services and (2) recommendations to strengthen children and youth resiliency strategies and California’s use of mental health services to reduce the negative outcomes that may result from untreated mental illness, as specified. The bill would require the commission to explore, among other things, the persons and populations that use social media and the negative mental health risks associated with social media and artificial intelligence, as defined. The bill would repeal these provisions on January 1, 2029.
+
+
+Vote: majority   Appropriation: no   Fiscal Committee: yes   Local Program: no  
+
+ THE PEOPLE OF THE STATE OF CALIFORNIA DO ENACT AS FOLLOWS:
+
+
+SECTION 1. Part 4.3 (commencing with Section 5888) is added to Division 5 of the Welfare and Institutions Code, to read:
+PART 4.3. Impacts of Social Media and Artificial Intelligence on Mental Health
+
+1. As used in this part, the following definitions shall apply:
+(a) “Children and youth” means individuals up to 26 years of age.
+(b) “Commission” means the Mental Health Services Oversight and Accountability Commission established pursuant to Section 5845.
+(c) “Social media” means a social media platform, as defined in Section 22675 of the Business and Professions Code.
+(d) “Artificial intelligence” means a machine-based system that can, for a given set of human-defined objectives, make predictions, recommendations, or decisions influencing real or virtual environments. Artificial intelligence systems use machine- and human-based inputs to do all of the following:
+(1) Perceive real and virtual environments.
+(2) Abstract those perceptions into models through analysis in an automated manner.
+(3) Use model inferences to formulate options for information or action.
+
+ 5888.1. 
+(a) The commission shall report to the Senate and Assembly Committees on Health, the Senate Committee on Judiciary, the Assembly Committee on Privacy and Consumer Protection, and other relevant policy committees of the Legislature a statewide strategy to understand, communicate, and mitigate mental health risks associated with the use of social media by children and youth. The report shall include all of the following:
+(1) The degree to which individuals negatively impacted by social media are accessing and receiving mental health services.
+(2) Recommendations to strengthen children and youth resiliency strategies and California’s use of mental health services to reduce the negative outcomes that may result from untreated mental illness enumerated in subdivision (d) of Section 5840.
+(3) Any barriers to receiving the data relevant to completing this report.
+(b) In preparing the report, the commission shall explore all of the following:
+(1) The types of social media.
+(2) The persons and populations that use social media.
+(3) Opportunities to support resilience.
+(4) Negative mental health risks associated with social media, including all of the following:
+(A) Suicide.
+(B) Eating disorders.
+(C) Self-harm.
+(D) Prolonged suffering.
+(E) Depression.
+(F) Anxiety.
+(G) Bullying.
+(H) Substance abuse.
+(I) Other mental health risks as determined by the commission.
+(5) The negative health risks associated with artificial intelligence.
+(c) In formulating this report, the commission shall prioritize the perspectives of children and youth through a robust engagement process with a focus on transition-age youth, at-risk populations, in-need populations and underserved cultural and linguistic populations. The commission shall also consult with the California mental health community, including, but not limited to, consumers, family members, providers, and other subject matter experts.
+(d) The report shall be submitted on or before July 1, 2025.
+
+ 5888.2. This part shall remain in effect only until January 1, 2029, and as of that date is repealed.
