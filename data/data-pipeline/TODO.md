@@ -5,3 +5,4 @@
 * Add dvc and set it to push to Gcloud
 * Add logging, tracking and schema generation.
 * Anomaly detection.
+* paralellize generate-embedding task

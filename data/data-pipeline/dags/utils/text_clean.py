@@ -27,7 +27,7 @@ def clean_full_text(data):
     output_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), output_dir_name)
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, clean_data_path)
-    pd_csv_file.to_csv(output_path, index=False)
+    pd_csv_file.to_csv(output_path, index=False)    #TODO: upload to gcp in real scenario instead of saving in local
 
     # save_data = SaveFile(output_dir, clean_data_path, pd_csv_file)
     # save_data.save_csv_file()
