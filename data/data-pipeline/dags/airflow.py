@@ -8,6 +8,7 @@ from utils.data_loader import load_data
 from utils.text_clean import clean_full_text
 from utils.embeddings_gen import generate_embeddings
 from utils.create_vector_index import create_index
+from utils.gcs_upload import upload_merged_data_to_gcs
 
 from airflow import configuration as conf
 
@@ -63,10 +64,17 @@ create_index_task = PythonOperator(
     dag=dag,
 )
 
+upload_to_gcs_task = PythonOperator(
+    task_id='upload_to_gcs_task',
+    python_callable=upload_merged_data_to_gcs,
+    op_args=[create_index_task.output],
+    dag=dag,
+)
+
 
 
 # Set task dependencies
-load_data_task >> clean_text_task >> generate_embeddings_task >> create_index_task
+load_data_task >> clean_text_task >> generate_embeddings_task >> create_index_task  >> upload_to_gcs_task
 
 # If this script is run directly, allow command-line interaction with the DAG
 if __name__ == "__main__":
