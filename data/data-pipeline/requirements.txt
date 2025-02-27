@@ -2,3 +2,5 @@ faiss-cpu
 pandas 
 numpy
 sentence-transformers
+requests
+openpyxl

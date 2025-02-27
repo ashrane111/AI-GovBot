@@ -15,9 +15,10 @@ def make_input_dir():
 
 def extract_and_merge_documents(temp_dir = ""):
     make_input_dir()
-    documents = pd.read_csv(f"{temp_dir}/documents.csv")
+    documents_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), temp_dir)
+    documents = pd.read_csv(f"{documents_dir}/documents.csv")
     print("Accessed documents.csv")
-    segments = pd.read_csv(f"{temp_dir}/segments.csv")
+    segments = pd.read_csv(f"{documents_dir}/segments.csv")
     print("Accessed segments.csv")
 
     segments_result = segments.groupby('Document ID').agg(lambda x: ', '.join(x.astype(str))).reset_index()
@@ -46,15 +47,19 @@ def extract_and_merge_documents(temp_dir = ""):
     
     save_file_name = 'Documents_segments_merged'
 
-    merged_document_segments.to_csv(f'merged_input/{save_file_name}.csv', index=False)
+    output_csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), f'merged_input/{save_file_name}.csv')
+    output_xlsx_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), f'merged_input/{save_file_name}.xlsx')
+    
+    print(output_csv_path, output_xlsx_path)
+    merged_document_segments.to_csv( output_csv_path, index=False)
     print(f"Saved merged data to {save_file_name}.csv")
-    merged_document_segments.to_excel(f'merged_input/{save_file_name}.xlsx', index=False)
+    merged_document_segments.to_excel(output_xlsx_path, index=False)
     print(f"Saved merged data to {save_file_name}.xlsx")
 
 
 
 def main():
-    temp_dir = "../agora"
+    temp_dir = "merged_input/agora"
     # Call the method to perform the data extraction and merging
     extract_and_merge_documents(temp_dir)
 

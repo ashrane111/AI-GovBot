@@ -10,6 +10,8 @@ output_dir_name = "embeddings"
 embeddings_file_path = "embeddings.pkl"
 
 
+## TODO: DVC - with gcloud
+
 def generate_embeddings(data, transformer_model="sentence-transformers/multi-qa-mpnet-base-dot-v1"):
     pd_csv_file = pickle.loads(data)
     model = SentenceTransformer(transformer_model)

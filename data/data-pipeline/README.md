@@ -7,6 +7,7 @@ For Mac and Linux, docker should be self-explanatory.
 
 For linux (even WSL), will need to run this in the main data-pipeline directory. Assume the same for Mac.
 ```bash
+cd data/data-pipeline
 mkdir -p ./dags ./logs ./plugins ./config
 echo -e "AIRFLOW_UID=$(id -u)" > .env
 ```
