@@ -9,7 +9,8 @@ from utils.text_clean import clean_full_text
 from utils.embeddings_gen import generate_embeddings
 from utils.create_vector_index import create_index
 from utils.gcs_upload import upload_merged_data_to_gcs
-
+from utils.download_data import download_and_unzip_data_file
+from utils.data_extract_combine import extract_and_merge_documents
 from airflow import configuration as conf
 
 # Enable pickle support for XCom, allowing data to be passed between tasks
@@ -34,11 +35,33 @@ dag = DAG(
 
 # Define PythonOperators for each function
 
+
+# Task to download data in zip, calls the 'download_zip_file' Python function
+download_unzip_task = PythonOperator(
+    task_id='download_unzip_task',
+    python_callable=download_and_unzip_data_file,
+    op_kwargs={
+        'download_url': 'https://zenodo.org/records/14877811/files/agora.zip', 
+        'output_dir_name': 'merged_input',  
+    },
+    dag=dag,
+)
+
+data_combine_task = PythonOperator(
+    task_id='data_combine_task',
+    python_callable=extract_and_merge_documents,
+    op_kwargs={
+        'temp_dir': os.path.join(os.path.dirname(__file__), "merged_input/agora"), 
+    },
+    dag=dag,
+)
+
+
 # Task to load data, calls the 'load_data' Python function
 load_data_task = PythonOperator(
     task_id='load_data_task',
     python_callable=load_data,
-    op_args=[os.path.join(os.path.dirname(__file__), "./merged_input/Documents_segments_merged.csv")],
+    op_args=[os.path.join(os.path.dirname(__file__), "merged_input/Documents_segments_merged.csv")],
     dag=dag,
 )
 # Task to perform data preprocessing, depends on 'load_data_task'
@@ -74,7 +97,8 @@ upload_to_gcs_task = PythonOperator(
 
 
 # Set task dependencies
-load_data_task >> clean_text_task >> generate_embeddings_task >> create_index_task  >> upload_to_gcs_task
+download_unzip_task >> data_combine_task >> load_data_task >> clean_text_task >> generate_embeddings_task >> create_index_task  >> upload_to_gcs_task
+
 
 # If this script is run directly, allow command-line interaction with the DAG
 if __name__ == "__main__":

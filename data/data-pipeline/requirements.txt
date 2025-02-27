@@ -3,3 +3,5 @@ pandas
 numpy
 sentence-transformers
 apache-airflow-providers-google
+requests
+openpyxl
