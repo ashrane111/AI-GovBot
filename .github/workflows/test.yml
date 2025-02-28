@@ -20,8 +20,14 @@ jobs:
 
       - name: Install Docker Compose
         run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/2.23.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          # Ensure curl is installed
+          sudo apt-get update
+          sudo apt-get install -y curl
+          # Download and install docker-compose
+          sudo curl -L "https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
+          # Verify installation
+          docker-compose --version
 
       - name: Build Docker image
         run: docker-compose build
@@ -32,5 +38,5 @@ jobs:
           docker run --rm \
             -v ${PWD}:/app \
             -w /app \
-            apache/airflow:2.10.5-python3.10 \
+            apache/airflow:2.10.5 \
             bash -c "pip install -r requirements.txt && PYTHONPATH=data/data-pipeline pytest tests/unit/ -v"
