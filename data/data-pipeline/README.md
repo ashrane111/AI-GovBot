@@ -8,7 +8,7 @@ For Mac and Linux, docker should be self-explanatory.
 For linux (even WSL), will need to run this in the main data-pipeline directory. Assume the same for Mac.
 ```bash
 cd data/data-pipeline
-mkdir -p ./dags ./logs ./plugins ./config
+mkdir -p ./dags ./logs ./plugins ./config ./secrets
 echo -e "AIRFLOW_UID=$(id -u)" > .env
 ```
 
@@ -16,6 +16,23 @@ If "warning that AIRFLOW_UID is not set" then create a .env file manually with t
 ```bash
 AIRFLOW_UID=50000
 ```
+
+
+### Create a GCP key 
+
+- Create a service account in your Google Cloud project and download the JSON key file.
+
+- Rename the key file to `google_cloud_key.json`.
+
+- Place the key inside the `data/data-pipeline/secrets/` folder.
+
+- Update a .env file in your project root directory and add the following line:
+
+```bash
+GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/secrets/google_cloud_key.json
+```
+
+
 
 ### Initialize the database
 
