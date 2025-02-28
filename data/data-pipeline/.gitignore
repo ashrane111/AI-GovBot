@@ -265,7 +265,13 @@ airflow-build-dockerfile*
 config/
 plugins/
 working_data/
+secrets/
 
 result_data/
 FAISS_Index/
 embeddings/
+util_logs/
+
+merged_input/
+
+*key.json

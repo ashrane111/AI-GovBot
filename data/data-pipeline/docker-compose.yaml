@@ -78,8 +78,8 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
-    - ${GOOGLE_APPLICATION_CREDENTIALS}:/opt/airflow/secrets/google_cloud_key.json:ro
-    # - ${AIRFLOW_PROJ_DIR:-.}/working_data:/opt/airflow/working_data
+    - ${AIRFLOW_PROJ_DIR:-.}/secrets:/opt/airflow/secrets
+    
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
