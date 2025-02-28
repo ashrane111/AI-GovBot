@@ -1,0 +1,31 @@
+name: Run Unit Tests
+
+on:
+  push:
+    branches:
+      - ash-dev
+  pull_request:
+    branches:
+      - ash-dev
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker image
+        run: docker-compose build
+
+      - name: Run tests in a separate Docker container
+        run: |
+          # Create a temporary container to run tests, mounting the project directory
+          docker run --rm \
+            -v ${PWD}:/app \
+            -w /app \
+            apache/airflow:2.10.5 \
+            bash -c "pip install -r requirements.txt && PYTHONPATH=data/data-pipeline pytest tests/unit/ -v"
