@@ -30,7 +30,7 @@ jobs:
           docker-compose --version
 
       - name: Build Docker image
-        run: docker-compose -f docker-compose.yaml build
+        run: docker-compose -f data/data-pipeline/docker-compose.yaml build
 
       - name: Run tests in a separate Docker container
         run: |
