@@ -5,9 +5,9 @@ import pickle
 import os
 # from save_file import SaveFile
 
-output_dir_name = "result_data"
-clean_data_path = 'Documents_segments_merged_cleaned.csv'
-clean_data_xlsx_path = 'Documents_segments_merged_cleaned.xlsx'
+output_dir_name = "merged_input"
+clean_data_path = 'Documents_segments_merged.csv'
+clean_data_xlsx_path = 'Documents_segments_merged.xlsx'
 
 
 def clean_text(text):

@@ -3,6 +3,7 @@
 import os
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
+from airflow.operators.email_operator import EmailOperator
 from datetime import datetime, timedelta
 from utils.data_loader import load_data
 from utils.text_clean import clean_full_text
@@ -22,6 +23,26 @@ default_args = {
     'retries': 0, # Number of retries in case of task failure
     'retry_delay': timedelta(minutes=5), # Delay before retries
 }
+
+def task_success_slack_alert(context):
+    success_email = EmailOperator(
+        task_id='send_email',
+        to='sanjanajd115@gmail.com',
+        subject='Success Notification from Airflow',
+        html_content='<p>The task is successful.</p>',
+        dag=context['dag']
+    )
+    success_email.execute(context=context)
+
+def task_fail_slack_alert(context):
+    failure_email = EmailOperator(
+        task_id='send_email',
+        to='sanjanajd115@gmail.com',
+        subject='Failure Notification from Airflow',
+        html_content='<p>The task has failed.</p>',
+        dag=context['dag']
+    )
+    failure_email.execute(context=context)
 
 # Create a DAG instance named 'Airflow_Lab1' with the defined default arguments
 dag = DAG(

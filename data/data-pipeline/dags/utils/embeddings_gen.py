@@ -33,7 +33,8 @@ def generate_embeddings(data, transformer_model="sentence-transformers/multi-qa-
 def main():
     csv_file = pd.read_csv('merged_input/Documents_segments_merged.csv')
     # Call the method to perform the data extraction and merging
-    generate_embeddings(csv_file)
+    serialized_input_data = pickle.dumps(csv_file)
+    generate_embeddings(serialized_input_data)
 
 if __name__ == "__main__":
     main()
