@@ -29,9 +29,6 @@ jobs:
           # Verify installation
           docker-compose --version
 
-      - name: Build Docker image
-        run: docker-compose build
-
       - name: Run tests in a separate Docker container
         run: |
           # Create a temporary container to run tests, mounting the project directory
