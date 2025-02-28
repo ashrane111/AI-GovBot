@@ -1,4 +1,4 @@
-FROM apache/airflow:2.10.5
+FROM apache/airflow:2.10.5-python3.10
 ADD requirements.txt .
 RUN pip install apache-airflow==${AIRFLOW_VERSION} -r requirements.txt
 RUN curl -sSL https://sdk.cloud.google.com | bash
