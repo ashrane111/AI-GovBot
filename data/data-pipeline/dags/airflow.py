@@ -4,6 +4,9 @@ import os
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.email_operator import EmailOperator
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
+from airflow.utils.trigger_rule import TriggerRule
+from airflow.operators.bash import BashOperator
 from datetime import datetime, timedelta
 from utils.data_loader import load_data
 from utils.text_clean import clean_full_text
@@ -25,6 +28,16 @@ default_args = {
     'retry_delay': timedelta(minutes=5), # Delay before retries
 }
 
+# Create a DAG instance named 'Airflow_Lab1' with the defined default arguments
+dag = DAG(
+    'Data_pipeline_HARVEY',
+    default_args=default_args,
+    description='Dag for the data pipeline',
+    schedule_interval=None,  # Set the schedule interval or use None for manual triggering
+    catchup=False,
+)
+
+# Define EmailOperators for success and failure notifications
 def task_success_slack_alert(context):
     success_email = EmailOperator(
         task_id='send_email',
@@ -45,17 +58,23 @@ def task_fail_slack_alert(context):
     )
     failure_email.execute(context=context)
 
-# Create a DAG instance named 'Airflow_Lab1' with the defined default arguments
-dag = DAG(
-    'Data_pipeline_HARVEY',
-    default_args=default_args,
-    description='Dag for the data pipeline',
-    schedule_interval=None,  # Set the schedule interval or use None for manual triggering
-    catchup=False,
+owner_task = BashOperator(
+    task_id="task_using_linked_owner",
+    bash_command="echo 1",
+    owner="Sanjana",
+    dag=dag
+)
+send_email = EmailOperator(
+    task_id='send_email',
+    to='sanjanajd115@gmail.com',
+    subject='Notification from Airflow',
+    html_content='<p>This is a notification email sent from Airflow.</p>',
+    dag=dag,
+    on_failure_callback=task_fail_slack_alert,
+    on_success_callback=task_success_slack_alert
 )
 
 # Define PythonOperators for each function
-
 
 # Task to download data in zip, calls the 'download_zip_file' Python function
 download_unzip_task = PythonOperator(
@@ -115,12 +134,19 @@ upload_to_gcs_task = PythonOperator(
     dag=dag,
 )
 
-
+TriggerDag = TriggerDagRunOperator(
+    task_id='my_trigger_task',
+    trigger_rule=TriggerRule.ALL_DONE,
+    trigger_dag_id='Airflow_Lab2_Flask',
+    dag=dag
+)
 
 # Set task dependencies
-download_unzip_task >> data_combine_task >> load_data_task >> clean_text_task >> generate_embeddings_task >> create_index_task  >> upload_to_gcs_task
+download_unzip_task >> data_combine_task >> load_data_task >> clean_text_task >> generate_embeddings_task >> create_index_task  >> upload_to_gcs_task >> send_email >> TriggerDag
 
 
 # If this script is run directly, allow command-line interaction with the DAG
 if __name__ == "__main__":
     dag.cli()
+
+# 

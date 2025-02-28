@@ -49,7 +49,7 @@ def extract_and_merge_documents(temp_dir=""):
                                          'Authority', 'Collections', 'Most recent activity',
                                          'Most recent activity date', 'Proposed date', 'Primarily applies to the government',
                                          'Primarily applies to the private sector', 'Short summary',
-                                         'Long summary', 'Tags']]
+                                         'Long summary']]
         logger.info("Extracted necessary columns from documents")
 
         merged_document_segments = pd.merge(
