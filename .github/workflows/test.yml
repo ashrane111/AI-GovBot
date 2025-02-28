@@ -29,6 +29,9 @@ jobs:
           # Verify installation
           docker-compose --version
 
+      - name: Build Docker image
+        run: docker-compose -f docker-compose.yaml build
+
       - name: Run tests in a separate Docker container
         run: |
           # Create a temporary container to run tests, mounting the project directory
@@ -36,4 +39,4 @@ jobs:
             -v ${PWD}:/app \
             -w /app \
             apache/airflow:2.10.5 \
-            bash -c "pip install -r requirements.txt && PYTHONPATH=data/data-pipeline pytest tests/unit/ -v"
+            bash -c "pip install -r data/data-pipeline/requirements.txt && PYTHONPATH=data/data-pipeline pytest tests/unit/ -v"
