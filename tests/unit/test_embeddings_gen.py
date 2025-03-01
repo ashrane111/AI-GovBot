@@ -5,6 +5,7 @@ import numpy as np
 import pickle
 import sys
 from unittest.mock import patch, MagicMock
+import pandas as pd
 
 # Add the parent directory to sys.path to import modules correctly
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../data/data-pipeline/dags')))

@@ -1,9 +1,9 @@
-# test_save_file.py
 import unittest
 import os
 import sys
 import pickle
 import pandas as pd
+import pandas.testing as pdt  # Added for DataFrame comparison
 import numpy as np
 import faiss
 from unittest.mock import patch, mock_open, MagicMock
@@ -38,7 +38,7 @@ class TestSaveFile(unittest.TestCase):
         
         # Verify instance setup
         mock_makedirs.assert_called_once()
-        self.assertEqual(save_file.data, self.test_df)
+        pdt.assert_frame_equal(save_file.data, self.test_df)  # Updated comparison
     
     @patch('os.makedirs')
     @patch('os.path.join')
@@ -82,3 +82,6 @@ class TestSaveFile(unittest.TestCase):
         # Test faiss index saving
         save_file.save_faiss_index_file()
         mock_write_index.assert_called_once_with(self.test_index, save_file.output_path)
+
+if __name__ == '__main__':
+    unittest.main()
