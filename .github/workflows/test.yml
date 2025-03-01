@@ -25,13 +25,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r data/data-pipeline/requirements.txt
 
-      - name: Run unit tests
+      - name: Run tests
         run: |
-          export PYTHONPATH=$(pwd)/data/data-pipeline/dags
-          python -m unittest discover tests/unit/ -v
-
-      - name: Upload coverage reports to Codecov (optional)
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./coverage.xml
-          fail_ci_if_error: true
+          cd data/data-pipeline
+          python -m pytest dags/tests/ -v

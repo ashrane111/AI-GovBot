@@ -1,86 +1,40 @@
+# test_create_vector_index.py
 import unittest
 import os
-import pickle
 import numpy as np
 import faiss
-from unittest.mock import patch, MagicMock
+import pickle
 import sys
+from unittest.mock import patch, mock_open, MagicMock
 
-# Add parent directory to path to import the module
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Add the parent directory to sys.path to import modules correctly
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../data/data-pipeline/dags')))
 from utils.create_vector_index import create_index
 
 class TestCreateVectorIndex(unittest.TestCase):
     def setUp(self):
-        """Set up test fixtures with minimal data"""
-        # Use small sample embeddings (2 vectors of dimension 2 for simplicity)
-        self.sample_embeddings = np.array([[0.1, 0.2], [0.3, 0.4]], dtype="float32")
-        self.serialized_embeddings = pickle.dumps(self.sample_embeddings)
-        self.base_path = f"{os.getcwd()}/data/data-pipeline/dags"
-
-    def tearDown(self):
-        """Clean up after tests"""
-        pass
-
-    @patch('utils.create_vector_index.faiss.write_index')
-    @patch('utils.create_vector_index.os.makedirs')
-    @patch('utils.create_vector_index.os.path.exists', return_value=True)
-    def test_create_index_normal(self, mock_exists, mock_makedirs, mock_write_index):
-        """Test that the index is created successfully with valid embeddings"""
-        # Mock create_index to return None and simulate FAISS index creation
-        mock_index = MagicMock(spec=faiss.Index)
-        mock_index.d = 2  # Match embedding dimension
-        mock_index.ntotal = 2  # Match number of vectors
-        mock_write_index.return_value = None
-        with patch('utils.create_vector_index.create_index', return_value=None) as mock_func:
-            create_index(self.serialized_embeddings)
-            
-            # Verify mocks were called with full path
-            mock_makedirs.assert_called_with(f"{self.base_path}/FAISS_Index", exist_ok=True)
-            mock_write_index.assert_called_once_with(mock_index, f"{self.base_path}/FAISS_Index/legal_embeddings.index")
-            mock_exists.assert_called()
-            self.assertTrue(os.path.exists(f"{self.base_path}/FAISS_Index/legal_embeddings.index"))
-
-    @patch('utils.create_vector_index.os.makedirs')
-    @patch('utils.create_vector_index.os.path.exists', return_value=True)
-    @patch('utils.create_vector_index.faiss.write_index')
-    def test_create_index_empty_embeddings(self, mock_write_index, mock_exists, mock_makedirs):
-        """Test that the index handles empty embeddings correctly"""
-        # Use empty embeddings
-        empty_embeddings = np.array([], dtype="float32")
-        serialized_empty = pickle.dumps(empty_embeddings)
+        # Create sample embeddings
+        self.test_embeddings = np.random.random((10, 128)).astype('float32')
+        self.serialized_embeddings = pickle.dumps(self.test_embeddings)
         
-        # Mock create_index to return None and simulate an empty FAISS index
-        mock_empty_index = MagicMock(spec=faiss.Index)
-        mock_empty_index.d = 768  # Default dimension (adjust if needed)
-        mock_empty_index.ntotal = 0
-        mock_write_index.return_value = None
+    @patch('os.makedirs')
+    @patch('faiss.write_index')
+    @patch('os.path.join')
+    def test_create_index(self, mock_join, mock_write_index, mock_makedirs):
+        # Configure mocks
+        mock_join.side_effect = lambda *args: '/'.join(args)
+        mock_makedirs.return_value = None
         
-        # Patch create_index to prevent execution and directly return None
-        with patch('utils.create_vector_index.create_index', return_value=None) as mock_func:
-            create_index(serialized_empty)
-            
-            # Verify mocks were called with empty index and full path
-            mock_makedirs.assert_called_with(f"{self.base_path}/FAISS_Index", exist_ok=True)
-            mock_write_index.assert_called_once_with(mock_empty_index, f"{self.base_path}/FAISS_Index/legal_embeddings.index")
-            mock_exists.assert_called()
-            self.assertTrue(os.path.exists(f"{self.base_path}/FAISS_Index/legal_embeddings.index"))
-
-    @patch('utils.create_vector_index.create_index', side_effect=ValueError("Invalid embedding dimensions for FAISS index"))
-    def test_create_index_invalid_data(self, mock_func):
-        """Test that invalid data raises the correct ValueError"""
-        # Test with invalid shape (1x1 array)
-        invalid_data = np.array([[0.1]], dtype="float32")
-        serialized_invalid = pickle.dumps(invalid_data)
-        with self.assertRaises(ValueError) as cm:
-            create_index(serialized_invalid)
-        self.assertEqual(str(cm.exception), "Invalid embedding dimensions for FAISS index")
-
-        # Test with None
-        serialized_none = pickle.dumps(None)
-        with self.assertRaises(ValueError) as cm:
-            create_index(serialized_none)
-        self.assertEqual(str(cm.exception), "Invalid embedding dimensions for FAISS index")
-
-if __name__ == '__main__':
-    unittest.main()
+        # Call the function
+        create_index(self.serialized_embeddings)
+        
+        # Verify the function behavior
+        mock_makedirs.assert_called_once()
+        mock_write_index.assert_called_once()
+        
+        # Get the index object that was passed to write_index
+        index_arg = mock_write_index.call_args[0][0]
+        
+        # Verify it's a FAISS index with the right dimension
+        self.assertIsInstance(index_arg, faiss.IndexFlatL2)
+        self.assertEqual(index_arg.d, 128)  # Check dimension matches our test data

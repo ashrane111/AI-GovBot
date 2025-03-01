@@ -1,26 +1,22 @@
+# tests/conftest.py
 import pytest
 import pandas as pd
+import numpy as np
 import os
-from pathlib import Path
+import sys
+
+# Add the correct path to access utility modules
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../data/data-pipeline/dags')))
 
 @pytest.fixture
-def sample_authorities_csv(tmp_path):
-    df = pd.DataFrame({
-        "Name": ["U.S. Federal Government"],
-        "Jurisdiction": ["United States"],
-        "Parent authority": ["Federal government"]
+def sample_dataframe():
+    """Create a sample DataFrame for testing."""
+    return pd.DataFrame({
+        'Full Text': ['Sample text 1', 'Sample text 2', 'Sample text 3'],
+        'cleaned_text': ['sample text 1', 'sample text 2', 'sample text 3']
     })
-    csv_path = tmp_path / "authorities.csv"
-    df.to_csv(csv_path, index=False)
-    return str(csv_path)
 
 @pytest.fixture
-def sample_segments_csv(tmp_path):
-    df = pd.DataFrame({
-        "Document ID": [1],
-        "Text": ["Sample text"],
-        "Summary": ["Summary text"]
-    })
-    csv_path = tmp_path / "segments.csv"
-    df.to_csv(csv_path, index=False)
-    return str(csv_path)
+def sample_embeddings():
+    """Create sample embeddings for testing."""
+    return np.random.random((3, 128)).astype('float32')

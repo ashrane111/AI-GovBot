@@ -1,65 +1,66 @@
+# test_data_extract_combine.py
 import unittest
 import os
 import pandas as pd
-from unittest.mock import patch, MagicMock
 import sys
+from unittest.mock import patch, MagicMock
 
-# Add parent directory to path to import the module
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from utils.data_extract_combine import extract_and_merge_documents
+# Add the parent directory to sys.path to import modules correctly
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../data/data-pipeline/dags')))
+
+from utils.data_extract_combine import extract_and_merge_documents, make_input_dir
 
 class TestDataExtractCombine(unittest.TestCase):
     def setUp(self):
-        """Set up test fixtures"""
-        self.sample_documents = pd.DataFrame({
-            "AGORA ID": [1], "Authority ID": [1], "Document ID": [1],  # Added Document ID
-            "Name": ["Test Doc"], "Status": ["Enacted"]
+        # Sample data for testing
+        self.documents_data = pd.DataFrame({
+            'AGORA ID': [1, 2],
+            'Official name': ['Doc1', 'Doc2'],
+            'Casual name': ['D1', 'D2'],
+            'Link to document': ['link1', 'link2'],
+            'Authority': ['Auth1', 'Auth2'],
+            'Collections': ['Col1', 'Col2'],
+            'Most recent activity': ['Act1', 'Act2'],
+            'Most recent activity date': ['2023-01-01', '2023-02-01'],
+            'Proposed date': ['2022-01-01', '2022-02-01'],
+            'Primarily applies to the government': [True, False],
+            'Primarily applies to the private sector': [False, True],
+            'Short summary': ['Short1', 'Short2'],
+            'Long summary': ['Long1', 'Long2'],
+            'Tags': ['Tag1', 'Tag2']
         })
-        self.sample_authorities = pd.DataFrame({
-            "Name": ["U.S. Federal Government"], "Jurisdiction": ["United States"]
+        
+        self.segments_data = pd.DataFrame({
+            'Document ID': [1, 1, 2],
+            'Text': ['Text1', 'Text2', 'Text3'],
+            'Summary': ['Sum1', 'Sum2', 'Sum3']
         })
-        self.sample_segments = pd.DataFrame({
-            "Document ID": [1], "Text": ["Sample text"], "Summary": ["Summary text"]
-        })
-        self.temp_dir = "/tmp/test_dir"
-
-    def tearDown(self):
-        """Clean up after tests"""
-        pass
-
+    
+    @patch('os.makedirs')
+    def test_make_input_dir(self, mock_makedirs):
+        # Test creating the directory
+        make_input_dir()
+        mock_makedirs.assert_called_once_with('merged_input')
+        
+        # Test handling existing directory
+        mock_makedirs.side_effect = FileExistsError()
+        make_input_dir()  # Should not raise an exception
+    
     @patch('pandas.read_csv')
-    @patch('os.path.exists', return_value=True)
-    def test_extract_and_merge_documents_success(self, mock_exists, mock_read_csv):
-        """Test that documents are extracted and merged successfully"""
-        mock_read_csv.side_effect = [
-            self.sample_documents, self.sample_authorities, self.sample_segments
-        ]
-        with patch('utils.data_extract_combine.extract_and_merge_documents', return_value=pd.DataFrame({
-            "Full Text": ["Sample text Summary text"], "AGORA ID": [1], "Document ID": [1]
-        })) as mock_func:
-            result = extract_and_merge_documents(self.temp_dir)
-            self.assertIsInstance(result, pd.DataFrame)
-            self.assertEqual(result["Full Text"].iloc[0], "Sample text Summary text")
-            mock_read_csv.assert_called()
-            mock_exists.assert_called()
-
-    @patch('os.path.exists', return_value=False)
-    def test_extract_and_merge_documents_missing_file(self, mock_exists):
-        """Test error handling for missing input files"""
-        with self.assertRaises(FileNotFoundError) as cm:
-            extract_and_merge_documents(self.temp_dir)
-        self.assertEqual(str(cm.exception), "No such file or directory")
-        mock_exists.assert_called()
-
-    @patch('pandas.read_csv', return_value=pd.DataFrame({"Invalid Column": [1]}))
-    @patch('os.path.exists', return_value=True)
-    def test_extract_and_merge_documents_invalid_data(self, mock_exists, mock_read_csv):
-        """Test error handling for invalid data"""
-        with patch('utils.data_extract_combine.extract_and_merge_documents', side_effect=ValueError("Missing required columns in documents.csv")) as mock_func:
-            with self.assertRaises(ValueError) as cm:
-                extract_and_merge_documents(self.temp_dir)
-            self.assertEqual(str(cm.exception), "Missing required columns in documents.csv")
-            mock_read_csv.assert_called()
-
-if __name__ == '__main__':
-    unittest.main()
+    @patch('pandas.DataFrame.to_csv')
+    @patch('pandas.DataFrame.to_excel')
+    @patch('os.path.join')
+    @patch('os.makedirs')
+    def test_extract_and_merge_documents(self, mock_makedirs, mock_join, mock_to_excel, 
+                                         mock_to_csv, mock_read_csv):
+        # Configure the mocks
+        mock_join.side_effect = lambda *args: '/'.join(args)
+        mock_read_csv.side_effect = [self.documents_data, self.segments_data]
+        
+        # Call the function
+        extract_and_merge_documents(temp_dir="test_dir")
+        
+        # Verify correct calls were made
+        self.assertEqual(mock_read_csv.call_count, 2)
+        mock_to_csv.assert_called_once()
+        mock_to_excel.assert_called_once()

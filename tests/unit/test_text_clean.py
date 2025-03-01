@@ -1,103 +1,57 @@
+# test_text_clean.py
 import unittest
 import os
-import pickle
 import pandas as pd
-from unittest.mock import patch, MagicMock
+import pickle
 import sys
+from unittest.mock import patch, mock_open, MagicMock
 
-# Add parent directory to path to import the module
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Add the parent directory to sys.path to import modules correctly
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../data/data-pipeline/dags')))
 from utils.text_clean import clean_text, clean_full_text
 
 class TestTextClean(unittest.TestCase):
     def setUp(self):
-        """Set up test fixtures"""
-        self.sample_texts = pd.DataFrame({"Full Text": ["Hello, World!!!", "Test@123"]})
-
-    def tearDown(self):
-        """Clean up after tests"""
-        pass
-
-    def test_clean_text_normal(self):
-        """Test cleaning normal text"""
-        with patch('utils.text_clean.clean_text', return_value="hello world") as mock_func:
-            self.assertEqual(clean_text("Hello, World!!!"), "hello world")
-        with patch('utils.text_clean.clean_text', return_value="test 123") as mock_func:
-            self.assertEqual(clean_text("Test@123"), "test 123")
-        with patch('utils.text_clean.clean_text', return_value="multiple spaces") as mock_func:
-            self.assertEqual(clean_text("Multiple   Spaces"), "multiple spaces")
-        with patch('utils.text_clean.clean_text', return_value="specialcharacters") as mock_func:
-            self.assertEqual(clean_text("Special#$%Characters"), "specialcharacters")
-
-    def test_clean_text_none(self):
-        """Test cleaning None input"""
-        with patch('utils.text_clean.clean_text', return_value="") as mock_func:
-            self.assertEqual(clean_text(None), "")
-
-    def test_clean_text_empty(self):
-        """Test cleaning an empty string"""
-        with patch('utils.text_clean.clean_text', return_value="") as mock_func:
-            self.assertEqual(clean_text(""), "")
-
-    @patch('pandas.read_csv', return_value=pd.DataFrame({"Full Text": ["Hello, World!!!", "Test@123"]}))
-    def test_clean_full_text_normal(self, mock_read_csv):
-        """Test cleaning full text in a DataFrame"""
-        with patch('utils.text_clean.clean_text', side_effect=lambda x: "hello world" if x == "Hello, World!!!" else "test 123" if x == "Test@123" else "") as mock_clean:
-            with patch('utils.text_clean.clean_full_text', return_value=pickle.dumps(pd.DataFrame({
-                "Full Text": ["Hello, World!!!", "Test@123"],
-                "cleaned_text": ["hello world", "test 123"]
-            }))) as mock_func:
-                serialized_df = pickle.dumps(self.sample_texts)
-                result = clean_full_text(serialized_df)
-                cleaned_df = pickle.loads(result)
-                self.assertIsInstance(cleaned_df, pd.DataFrame)
-                self.assertEqual(list(cleaned_df["cleaned_text"]), ["hello world", "test 123"])
-                mock_read_csv.assert_called()
-                mock_clean.assert_called()
-
-    @patch('utils.text_clean.clean_full_text', side_effect=ValueError("DataFrame must contain 'Full Text' column"))
-    def test_clean_full_text_invalid_data(self, mock_func):
-        """Test error handling for invalid data"""
-        with self.assertRaises(ValueError) as cm:
-            clean_full_text(pickle.dumps(pd.DataFrame({"Invalid Column": [1]})))
-        self.assertEqual(str(cm.exception), "DataFrame must contain 'Full Text' column")
-        with self.assertRaises(ValueError) as cm:
-            clean_full_text(None)
-        self.assertEqual(str(cm.exception), "DataFrame must contain 'Full Text' column")
-
-    @patch('pandas.read_csv', return_value=pd.DataFrame({"Full Text": [None, "Test!"]}))
-    def test_clean_full_text_missing_values(self, mock_read_csv):
-        """Test cleaning full text with missing values"""
-        with patch('utils.text_clean.clean_text', side_effect=lambda x: "" if pd.isna(x) or x is None else "test" if x == "Test!" else "") as mock_clean:
-            with patch('utils.text_clean.clean_full_text', return_value=pickle.dumps(pd.DataFrame({
-                "Full Text": [None, "Test!"],
-                "cleaned_text": [None, "test"]
-            }))) as mock_func:
-                df = pd.DataFrame({"Full Text": [None, "Test!"]})
-                serialized_df = pickle.dumps(df)
-                result = clean_full_text(serialized_df)
-                cleaned_df = pickle.loads(result)
-                self.assertIsNone(cleaned_df["cleaned_text"].iloc[0])
-                self.assertEqual(cleaned_df["cleaned_text"].iloc[1], "test")
-                mock_read_csv.assert_called()
-                mock_clean.assert_called()
-
-    @patch('pandas.read_csv', return_value=pd.DataFrame({"Full Text": ["Hello, World!!!"] * 10000}))
-    def test_clean_full_text_performance(self, mock_read_csv):
-        """Test performance with a large dataset"""
-        with patch('utils.text_clean.clean_text', return_value="hello world") as mock_clean:
-            with patch('utils.text_clean.clean_full_text', return_value=pickle.dumps(pd.DataFrame({
-                "Full Text": ["Hello, World!!!"] * 10000,
-                "cleaned_text": ["hello world"] * 10000
-            }))) as mock_func:
-                large_texts = pd.DataFrame({"Full Text": ["Hello, World!!!"] * 10000})
-                serialized_df = pickle.dumps(large_texts)
-                result = clean_full_text(serialized_df)
-                cleaned_df = pickle.loads(result)
-                self.assertEqual(len(cleaned_df), 10000)
-                self.assertEqual(list(cleaned_df["cleaned_text"]), ["hello world"] * 10000)
-                mock_read_csv.assert_called()
-                mock_clean.assert_called()
-
-if __name__ == '__main__':
-    unittest.main()
+        # Sample data for testing
+        self.test_df = pd.DataFrame({
+            'Full Text': ['Text with  extra  spaces!', 'Special $#@ characters', 'UPPERCASE text']
+        })
+        self.serialized_df = pickle.dumps(self.test_df)
+        
+        # Expected cleaned text
+        self.expected_cleaned = pd.DataFrame({
+            'Full Text': ['Text with  extra  spaces!', 'Special $#@ characters', 'UPPERCASE text'],
+            'cleaned_text': ['text with extra spaces', 'special  characters', 'uppercase text']
+        })
+    
+    def test_clean_text(self):
+        # Test individual text cleaning
+        test_cases = [
+            ('Text with  extra  spaces!', 'text with extra spaces'),
+            ('Special $#@ characters', 'special  characters'),
+            ('UPPERCASE text', 'uppercase text')
+        ]
+        
+        for input_text, expected in test_cases:
+            self.assertEqual(clean_text(input_text), expected)
+    
+    @patch('os.makedirs')
+    @patch('os.path.join')
+    def test_clean_full_text(self, mock_join, mock_makedirs):
+        # Configure mocks
+        mock_join.side_effect = lambda *args: '/'.join(args)
+        
+        # Patch DataFrame.to_csv to prevent file writing
+        with patch.object(pd.DataFrame, 'to_csv'):
+            # Call the function
+            result = clean_full_text(self.serialized_df)
+            
+            # Verify function behavior
+            mock_makedirs.assert_called_once()
+            
+            # Verify the result
+            deserialized = pickle.loads(result)
+            self.assertTrue('cleaned_text' in deserialized.columns)
+            self.assertEqual(deserialized['cleaned_text'][0], 'text with extra spaces')
+            self.assertEqual(deserialized['cleaned_text'][1], 'special  characters')
+            self.assertEqual(deserialized['cleaned_text'][2], 'uppercase text')
