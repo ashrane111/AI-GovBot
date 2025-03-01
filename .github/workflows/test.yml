@@ -28,4 +28,4 @@ jobs:
       - name: Run tests
         run: |
           cd data/data-pipeline
-          python -m pytest dags/tests/ -v
+          python -m pytest tests/ -v
