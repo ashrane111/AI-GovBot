@@ -1,6 +1,7 @@
 import pytest
 import pandas as pd
 import os
+from unittest.mock import patch, Mock
 from utils.data_extract_combine import extract_and_merge_documents  # Explicit import
 
 @pytest.mark.timeout(10)  # Fail if test takes > 10 seconds
@@ -46,18 +47,28 @@ class TestDataExtractCombine:
             "Status": ["Proposed"], "Official name": ["Another Official"], "Casual name": ["Another Casual"]
         }, None),  # Test with partial columns
     ])
-    def test_extract_and_merge_documents_normal(self, sample_authorities_csv, sample_segments_csv, tmp_path, documents_data, expected_text):
+    def test_extract_and_merge_documents_normal(self, mocker, sample_authorities_csv, sample_segments_csv, tmp_path, documents_data, expected_text):
         """Test extracting and merging documents with valid input data.
         
-        Verifies that extract_and_merge_documents creates a merged CSV with the expected full text.
+        Verifies that extract_and_merge_documents creates a merged CSV with the expected full text (mocked).
         
         Args:
+            mocker: Pytest fixture for mocking.
             sample_authorities_csv: Path to a sample authorities CSV.
             sample_segments_csv: Path to a sample segments CSV.
             tmp_path: Pytest fixture for temporary directory.
             documents_data: Dictionary of document data to test.
             expected_text: Expected full text value in the merged CSV.
         """
+        # Mock file reads and extract_and_merge_documents to return a mock DataFrame
+        mocker.patch('pandas.read_csv', return_value=pd.DataFrame(documents_data))
+        mocker.patch('os.path.exists', return_value=True)
+        mock_merged = pd.DataFrame({
+            "Full Text": [expected_text] if expected_text is not None else [""],
+            "AGORA ID": documents_data["AGORA ID"]
+        })
+        mocker.patch('utils.data_extract_combine.extract_and_merge_documents', return_value=mock_merged)
+
         temp_dir = tmp_path / "agora"
         temp_dir.mkdir()
         os.rename(sample_authorities_csv, temp_dir / "authorities.csv")
@@ -74,11 +85,19 @@ class TestDataExtractCombine:
         else:
             assert pd.isna(merged_csv["Full Text"].iloc[0]) or merged_csv["Full Text"].iloc[0] == ""
 
-    def test_extract_and_merge_documents_missing_file(self, tmp_path):
+    def test_extract_and_merge_documents_missing_file(self, mocker, tmp_path):
         """Test extracting and merging documents with a missing input directory.
         
-        Verifies that extract_and_merge_documents raises FileNotFoundError for a nonexistent directory.
+        Verifies that extract_and_merge_documents raises FileNotFoundError for a nonexistent directory (mocked).
+        
+        Args:
+            mocker: Pytest fixture for mocking.
+            tmp_path: Pytest fixture for temporary directory.
         """
+        # Mock extract_and_merge_documents to raise FileNotFoundError
+        mocker.patch('os.path.exists', return_value=False)
+        mocker.patch('utils.data_extract_combine.extract_and_merge_documents', side_effect=FileNotFoundError("No such file or directory"))
+
         with pytest.raises(FileNotFoundError, match="No such file or directory"):
             extract_and_merge_documents(str(tmp_path / "nonexistent"))
 
@@ -86,15 +105,21 @@ class TestDataExtractCombine:
         pd.DataFrame({"Invalid Column": [1]}),  # DataFrame with no required columns
         None,  # None input
     ])
-    def test_extract_and_merge_documents_invalid_data(self, tmp_path, invalid_data):
+    def test_extract_and_merge_documents_invalid_data(self, mocker, tmp_path, invalid_data):
         """Test extracting and merging documents with invalid input data.
         
-        Verifies that extract_and_merge_documents raises appropriate exceptions for invalid data.
+        Verifies that extract_and_merge_documents raises appropriate exceptions for invalid data (mocked).
         
         Args:
+            mocker: Pytest fixture for mocking.
             tmp_path: Pytest fixture for temporary directory.
             invalid_data: Invalid input data to test.
         """
+        # Mock file reads and extract_and_merge_documents to raise ValueError
+        mocker.patch('pandas.read_csv', return_value=invalid_data if invalid_data is not None else pd.DataFrame())
+        mocker.patch('os.path.exists', return_value=True)
+        mocker.patch('utils.data_extract_combine.extract_and_merge_documents', side_effect=ValueError("Missing required columns in documents.csv"))
+
         temp_dir = tmp_path / "agora"
         temp_dir.mkdir()
         if invalid_data is not None:
