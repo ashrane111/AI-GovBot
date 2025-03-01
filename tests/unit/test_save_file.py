@@ -4,6 +4,7 @@ import pickle
 import numpy as np
 import faiss
 import os
+from utils.save_file import SaveFile  # Explicit import
 
 @pytest.mark.timeout(5)  # Fail if test takes > 5 seconds
 class TestSaveFile:

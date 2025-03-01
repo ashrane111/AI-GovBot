@@ -2,6 +2,7 @@ import pytest
 import pandas as pd
 import pickle
 import os
+from utils.text_clean import clean_text, clean_full_text  # Explicit imports
 
 @pytest.mark.timeout(5)  # Fail if test takes > 5 seconds
 class TestTextClean:

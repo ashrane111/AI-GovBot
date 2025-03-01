@@ -1,6 +1,7 @@
 import pytest
 import pandas as pd
 import os
+from utils.data_extract_combine import extract_and_merge_documents  # Explicit import
 
 @pytest.mark.timeout(10)  # Fail if test takes > 10 seconds
 class TestDataExtractCombine:

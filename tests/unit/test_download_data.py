@@ -4,6 +4,7 @@ import os
 import requests
 import io
 import zipfile
+from utils.download_data import download_and_unzip_data_file  # Explicit import
 
 @pytest.mark.timeout(5)  # Fail if test takes > 5 seconds
 class TestDownloadData:

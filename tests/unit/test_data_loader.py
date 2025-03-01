@@ -2,6 +2,7 @@ import pytest
 import pandas as pd
 import pickle
 import os
+from utils.data_loader import load_data  # Explicit import
 
 @pytest.mark.timeout(5)  # Fail if test takes > 5 seconds
 class TestDataLoader:

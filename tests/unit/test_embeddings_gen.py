@@ -4,6 +4,7 @@ import pickle
 import numpy as np
 import os
 from unittest.mock import patch
+from utils.embeddings_gen import generate_embeddings  # Explicit import
 
 @pytest.mark.timeout(5)  # Fail if test takes > 5 seconds
 class TestEmbeddingsGen:

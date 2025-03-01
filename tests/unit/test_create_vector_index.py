@@ -3,6 +3,7 @@ import pickle
 import numpy as np
 import faiss
 import os
+from utils.create_vector_index import create_index  # Explicit import
 
 @pytest.mark.timeout(5)  # Fail if test takes > 5 seconds
 class TestCreateVectorIndex:
