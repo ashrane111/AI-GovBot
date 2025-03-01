@@ -16,6 +16,7 @@ class TestCreateVectorIndex(unittest.TestCase):
         # Use small sample embeddings (2 vectors of dimension 2 for simplicity)
         self.sample_embeddings = np.array([[0.1, 0.2], [0.3, 0.4]], dtype="float32")
         self.serialized_embeddings = pickle.dumps(self.sample_embeddings)
+        self.base_path = f"{os.getcwd()}/data/data-pipeline/dags"
 
     def tearDown(self):
         """Clean up after tests"""
@@ -34,12 +35,11 @@ class TestCreateVectorIndex(unittest.TestCase):
         with patch('utils.create_vector_index.create_index', return_value=None) as mock_func:
             create_index(self.serialized_embeddings)
             
-            # Verify mocks were called, allowing for full path in makedirs
-            mock_mkdirs_path = f"{os.getcwd()}/data/data-pipeline/dags/FAISS_Index"
-            mock_makedirs.assert_called_with(mock_mkdirs_path, exist_ok=True)
-            mock_write_index.assert_called_once_with(mock_index, f"{mock_mkdirs_path}/legal_embeddings.index")
+            # Verify mocks were called with full path
+            mock_makedirs.assert_called_with(f"{self.base_path}/FAISS_Index", exist_ok=True)
+            mock_write_index.assert_called_once_with(mock_index, f"{self.base_path}/FAISS_Index/legal_embeddings.index")
             mock_exists.assert_called()
-            self.assertTrue(os.path.exists(f"{mock_mkdirs_path}/legal_embeddings.index"))
+            self.assertTrue(os.path.exists(f"{self.base_path}/FAISS_Index/legal_embeddings.index"))
 
     @patch('utils.create_vector_index.os.makedirs')
     @patch('utils.create_vector_index.os.path.exists', return_value=True)
@@ -60,12 +60,11 @@ class TestCreateVectorIndex(unittest.TestCase):
         with patch('utils.create_vector_index.create_index', return_value=None) as mock_func:
             create_index(serialized_empty)
             
-            # Verify mocks were called with empty index
-            mock_mkdirs_path = f"{os.getcwd()}/data/data-pipeline/dags/FAISS_Index"
-            mock_makedirs.assert_called_with(mock_mkdirs_path, exist_ok=True)
-            mock_write_index.assert_called_once_with(mock_empty_index, f"{mock_mkdirs_path}/legal_embeddings.index")
+            # Verify mocks were called with empty index and full path
+            mock_makedirs.assert_called_with(f"{self.base_path}/FAISS_Index", exist_ok=True)
+            mock_write_index.assert_called_once_with(mock_empty_index, f"{self.base_path}/FAISS_Index/legal_embeddings.index")
             mock_exists.assert_called()
-            self.assertTrue(os.path.exists(f"{mock_mkdirs_path}/legal_embeddings.index"))
+            self.assertTrue(os.path.exists(f"{self.base_path}/FAISS_Index/legal_embeddings.index"))
 
     @patch('utils.create_vector_index.create_index', side_effect=ValueError("Invalid embedding dimensions for FAISS index"))
     def test_create_index_invalid_data(self, mock_func):
