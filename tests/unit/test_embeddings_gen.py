@@ -4,7 +4,7 @@ import os
 import numpy as np
 import pickle
 import sys
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, mock_open
 import pandas as pd
 
 # Add the parent directory to sys.path to import modules correctly
