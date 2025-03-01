@@ -12,7 +12,7 @@ class TestCreateVectorIndex:
         (np.array([[0.1, 0.2], [0.3, 0.4]], dtype="float32"), 2, 2),  # Small embeddings
         (np.array([[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]], dtype="float32"), 2, 3),  # Different dimension
     ])
-    def test_create_index_normal(self, embeddings_data):
+    def test_create_index_normal(self, embeddings_data, ntotal, dimension):
         """Test creating a FAISS index with valid embeddings.
         
         Verifies that create_index creates a valid FAISS index with the correct number of vectors
@@ -20,14 +20,16 @@ class TestCreateVectorIndex:
         
         Args:
             embeddings_data: NumPy array of embeddings to test.
+            ntotal: Expected number of vectors in the index.
+            dimension: Expected dimension of each embedding.
         """
         serialized_embeddings = pickle.dumps(embeddings_data)
         create_index(serialized_embeddings)
         index_path = "FAISS_Index/legal_embeddings.index"
         assert os.path.exists(index_path)
         index = faiss.read_index(index_path)
-        assert index.ntotal == len(embeddings_data)
-        assert index.d == embeddings_data.shape[1]
+        assert index.ntotal == ntotal
+        assert index.d == dimension
 
     def test_create_index_empty_embeddings(self):
         """Test creating a FAISS index with empty embeddings.
