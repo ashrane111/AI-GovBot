@@ -20,9 +20,10 @@ class TestSaveFile:
             mocker: Pytest fixture for mocking.
             tmp_path: Pytest fixture for temporary directory.
         """
-        # Mock SaveFile methods to simulate file creation
-        mock_save = Mock()
-        mocker.patch('utils.save_file.SaveFile.save_as_csv', mock_save)
+        # Mock SaveFile instance methods correctly
+        mock_instance = Mock()
+        mocker.patch('utils.save_file.SaveFile.__init__', return_value=None)
+        mocker.patch.object(SaveFile, 'save_as_csv', mock_instance.save_as_csv)
         mocker.patch('os.path.exists', return_value=True)
         mocker.patch('pandas.read_csv', return_value=pd.DataFrame({"col": ["value"]}))
 
@@ -42,9 +43,10 @@ class TestSaveFile:
             mocker: Pytest fixture for mocking.
             tmp_path: Pytest fixture for temporary directory.
         """
-        # Mock SaveFile methods to simulate file creation
-        mock_save = Mock()
-        mocker.patch('utils.save_file.SaveFile.save_as_pickle', mock_save)
+        # Mock SaveFile instance methods correctly
+        mock_instance = Mock()
+        mocker.patch('utils.save_file.SaveFile.__init__', return_value=None)
+        mocker.patch.object(SaveFile, 'save_as_pickle', mock_instance.save_as_pickle)
         mocker.patch('os.path.exists', return_value=True)
         mocker.patch('pickle.load', return_value={"key": "value"})
 
@@ -65,9 +67,10 @@ class TestSaveFile:
             mocker: Pytest fixture for mocking.
             tmp_path: Pytest fixture for temporary directory.
         """
-        # Mock SaveFile methods to simulate file creation
-        mock_save = Mock()
-        mocker.patch('utils.save_file.SaveFile.save_as_faiss', mock_save)
+        # Mock SaveFile instance methods correctly
+        mock_instance = Mock()
+        mocker.patch('utils.save_file.SaveFile.__init__', return_value=None)
+        mocker.patch.object(SaveFile, 'save_as_faiss', mock_instance.save_as_faiss)
         mocker.patch('os.path.exists', return_value=True)
         mocker.patch('faiss.read_index', return_value=Mock(ntotal=1, d=2))  # Adjust dimension if needed
 
@@ -94,7 +97,7 @@ class TestSaveFile:
             tmp_path: Pytest fixture for temporary directory.
             invalid_data: Invalid input data to test.
         """
-        # Mock SaveFile initialization and methods to raise exceptions
+        # Mock SaveFile initialization to raise exceptions
         if isinstance(invalid_data, str):
             mocker.patch('utils.save_file.SaveFile.__init__', side_effect=TypeError("Data must be a pandas DataFrame for CSV"))
         elif invalid_data is None:
@@ -124,9 +127,11 @@ class TestSaveFile:
             mocker: Pytest fixture for mocking.
             tmp_path: Pytest fixture for temporary directory.
         """
-        # Mock SaveFile methods to raise PermissionError
+        # Mock SaveFile instance methods to raise PermissionError
+        mock_instance = Mock()
+        mocker.patch('utils.save_file.SaveFile.__init__', return_value=None)
+        mocker.patch.object(SaveFile, 'save_as_csv', side_effect=PermissionError("Permission denied"))
         mocker.patch('os.access', return_value=False)
-        mocker.patch('utils.save_file.SaveFile.save_as_csv', side_effect=PermissionError("Permission denied"))
 
         data = pd.DataFrame({"col": ["value"]})
         with pytest.raises(PermissionError, match="Permission denied"):
@@ -143,9 +148,10 @@ class TestSaveFile:
             mocker: Pytest fixture for mocking.
             tmp_path: Pytest fixture for temporary directory.
         """
-        # Mock SaveFile methods to simulate file creation
-        mock_save = Mock()
-        mocker.patch('utils.save_file.SaveFile.save_as_csv', mock_save)
+        # Mock SaveFile instance methods to simulate file creation
+        mock_instance = Mock()
+        mocker.patch('utils.save_file.SaveFile.__init__', return_value=None)
+        mocker.patch.object(SaveFile, 'save_as_csv', mock_instance.save_as_csv)
         mocker.patch('os.path.exists', return_value=True)
         mocker.patch('pandas.read_csv', return_value=pd.DataFrame({"col": ["value"] * 10000}))
 

@@ -15,7 +15,8 @@ class TestEmbeddingsGen:
         """Fixture to mock SentenceTransformer for embedding generation."""
         with patch("sentence_transformers.SentenceTransformer") as mock_st:
             mock_model = mock_st.return_value
-            mock_model.encode.return_value = np.array([[0.1, 0.2, 0.3, ..., 0.768]], dtype="float32")  # Placeholder for 768 dimensions
+            # Use a valid NumPy array for 768 dimensions (placeholder)
+            mock_model.encode.return_value = np.zeros((1, 768), dtype="float32")  # Corrected to valid array
             yield mock_model
 
     @pytest.mark.parametrize("texts, expected_shape", [

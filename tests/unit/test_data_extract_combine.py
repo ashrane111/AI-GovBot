@@ -60,12 +60,20 @@ class TestDataExtractCombine:
             documents_data: Dictionary of document data to test.
             expected_text: Expected full text value in the merged CSV.
         """
-        # Mock file reads and extract_and_merge_documents to return a mock DataFrame
-        mocker.patch('pandas.read_csv', return_value=pd.DataFrame(documents_data))
+        # Mock file reads and extract_and_merge_documents to return a mock DataFrame with 'Document ID'
+        mock_documents = pd.DataFrame(documents_data)
+        mock_documents["Document ID"] = mock_documents["AGORA ID"]  # Add 'Document ID' to align with grouping
+        mock_segments = pd.DataFrame({
+            "Document ID": [1],
+            "Text": ["Sample text"],
+            "Summary": ["Summary text"]
+        })
+        mocker.patch('pandas.read_csv', side_effect=[mock_documents, pd.DataFrame(), mock_segments])
         mocker.patch('os.path.exists', return_value=True)
         mock_merged = pd.DataFrame({
             "Full Text": [expected_text] if expected_text is not None else [""],
-            "AGORA ID": documents_data["AGORA ID"]
+            "AGORA ID": documents_data["AGORA ID"],
+            "Document ID": documents_data["AGORA ID"]
         })
         mocker.patch('utils.data_extract_combine.extract_and_merge_documents', return_value=mock_merged)
 

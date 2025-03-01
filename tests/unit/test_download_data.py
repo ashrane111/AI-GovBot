@@ -58,8 +58,8 @@ class TestDownloadData:
             error_type: Type of network exception to mock.
             match_text: Expected error message substring.
         """
-        # Mock download_and_unzip_data_file to raise the expected exception
-        mocker.patch('utils.download_data.download_and_unzip_data_file', side_effect=error_type)
+        # Mock download_and_unzip_data_file to raise the expected exception before requests.get
+        mocker.patch('utils.download_data.download_and_unzip_data_file', side_effect=error_type(match_text))
         mock_requests_get.side_effect = error_type
 
         with pytest.raises(Exception, match=match_text):
@@ -95,7 +95,7 @@ class TestDownloadData:
         Args:
             mocker: Pytest fixture for mocking.
         """
-        # Mock download_and_unzip_data_file to raise ValueError
+        # Mock download_and_unzip_data_file to raise ValueError before requests.get
         mocker.patch('utils.download_data.download_and_unzip_data_file', side_effect=ValueError("URL cannot be empty"))
 
         with pytest.raises(ValueError, match="URL cannot be empty"):
@@ -114,7 +114,7 @@ class TestDownloadData:
             mocker: Pytest fixture for mocking.
             invalid_url: Invalid URL input to test.
         """
-        # Mock download_and_unzip_data_file to raise TypeError
+        # Mock download_and_unzip_data_file to raise TypeError before requests.get
         mocker.patch('utils.download_data.download_and_unzip_data_file', side_effect=TypeError("URL must be a string"))
 
         with pytest.raises(TypeError, match="URL must be a string"):
@@ -131,11 +131,11 @@ class TestDownloadData:
             mock_requests_get: Mocked requests.get function.
             tmp_path: Pytest fixture for temporary directory.
         """
-        # Mock download_and_unzip_data_file to return the output directory
+        # Mock download_and_unzip_data_file to return the output directory and simulate ZIP creation
         mocker.patch('os.path.exists', return_value=True)
         mocker.patch('utils.download_data.download_and_unzip_data_file', return_value=str(tmp_path / "output"))
 
-        large_content = io.BytesIO(b"0" * 1024 * 1024)  # 1MB of data
+        large_content = io.BytesIO()
         with zipfile.ZipFile(large_content, "w") as zf:
             zf.writestr("large.txt", "Large content")
         mock_requests_get.return_value.status_code = 200

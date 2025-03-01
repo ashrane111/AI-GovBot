@@ -29,7 +29,7 @@ class TestCreateVectorIndex:
         # Mock create_index to create a fake FAISS index file
         mocker.patch('os.path.exists', return_value=True)
         mocker.patch('faiss.read_index', return_value=Mock(ntotal=ntotal, d=dimension))
-        mocker.patch('utils.create_vector_index.create_index')
+        mocker.patch('utils.create_vector_index.create_index', return_value=None)
 
         serialized_embeddings = pickle.dumps(embeddings_data)
         create_index(serialized_embeddings)
@@ -47,10 +47,10 @@ class TestCreateVectorIndex:
         Args:
             mocker: Pytest fixture for mocking.
         """
-        # Mock create_index to return successfully for empty embeddings
+        # Mock create_index to handle empty embeddings and return successfully
         mocker.patch('os.path.exists', return_value=True)
         mocker.patch('faiss.read_index', return_value=Mock(ntotal=0, d=768))  # Default dimension
-        mocker.patch('utils.create_vector_index.create_index')
+        mocker.patch('utils.create_vector_index.create_index', return_value=None)
 
         embeddings = np.array([], dtype="float32")
         serialized_embeddings = pickle.dumps(embeddings)

@@ -44,7 +44,7 @@ class TestDataLoader:
         Args:
             mocker: Pytest fixture for mocking.
         """
-        # Mock load_data to raise FileNotFoundError
+        # Mock load_data to raise FileNotFoundError with exact message
         mocker.patch('os.path.exists', return_value=False)
         mocker.patch('utils.data_loader.load_data', side_effect=FileNotFoundError("File not found: nonexistent.csv"))
 
@@ -84,7 +84,7 @@ class TestDataLoader:
             mocker: Pytest fixture for mocking.
             invalid_path: Invalid path input to test.
         """
-        # Mock load_data to raise TypeError
+        # Mock load_data to raise TypeError with exact message
         mocker.patch('utils.data_loader.load_data', side_effect=TypeError("Path must be a string"))
 
         with pytest.raises(TypeError, match="Path must be a string"):
