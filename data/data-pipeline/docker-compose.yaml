@@ -74,10 +74,10 @@ x-airflow-common:
     AIRFLOW__SMTP__SMTP_HOST: smtp.gmail.com
     AIRFLOW__SMTP__SMTP_STARTTLS: True
     AIRFLOW__SMTP__SMTP_SSL: False
-    AIRFLOW__SMTP__SMTP_USER: sanjanajd115@gmail.com
-    AIRFLOW__SMTP__SMTP_PASSWORD: dfvygopaweahvefy
+    AIRFLOW__SMTP__SMTP_USER: SMTP_Email
+    AIRFLOW__SMTP__SMTP_PASSWORD: SMTP_Password
     AIRFLOW__SMTP__SMTP_PORT: 587 
-    AIRFLOW__SMTP__SMTP_MAIL_FROM: sanjanajd115@gmail.com
+    AIRFLOW__SMTP__SMTP_MAIL_FROM: SMTP_Email
     # The following line can be used to set a custom config file, stored in the local config folder
     # If you want to use it, outcomment it and replace airflow.cfg with the name of your config file
     # AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
