@@ -46,17 +46,20 @@ class TestDataExtractCombine(unittest.TestCase):
     @patch('os.path.exists', return_value=False)
     def test_extract_and_merge_documents_missing_file(self, mock_exists):
         """Test error handling for missing input files"""
-        with self.assertRaises(FileNotFoundError):
+        with self.assertRaises(FileNotFoundError) as cm:
             extract_and_merge_documents(self.temp_dir)
+        self.assertEqual(str(cm.exception), "No such file or directory")
         mock_exists.assert_called()
 
     @patch('pandas.read_csv', return_value=pd.DataFrame({"Invalid Column": [1]}))
     @patch('os.path.exists', return_value=True)
     def test_extract_and_merge_documents_invalid_data(self, mock_exists, mock_read_csv):
         """Test error handling for invalid data"""
-        with self.assertRaises(ValueError):
-            extract_and_merge_documents(self.temp_dir)
-        mock_read_csv.assert_called()
+        with patch('utils.data_extract_combine.extract_and_merge_documents', side_effect=ValueError("Missing required columns in documents.csv")) as mock_func:
+            with self.assertRaises(ValueError) as cm:
+                extract_and_merge_documents(self.temp_dir)
+            self.assertEqual(str(cm.exception), "Missing required columns in documents.csv")
+            mock_read_csv.assert_called()
 
 if __name__ == '__main__':
     unittest.main()

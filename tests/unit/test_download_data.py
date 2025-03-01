@@ -77,7 +77,7 @@ class TestDownloadData(unittest.TestCase):
     @patch('os.path.exists', return_value=True)
     def test_download_and_unzip_performance(self, mock_exists, mock_get):
         """Test performance with a large ZIP file"""
-        large_content = io.BytesIO(b"0" * 1024 * 1024)  # 1MB of data
+        large_content = io.BytesIO()
         with zipfile.ZipFile(large_content, "w") as zf:
             zf.writestr("large.txt", "Large content")
         mock_get.return_value.status_code = 200
