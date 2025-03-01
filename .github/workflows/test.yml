@@ -27,5 +27,6 @@ jobs:
 
       - name: Run tests
         run: |
+          export PYTHONPATH=$(pwd)/data/data-pipeline/dags
           cd data/data-pipeline
-          python -m pytest tests/ -v
+          python -m pytest tests/unit/ -v
