@@ -1,15 +1,13 @@
-# test_embeddings_gen.py
 import unittest
 import os
 import numpy as np
 import pickle
+import pandas as pd
 import sys
 from unittest.mock import patch, MagicMock, mock_open
-import pandas as pd
 
-# Add the parent directory to sys.path to import modules correctly
+# Add the parent directory to sys.path but don't import the module yet
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../data/data-pipeline/dags')))
-from utils.embeddings_gen import generate_embeddings
 
 class TestEmbeddingsGen(unittest.TestCase):
     def setUp(self):
@@ -27,13 +25,16 @@ class TestEmbeddingsGen(unittest.TestCase):
     @patch('pickle.dump')
     @patch('sentence_transformers.SentenceTransformer')
     def test_generate_embeddings(self, mock_transformer, mock_pickle_dump, mock_join, mock_makedirs):
-        # Configure mocks
+        # Configure mocks BEFORE importing the function
         mock_model = MagicMock()
         mock_model.encode.return_value = self.mock_embeddings
         mock_transformer.return_value = mock_model
         
         # Mock os.path.join to return consistent paths
         mock_join.side_effect = lambda *args: '/'.join(args)
+        
+        # Import the function here, AFTER patching
+        from utils.embeddings_gen import generate_embeddings
         
         # Expected paths based on embeddings_gen.py
         output_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'embeddings'))
