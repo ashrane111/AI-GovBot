@@ -29,38 +29,6 @@ def make_input_dir():
     except FileExistsError:
         pass
 
-def clean_url(url):
-    if pd.isna(url):
-        return "N/A"
-    return url.replace("https://", "")
-
-def summarize_text(text, length=300):
-    return text[:length] if isinstance(text, str) else ""
-
-def validate_and_clean_data(df, authority_df):
-    authorized_authorities = set(authority_df["Name"].dropna())
-    
-    df['Casual name'].fillna("N/A", inplace=True)
-    df = df.dropna(subset=['Full Text'])
-    
-    df['Link to document'] = df['Link to document'].apply(clean_url)
-    
-    df['Most recent activity date'] = pd.to_datetime(df['Most recent activity date'], errors='coerce')
-    df['Proposed date'] = pd.to_datetime(df['Proposed date'], errors='coerce')
-    df = df.dropna(subset=['Proposed date'])
-    df.loc[df['Most recent activity date'] < df['Proposed date'], 'Most recent activity date'] = df['Proposed date']
-    
-    df = df[df['Authority'].isin(authorized_authorities)]
-    
-    df.drop(columns=['Tags'], inplace=True, errors='ignore')
-    
-    df['Short summary'].fillna("N/A", inplace=True)
-    df['Long summary'].fillna(df['Full Text'].apply(lambda x: summarize_text(x, 500)), inplace=True)
-    df = df.dropna(subset=['Long summary'])
-    
-    return df
-
-
 
 def extract_and_merge_documents(temp_dir=""):
     try:
@@ -72,9 +40,6 @@ def extract_and_merge_documents(temp_dir=""):
         
         segments = pd.read_csv(f"{documents_dir}/segments.csv")
         logger.info("Accessed segments.csv")
-
-        authority_df = pd.read_csv(f"{documents_dir}/authorities.csv")
-        logger.info("Accessed authorities.csv")
 
         segments_result = segments.groupby('Document ID').agg(lambda x: ', '.join(x.astype(str))).reset_index()
         segments_required = segments_result[['Document ID', 'Text', 'Summary']]
@@ -95,10 +60,6 @@ def extract_and_merge_documents(temp_dir=""):
             right_on='Document ID'
         ).drop('Document ID', axis=1)
         logger.info("Merged documents and segments")
-
-        # Apply anomaly detection and cleaning
-        merged_document_segments = validate_and_clean_data(merged_document_segments, authority_df)
-        logger.info("Applied anomaly detection and cleaning")
 
         save_file_name = 'Documents_segments_merged'
         output_csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), f'merged_input/{save_file_name}.csv')
