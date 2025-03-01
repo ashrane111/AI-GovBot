@@ -25,8 +25,10 @@ logger.addHandler(handler)
 # Prevent log propagation to Airflow's root logger
 logger.propagate = False
 
-output_dir_name = "result_data"
-clean_data_path = 'Documents_segments_merged_cleaned.csv'
+output_dir_name = "merged_input"
+clean_data_path = 'Documents_segments_merged.csv'
+clean_data_xlsx_path = 'Documents_segments_merged.xlsx'
+
 
 def clean_text(text):
     try:
@@ -42,6 +44,12 @@ def clean_full_text(data):
     try:
         pd_csv_file = pickle.loads(data)
         logger.info("Loaded data from serialized input")
+        # Remove 'Tags' column
+        pd_csv_file.drop(columns=['Tags'], inplace=True)
+    
+    # Remove 'Tags' column
+        if 'Tags' in pd_csv_file.columns:
+            pd_csv_file.drop(columns=['Tags'], inplace=True)
         
         pd_csv_file['cleaned_text'] = pd_csv_file['Full Text'].apply(clean_text)
         logger.info("Cleaned text in the DataFrame")
@@ -49,7 +57,9 @@ def clean_full_text(data):
         output_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), output_dir_name)
         os.makedirs(output_dir, exist_ok=True)
         output_path = os.path.join(output_dir, clean_data_path)
+        output_xlsx_path = os.path.join(output_dir, clean_data_xlsx_path)
         pd_csv_file.to_csv(output_path, index=False)  # TODO: upload to gcp in real scenario instead of saving in local
+        pd_csv_file.to_excel(output_xlsx_path, index=False)
         logger.info(f"Saved cleaned data to {output_path}")
 
         serialized_data = pickle.dumps(pd_csv_file)
