@@ -18,7 +18,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'  # Match the Python version in your project
+          python-version: '3.10'  # Match Python version
 
       - name: Install dependencies
         run: |
@@ -27,7 +27,11 @@ jobs:
 
       - name: Run unit tests
         run: |
-          # Set PYTHONPATH to point to data/data-pipeline/dags for utils/
           export PYTHONPATH=$(pwd)/data/data-pipeline/dags
-          # Run pytest from the project root to ensure conftest.py in tests/ is discovered
-          pytest tests/unit/ -v
+          python -m unittest discover tests/unit/ -v
+
+      - name: Upload coverage reports to Codecov (optional)
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: true

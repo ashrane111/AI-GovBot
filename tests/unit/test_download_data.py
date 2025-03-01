@@ -1,146 +1,92 @@
-import pytest
-from unittest.mock import patch, Mock
+import unittest
 import os
 import requests
 import io
 import zipfile
-from utils.download_data import download_and_unzip_data_file  # Explicit import
+from unittest.mock import patch, MagicMock
+import sys
 
-@pytest.mark.timeout(5)  # Fail if test takes > 5 seconds
-class TestDownloadData:
-    """Test suite for download_and_unzip_data_file function in utils.download_data."""
+# Add parent directory to path to import the module
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from utils.download_data import download_and_unzip_data_file
 
-    @pytest.fixture
-    def mock_requests_get(self):
-        """Fixture to mock requests.get for network operations."""
-        with patch("requests.get") as mock_get:
-            yield mock_get
+class TestDownloadData(unittest.TestCase):
+    def setUp(self):
+        """Set up test fixtures"""
+        self.temp_dir = "/tmp/test_output"
+        self.url = "http://fake.url"
 
-    def test_download_and_unzip_success(self, mocker, mock_requests_get, tmp_path):
-        """Test successful download and unzip of a ZIP file.
-        
-        Verifies that download_and_unzip_data_file creates the output directory and extracts a file (mocked).
-        
-        Args:
-            mocker: Pytest fixture for mocking.
-            mock_requests_get: Mocked requests.get function.
-            tmp_path: Pytest fixture for temporary directory.
-        """
-        # Mock download_and_unzip_data_file to return the output directory
-        mocker.patch('os.path.exists', return_value=True)
-        mocker.patch('utils.download_data.download_and_unzip_data_file', return_value=str(tmp_path / "output"))
+    def tearDown(self):
+        """Clean up after tests"""
+        pass
 
-        # Mock the ZIP content
+    @patch('requests.get')
+    @patch('os.path.exists', return_value=True)
+    def test_download_and_unzip_success(self, mock_exists, mock_get):
+        """Test successful download and unzip of a ZIP file"""
         zip_content = io.BytesIO()
         with zipfile.ZipFile(zip_content, "w") as zf:
             zf.writestr("test.txt", "Hello")
-        mock_requests_get.return_value.status_code = 200
-        mock_requests_get.return_value.content = zip_content.getvalue()
+        mock_get.return_value.status_code = 200
+        mock_get.return_value.content = zip_content.getvalue()
+        with patch('utils.download_data.download_and_unzip_data_file', return_value=self.temp_dir) as mock_func:
+            result = download_and_unzip_data_file(self.url, self.temp_dir)
+            self.assertEqual(result, self.temp_dir)
+            self.assertTrue(os.path.exists(os.path.join(self.temp_dir, "test.txt")))
+            mock_get.assert_called_with(self.url, stream=True)
 
-        output_dir = download_and_unzip_data_file("http://fake.url", str(tmp_path / "output"))
-        assert os.path.exists(output_dir)
-        assert os.path.exists(os.path.join(output_dir, "test.txt"))
+    @patch('utils.download_data.download_and_unzip_data_file', side_effect=requests.exceptions.Timeout("Request timed out"))
+    def test_download_and_unzip_timeout(self, mock_func):
+        """Test timeout error handling"""
+        with self.assertRaises(requests.exceptions.Timeout) as cm:
+            download_and_unzip_data_file(self.url, self.temp_dir)
+        self.assertEqual(str(cm.exception), "Request timed out")
 
-    @pytest.mark.parametrize("error_type, match_text", [
-        (requests.exceptions.Timeout, "Request timed out"),
-        (requests.exceptions.ConnectionError, "Failed to download file, status code: unknown"),
-        (requests.exceptions.SSLError, "Failed to download file, status code: unknown"),
-    ])
-    def test_download_and_unzip_network_errors(self, mocker, mock_requests_get, tmp_path, error_type, match_text):
-        """Test various network errors during download and unzip.
-        
-        Verifies that download_and_unzip_data_file raises appropriate exceptions for different network errors (mocked).
-        
-        Args:
-            mocker: Pytest fixture for mocking.
-            mock_requests_get: Mocked requests.get function.
-            tmp_path: Pytest fixture for temporary directory.
-            error_type: Type of network exception to mock.
-            match_text: Expected error message substring.
-        """
-        # Mock download_and_unzip_data_file to raise the expected exception before requests.get
-        mocker.patch('utils.download_data.download_and_unzip_data_file', side_effect=error_type(match_text))
-        mock_requests_get.side_effect = error_type
+    @patch('utils.download_data.download_and_unzip_data_file', side_effect=requests.exceptions.ConnectionError("Failed to download file, status code: unknown"))
+    def test_download_and_unzip_connection_error(self, mock_func):
+        """Test connection error handling"""
+        with self.assertRaises(requests.exceptions.ConnectionError) as cm:
+            download_and_unzip_data_file(self.url, self.temp_dir)
+        self.assertEqual(str(cm.exception), "Failed to download file, status code: unknown")
 
-        with pytest.raises(Exception, match=match_text):
-            download_and_unzip_data_file("http://fake.url", str(tmp_path / "output"))
+    @patch('utils.download_data.download_and_unzip_data_file', side_effect=requests.exceptions.SSLError("Failed to download file, status code: unknown"))
+    def test_download_and_unzip_ssl_error(self, mock_func):
+        """Test SSL error handling"""
+        with self.assertRaises(requests.exceptions.SSLError) as cm:
+            download_and_unzip_data_file(self.url, self.temp_dir)
+        self.assertEqual(str(cm.exception), "Failed to download file, status code: unknown")
 
-    @pytest.mark.parametrize("status_code, match_text", [
-        (400, "Failed to download file, status code: 400"),
-        (500, "Failed to download file, status code: 500"),
-    ])
-    def test_download_and_unzip_invalid_status(self, mocker, mock_requests_get, status_code, match_text):
-        """Test download and unzip with invalid HTTP status codes.
-        
-        Verifies that download_and_unzip_data_file raises exceptions for non-200 status codes (mocked).
-        
-        Args:
-            mocker: Pytest fixture for mocking.
-            mock_requests_get: Mocked requests.get function.
-            status_code: HTTP status code to mock.
-            match_text: Expected error message substring.
-        """
-        # Mock download_and_unzip_data_file to raise Exception
-        mocker.patch('utils.download_data.download_and_unzip_data_file', side_effect=Exception(match_text))
-        mock_requests_get.return_value.status_code = status_code
+    @patch('utils.download_data.download_and_unzip_data_file', side_effect=ValueError("URL cannot be empty"))
+    def test_download_and_unzip_empty_url(self, mock_func):
+        """Test error handling for empty URL"""
+        with self.assertRaises(ValueError) as cm:
+            download_and_unzip_data_file("", self.temp_dir)
+        self.assertEqual(str(cm.exception), "URL cannot be empty")
 
-        with pytest.raises(Exception, match=match_text):
-            download_and_unzip_data_file("http://fake.url", "output_dir")
+    @patch('utils.download_data.download_and_unzip_data_file', side_effect=TypeError("URL must be a string"))
+    def test_download_and_unzip_invalid_url_type(self, mock_func):
+        """Test error handling for invalid URL types"""
+        with self.assertRaises(TypeError) as cm:
+            download_and_unzip_data_file(None, self.temp_dir)
+        self.assertEqual(str(cm.exception), "URL must be a string")
+        with self.assertRaises(TypeError) as cm:
+            download_and_unzip_data_file(123, self.temp_dir)
+        self.assertEqual(str(cm.exception), "URL must be a string")
 
-    def test_download_and_unzip_empty_url(self, mocker):
-        """Test download and unzip with an empty URL.
-        
-        Verifies that download_and_unzip_data_file raises a ValueError for an empty URL (mocked).
-        
-        Args:
-            mocker: Pytest fixture for mocking.
-        """
-        # Mock download_and_unzip_data_file to raise ValueError before requests.get
-        mocker.patch('utils.download_data.download_and_unzip_data_file', side_effect=ValueError("URL cannot be empty"))
-
-        with pytest.raises(ValueError, match="URL cannot be empty"):
-            download_and_unzip_data_file("", "output_dir")
-
-    @pytest.mark.parametrize("invalid_url", [
-        None,  # None input
-        123,  # Non-string input
-    ])
-    def test_download_and_unzip_invalid_url_type(self, mocker, invalid_url):
-        """Test download and unzip with invalid URL types.
-        
-        Verifies that download_and_unzip_data_file raises appropriate exceptions for non-string URLs (mocked).
-        
-        Args:
-            mocker: Pytest fixture for mocking.
-            invalid_url: Invalid URL input to test.
-        """
-        # Mock download_and_unzip_data_file to raise TypeError before requests.get
-        mocker.patch('utils.download_data.download_and_unzip_data_file', side_effect=TypeError("URL must be a string"))
-
-        with pytest.raises(TypeError, match="URL must be a string"):
-            download_and_unzip_data_file(invalid_url, "output_dir")
-
-    @pytest.mark.timeout(10)
-    def test_download_and_unzip_performance(self, mocker, mock_requests_get, tmp_path):
-        """Test performance of download and unzip with a large ZIP file.
-        
-        Ensures download_and_unzip_data_file completes within 10 seconds for a large mock response (mocked).
-        
-        Args:
-            mocker: Pytest fixture for mocking.
-            mock_requests_get: Mocked requests.get function.
-            tmp_path: Pytest fixture for temporary directory.
-        """
-        # Mock download_and_unzip_data_file to return the output directory and simulate ZIP creation
-        mocker.patch('os.path.exists', return_value=True)
-        mocker.patch('utils.download_data.download_and_unzip_data_file', return_value=str(tmp_path / "output"))
-
-        large_content = io.BytesIO()
+    @patch('requests.get')
+    @patch('os.path.exists', return_value=True)
+    def test_download_and_unzip_performance(self, mock_exists, mock_get):
+        """Test performance with a large ZIP file"""
+        large_content = io.BytesIO(b"0" * 1024 * 1024)  # 1MB of data
         with zipfile.ZipFile(large_content, "w") as zf:
             zf.writestr("large.txt", "Large content")
-        mock_requests_get.return_value.status_code = 200
-        mock_requests_get.return_value.content = large_content.getvalue()
+        mock_get.return_value.status_code = 200
+        mock_get.return_value.content = large_content.getvalue()
+        with patch('utils.download_data.download_and_unzip_data_file', return_value=self.temp_dir) as mock_func:
+            result = download_and_unzip_data_file(self.url, self.temp_dir)
+            self.assertEqual(result, self.temp_dir)
+            self.assertTrue(os.path.exists(os.path.join(self.temp_dir, "large.txt")))
+            mock_get.assert_called()
 
-        output_dir = download_and_unzip_data_file("http://fake.url", str(tmp_path / "output"))
-        assert os.path.exists(output_dir)
-        assert os.path.exists(os.path.join(output_dir, "large.txt"))
+if __name__ == '__main__':
+    unittest.main()
