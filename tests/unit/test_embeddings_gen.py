@@ -36,8 +36,10 @@ class TestEmbeddingsGen(unittest.TestCase):
         # Import the function here, AFTER patching
         from utils.embeddings_gen import generate_embeddings
         
-        # Expected paths based on embeddings_gen.py
-        output_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'embeddings'))
+        # Calculate output_dir based on the location of embeddings_gen.py
+        module_dir = os.path.dirname(generate_embeddings.__code__.co_filename)
+        parent_dir = os.path.dirname(module_dir)
+        output_dir = os.path.abspath(os.path.join(parent_dir, 'embeddings'))
         output_path = f"{output_dir}/embeddings.pkl"
 
         # Patch open to prevent file writing and capture calls
