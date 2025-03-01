@@ -35,9 +35,10 @@ def generate_embeddings(data, transformer_model="sentence-transformers/multi-qa-
     try:
         pd_csv_file = pickle.loads(data)
         logger.info("Loaded data from serialized input")
+        unembedded_text = pd_csv_file['cleaned_text'].tolist()
         
         model = SentenceTransformer(transformer_model)
-        embeddings = model.encode(pd_csv_file['cleaned_text'].tolist(), show_progress_bar=True)
+        embeddings = model.encode(unembedded_text, batch_size=32, show_progress_bar=True, normalize_embeddings=True)
         embeddings = np.array(embeddings, dtype='float32')
         logger.info("Generated embeddings")
 
