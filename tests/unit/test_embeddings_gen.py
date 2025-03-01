@@ -31,18 +31,28 @@ class TestEmbeddingsGen(unittest.TestCase):
         mock_model = MagicMock()
         mock_model.encode.return_value = self.mock_embeddings
         mock_transformer.return_value = mock_model
+        
+        # Mock os.path.join to return consistent paths
         mock_join.side_effect = lambda *args: '/'.join(args)
         
-        # Patch open to prevent file writing
-        with patch('builtins.open', mock_open()):
+        # Expected paths based on embeddings_gen.py
+        output_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'embeddings'))
+        output_path = f"{output_dir}/embeddings.pkl"
+
+        # Patch open to prevent file writing and capture calls
+        with patch('builtins.open', mock_open()) as mock_file:
             # Call the function
             result = generate_embeddings(self.serialized_df)
             
             # Verify function behavior
-            mock_transformer.assert_called_once()
-            mock_model.encode.assert_called_once_with(['This is a test', 'Another test sentence'], show_progress_bar=True)
-            mock_makedirs.assert_called_once()
-            mock_pickle_dump.assert_called_once()
+            mock_transformer.assert_called_once_with("sentence-transformers/multi-qa-mpnet-base-dot-v1")
+            mock_model.encode.assert_called_once_with(
+                ['This is a test', 'Another test sentence'], 
+                show_progress_bar=True
+            )
+            mock_makedirs.assert_called_once_with(output_dir, exist_ok=True)
+            mock_file.assert_called_once_with(output_path, 'wb')
+            mock_pickle_dump.assert_called_once_with(self.mock_embeddings, mock_file())
             
             # Verify the result
             deserialized = pickle.loads(result)
