@@ -101,20 +101,22 @@ def send_validation_failure_email(**kwargs):
     anomalies = ti.xcom_pull(task_ids='check_validation_status', key='anomalies')
 
     email_task = EmailOperator(
-        task_id='validation_failure_email',
-        to='vedantdas130701@gmail.com',
+        task_id='send_validation_failure_email',
+        to='baravkardhanshree@gmail.com',
         subject='Data Pipeline Alert: Schema Validation Failed',
         html_content=f'<p>Schema validation failed with the following anomalies:</p><p>{anomalies}</p>',
         dag=kwargs['dag'],
     )
     email_task.execute(context=kwargs)
 
-validation_failure_email = PythonOperator(
-    task_id='validation_failure_email',
+trigger_validation_failure_email = PythonOperator(
+    task_id='trigger_validation_failure_email',
     python_callable=send_validation_failure_email,
     provide_context=True,
+    trigger_rule=TriggerRule.ONE_FAILED,  # Ensures execution only if validation fails
     dag=dag,
 )
+
 
 data_combine_task = PythonOperator(
     task_id='data_combine_task',
@@ -144,7 +146,7 @@ preprocess_data_task = PythonOperator(
 clean_text_task = PythonOperator(
     task_id='clean_text_task',
     python_callable=clean_full_text,
-    op_args=[preprocess_data.output],
+    op_args=[preprocess_data_task.output],
     dag=dag,
 )
 # Task to generate embeddings of the full text, depends on 'clean_text_task'
@@ -172,7 +174,7 @@ upload_to_gcs_task = PythonOperator(
 
 send_email = EmailOperator(
     task_id='send_email',
-    to='vedantdas130701@gmail.com',
+    to='baravkardhanshree@gmail.com',
     subject='Notification from Airflow',
     html_content='<p>This task is completed.</p>',
     dag=dag
@@ -186,15 +188,14 @@ send_email = EmailOperator(
 # )
 
 # Set task dependencies
-# download_unzip_task >> data_combine_task >> load_data_task >> preprocess_data_task >> clean_text_task >> generate_embeddings_task >> create_index_task  >> upload_to_gcs_task >> send_email
-# Set task dependencies
 download_unzip_task >> validate_schema_task >> check_validation_task
 check_validation_task >> data_combine_task  # If validation passes, continue
-check_validation_task >> validation_failure_email  # If validation fails, send an alert
+check_validation_task >> trigger_validation_failure_email  # If validation fails, send an alert
 
 # Continue the pipeline after successful validation
 data_combine_task >> load_data_task >> preprocess_data_task >> clean_text_task >> generate_embeddings_task >> create_index_task >> upload_to_gcs_task >> send_email
 
+# download_unzip_task >> data_combine_task >> load_data_task >> preprocess_data_task >> clean_text_task >> generate_embeddings_task >> create_index_task  >> upload_to_gcs_task >> send_email
 
 # If this script is run directly, allow command-line interaction with the DAG
 if __name__ == "__main__":
