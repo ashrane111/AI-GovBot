@@ -13,11 +13,11 @@ class TestDataValidationHelper(unittest.TestCase):
         self.file_schema_pairs = [("test.csv", "test_schema.pbtxt")]
         self.test_df = pd.DataFrame({'col1': [1, 2], 'col2': ['a', 'b']})
 
-    @patch('utils.data_validation_helper.os.path.exists')
-    @patch('utils.data_validation_helper.pd.read_csv')
-    @patch('utils.data_validation_helper.tfdv.generate_statistics_from_dataframe')
-    @patch('utils.data_validation_helper.tfdv.load_schema_text')
-    @patch('utils.data_validation_helper.tfdv.validate_statistics')
+    @patch('utils.data_validation.os.path.exists')
+    @patch('utils.data_validation.pd.read_csv')
+    @patch('utils.data_validation.tfdv.generate_statistics_from_dataframe')
+    @patch('utils.data_validation.tfdv.load_schema_text')
+    @patch('utils.data_validation.tfdv.validate_statistics')
     def test_validate_downloaded_data_files_success(self, mock_validate, mock_load_schema, 
                                                     mock_generate_stats, mock_read_csv, mock_exists):
         # Configure mocks
@@ -40,7 +40,7 @@ class TestDataValidationHelper(unittest.TestCase):
         mock_validate.assert_called_once_with(mock_stats, mock_schema)
         self.assertEqual(result, {"result": True, "anomalies": []})
 
-    @patch('utils.data_validation_helper.os.path.exists')
+    @patch('utils.data_validation.os.path.exists')
     def test_validate_downloaded_data_files_missing_file(self, mock_exists):
         # Configure mocks
         mock_exists.side_effect = [False, True]  # File missing, schema exists
@@ -51,8 +51,8 @@ class TestDataValidationHelper(unittest.TestCase):
         # Verify behavior
         self.assertEqual(result, {"result": False, "anomalies": ["File not found: test.csv"]})
 
-    @patch('utils.data_validation_helper.os.path.exists')
-    @patch('utils.data_validation_helper.pd.read_csv')
+    @patch('utils.data_validation.os.path.exists')
+    @patch('utils.data_validation.pd.read_csv')
     def test_validate_downloaded_data_files_empty_csv(self, mock_read_csv, mock_exists):
         # Configure mocks
         mock_exists.return_value = True
@@ -64,11 +64,11 @@ class TestDataValidationHelper(unittest.TestCase):
         # Verify behavior
         self.assertEqual(result, {"result": False, "anomalies": [{"file": "test.csv", "error": "CSV file is empty"}]})
 
-    @patch('utils.data_validation_helper.os.path.exists')
-    @patch('utils.data_validation_helper.pd.read_csv')
-    @patch('utils.data_validation_helper.tfdv.generate_statistics_from_dataframe')
-    @patch('utils.data_validation_helper.tfdv.load_schema_text')
-    @patch('utils.data_validation_helper.tfdv.validate_statistics')
+    @patch('utils.data_validation.os.path.exists')
+    @patch('utils.data_validation.pd.read_csv')
+    @patch('utils.data_validation.tfdv.generate_statistics_from_dataframe')
+    @patch('utils.data_validation.tfdv.load_schema_text')
+    @patch('utils.data_validation.tfdv.validate_statistics')
     def test_validate_downloaded_data_files_anomalies(self, mock_validate, mock_load_schema, 
                                                       mock_generate_stats, mock_read_csv, mock_exists):
         # Configure mocks

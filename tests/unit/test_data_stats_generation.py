@@ -15,13 +15,13 @@ class TestDataStatsGeneration(unittest.TestCase):
         self.output_schema_path = "output/schema.pbtxt"
         self.test_df = pd.DataFrame({'col1': [1, 2], 'col2': ['a', 'b']})
 
-    @patch('utils.data_stats_generation.os.path.exists')
-    @patch('utils.data_stats_generation.os.makedirs')
-    @patch('utils.data_stats_generation.pd.read_csv')
-    @patch('utils.data_stats_generation.tfdv.generate_statistics_from_dataframe')
-    @patch('utils.data_stats_generation.tfdv.write_stats_text')
-    @patch('utils.data_stats_generation.tfdv.infer_schema')
-    @patch('utils.data_stats_generation.tfdv.write_schema_text')
+    @patch('utils.data_schema_generation.os.path.exists')
+    @patch('utils.data_schema_generation.os.makedirs')
+    @patch('utils.data_schema_generation.pd.read_csv')
+    @patch('utils.data_schema_generation.tfdv.generate_statistics_from_dataframe')
+    @patch('utils.data_schema_generation.tfdv.write_stats_text')
+    @patch('utils.data_schema_generation.tfdv.infer_schema')
+    @patch('utils.data_schema_generation.tfdv.write_schema_text')
     def test_generate_data_statistics_success(self, mock_write_schema, mock_infer_schema, 
                                               mock_write_stats, mock_generate_stats, 
                                               mock_read_csv, mock_makedirs, mock_exists):
@@ -45,7 +45,7 @@ class TestDataStatsGeneration(unittest.TestCase):
         self.assertEqual(stats_path, self.output_stats_path)
         self.assertEqual(schema_path, self.output_schema_path)
 
-    @patch('utils.data_stats_generation.os.path.exists')
+    @patch('utils.data_schema_generation.os.path.exists')
     def test_generate_data_statistics_file_not_found(self, mock_exists):
         # Configure mocks
         mock_exists.return_value = False
@@ -55,10 +55,10 @@ class TestDataStatsGeneration(unittest.TestCase):
             generate_data_statistics(self.input_csv, self.output_stats_path, self.output_schema_path)
         self.assertIn(f"Input CSV not found: {self.input_csv}", str(context.exception))
 
-    @patch('utils.data_stats_generation.os.path.exists')
-    @patch('utils.data_stats_generation.os.makedirs')
-    @patch('utils.data_stats_generation.pd.read_csv')
-    @patch('utils.data_stats_generation.tfdv.generate_statistics_from_dataframe')
+    @patch('utils.data_schema_generation.os.path.exists')
+    @patch('utils.data_schema_generation.os.makedirs')
+    @patch('utils.data_schema_generation.pd.read_csv')
+    @patch('utils.data_schema_generation.tfdv.generate_statistics_from_dataframe')
     def test_generate_data_statistics_empty_csv(self, mock_generate_stats, mock_read_csv, mock_makedirs, mock_exists):
         # Configure mocks
         mock_exists.return_value = True
