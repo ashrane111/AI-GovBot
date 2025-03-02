@@ -4,9 +4,14 @@ on:
   push:
     branches:
       - ash-dev
+      - dhanashree-dev
+      - rishi-dev
+      - sanjana-dev
+      - vedant-dev
   pull_request:
     branches:
-      - ash-dev
+      - dev
+      - main
 
 jobs:
   test:
