@@ -41,8 +41,10 @@ def upload_merged_data_to_gcs(data):
     try:
         bucket_name = "datasets-mlops-25" 
 
-        source_file_name = os.path.join(os.path.join(os.path.dirname(os.path.dirname(__file__)), "result_data"), "Documents_segments_merged_cleaned.csv")
-        destination_blob_name = "result_data/Documents_segments_merged_cleaned.csv"
+
+
+        source_file_name = os.path.join(os.path.dirname(os.path.dirname(__file__)),  "merged_input/Documents_segments_merged.csv")
+        destination_blob_name = "result_data/Documents_segments_merged.csv"
 
         logger.info(f"Preparing to upload merged data to GCS")
         upload_to_gcs(bucket_name, source_file_name, destination_blob_name)
@@ -50,3 +52,6 @@ def upload_merged_data_to_gcs(data):
     except Exception as e:
         logger.error(f"Error uploading merged data to GCS: {e}")
         raise
+
+
+

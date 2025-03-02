@@ -1,8 +1,10 @@
+tensorflow-cpu
+tensorflow-data-validation
 faiss-cpu==1.8.0
 pandas==2.2.2
 numpy==1.26.4
 sentence-transformers==3.0.1
-apache-airflow-providers-google
+google-cloud-storage
 requests==2.32.3
 openpyxl==3.1.5
 pytest==7.4.0
@@ -10,3 +12,5 @@ pytest-mock==3.11.1
 pytest-cov==4.1.0
 pytest-timeout==2.2.0
 unittest2==1.1.0
+tf-keras
+keras==2.15.0 
