@@ -1,0 +1,1595 @@
+feature {
+  name: "AGORA ID"
+  type: INT
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Official name"
+  type: BYTES
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Casual name"
+  value_count {
+    min: 1
+    max: 1
+  }
+  type: BYTES
+  presence {
+    min_count: 1
+  }
+}
+feature {
+  name: "Link to document"
+  type: BYTES
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Authority"
+  type: BYTES
+  domain: "Authority"
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Collections"
+  value_count {
+    min: 1
+    max: 1
+  }
+  type: BYTES
+  domain: "Collections"
+  presence {
+    min_count: 1
+  }
+}
+feature {
+  name: "Most recent activity"
+  type: BYTES
+  domain: "Most recent activity"
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Most recent activity date"
+  type: BYTES
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Proposed date"
+  value_count {
+    min: 1
+    max: 1
+  }
+  type: BYTES
+  presence {
+    min_count: 1
+  }
+}
+feature {
+  name: "Annotated?"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Validated?"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Primarily applies to the government"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Primarily applies to the private sector"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Short summary"
+  value_count {
+    min: 1
+    max: 1
+  }
+  type: BYTES
+  presence {
+    min_count: 1
+  }
+}
+feature {
+  name: "Long summary"
+  value_count {
+    min: 1
+    max: 1
+  }
+  type: BYTES
+  presence {
+    min_count: 1
+  }
+}
+feature {
+  name: "Tags"
+  value_count {
+    min: 1
+    max: 1
+  }
+  type: BYTES
+  presence {
+    min_count: 1
+  }
+}
+feature {
+  name: "Summaries and tags may include unreviewed machine output"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Official plaintext retrieved"
+  value_count {
+    min: 1
+    max: 1
+  }
+  type: BYTES
+  presence {
+    min_count: 1
+  }
+}
+feature {
+  name: "Official plaintext source"
+  value_count {
+    min: 1
+    max: 1
+  }
+  type: BYTES
+  presence {
+    min_count: 1
+  }
+}
+feature {
+  name: "Official plaintext unavailable/infeasible"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Official pdf source"
+  value_count {
+    min: 1
+    max: 1
+  }
+  type: BYTES
+  domain: "Official pdf source"
+  presence {
+    min_count: 1
+  }
+}
+feature {
+  name: "Official pdf retrieved"
+  value_count {
+    min: 1
+    max: 1
+  }
+  type: BYTES
+  domain: "Official pdf retrieved"
+  presence {
+    min_count: 1
+  }
+}
+feature {
+  name: "Number of segments created"
+  type: INT
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Applications: Agriculture and resource extraction"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Applications: Arts, sports, leisure, travel, and lifestyle"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Applications: Broadcasting and media production"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Applications: Business services and analytics"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Applications: Construction and field services"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Applications: Consumer goods"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Applications: Education"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Applications: Energy and utilities"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Applications: Finance and investment"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Applications: Government: benefits and welfare"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Applications: Government: judicial and law enforcement"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Applications: Government: military and public safety"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Applications: Government: other applications/unspecified"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Applications: Manufacturing and process automation"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Applications: Medicine, life sciences and public health"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Applications: Networking and telecommunications"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Applications: Sales, retail, and customer relations"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Applications: Security"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Applications: Transportation"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Harms: Detrimental content"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Harms: Discrimination"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Harms: Ecological harm"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Harms: Financial loss"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Harms: Harm to health/safety"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Harms: Harm to infrastructure"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Harms: Harm to property"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Harms: Violation of civil or human rights, including privacy"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Incentives: Access to business opportunities"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Incentives: Civil liability"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Incentives: Criminal liability"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Incentives: Fines"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Incentives: Imprisonment"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Incentives: Subsidies"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Risk factors: Bias"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Risk factors: Interpretability and explainability"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Risk factors: Privacy"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Risk factors: Reliability"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Risk factors: Reliability: Robustness"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Risk factors: Safety"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Risk factors: Security"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Risk factors: Security: Cybersecurity"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Risk factors: Security: Dissemination"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Risk factors: Transparency"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Convening"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Disclosure"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Disclosure: About evaluation"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Disclosure: About incidents"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Disclosure: About inputs"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Disclosure: Accuracy thereof"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Disclosure: In deployment"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Disclosure: In standard form"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Evaluation"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Evaluation: Adversarial testing"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Evaluation: Conformity assessment"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Evaluation: External auditing"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Evaluation: Impact assessment"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Evaluation: Post-market monitoring"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Governance development"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Government study or report"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Government support"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Government support: AI workforce-related"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Government support: For R&D"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Input controls"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Input controls: Compute circulation"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Input controls: Compute use"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Input controls: Data circulation"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Input controls: Data use"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Licensing, registration, and certification"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: New institution"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Performance requirements"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Pilots and testbeds"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Tiering"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Tiering: Tiering based on domain of application"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Tiering: Tiering based on generality"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Tiering: Tiering based on impact"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Tiering: Tiering based on inputs"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Strategies: Tiering: Tiering based on planning ability"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+string_domain {
+  name: "Authority"
+  value: "Alabama"
+  value: "Arizona"
+  value: "Arkansas"
+  value: "California"
+  value: "Chinese central government"
+  value: "Chinese provincial and local governments"
+  value: "Colorado"
+  value: "Connecticut"
+  value: "Consumer Financial Protection Bureau"
+  value: "Copyright Office, Library of Congress"
+  value: "Delaware"
+  value: "Department of Agriculture"
+  value: "Department of Commerce"
+  value: "Department of Defense"
+  value: "Department of Education"
+  value: "Department of Health and Human Services"
+  value: "Department of Housing and Urban Development"
+  value: "Department of Transportation"
+  value: "District of Columbia"
+  value: "European Union"
+  value: "Executive Office of the President"
+  value: "Federal Election Commission"
+  value: "Federal government"
+  value: "Florida"
+  value: "Food and Drug Administration"
+  value: "Georgia"
+  value: "Government of Australia"
+  value: "Government of Canada"
+  value: "Government of Israel"
+  value: "Government of New Zealand"
+  value: "Government of Singapore"
+  value: "Government of the United Arab Emirates"
+  value: "Government of the United Kingdom"
+  value: "Hawaii"
+  value: "Idaho"
+  value: "Illinois"
+  value: "Indiana"
+  value: "Iowa"
+  value: "Louisiana"
+  value: "Maryland"
+  value: "Massachusetts"
+  value: "Michigan"
+  value: "Minnesota"
+  value: "Mississippi"
+  value: "National Institute of Standards and Technology"
+  value: "Nebraska"
+  value: "New Hampshire"
+  value: "New Jersey"
+  value: "New Mexico"
+  value: "New York"
+  value: "New York City"
+  value: "North Carolina"
+  value: "North Dakota"
+  value: "OECD"
+  value: "Office of Management and Budget"
+  value: "Office of Personnel Management"
+  value: "Office of Science and Technology Policy"
+  value: "Oklahoma"
+  value: "Oregon"
+  value: "Other authorities"
+  value: "Other multinational"
+  value: "Pennsylvania"
+  value: "Private-sector companies"
+  value: "Rhode Island"
+  value: "South Carolina"
+  value: "South Dakota"
+  value: "Tennessee"
+  value: "Texas"
+  value: "United Nations"
+  value: "United States Congress"
+  value: "Utah"
+  value: "Virginia"
+  value: "Washington"
+  value: "West Virginia"
+  value: "Wisconsin"
+  value: "Wyoming"
+}
+string_domain {
+  name: "Collections"
+  value: "Chinese law and policy"
+  value: "Corporate policies and commitments"
+  value: "Editors\' Picks"
+  value: "Editors\' Picks;Chinese law and policy"
+  value: "Editors\' Picks;Corporate policies and commitments"
+  value: "Editors\' Picks;Miscellaneous documents"
+  value: "Editors\' Picks;Multinational"
+  value: "Editors\' Picks;U.S. regulations, executive orders, and agency policies"
+  value: "Editors\' Picks;U.S. state and local laws"
+  value: "Enacted laws and policies;Editors\' Picks;U.S. regulations, executive orders, and agency policies"
+  value: "Enacted laws and policies;U.S. federal laws"
+  value: "Enacted laws and policies;U.S. regulations, executive orders, and agency policies"
+  value: "Enacted laws and policies;U.S. state and local laws"
+  value: "FY2025 NDAA;NDAA provisions"
+  value: "Miscellaneous documents"
+  value: "Multinational"
+  value: "NDAA provisions;Enacted laws and policies;U.S. federal laws"
+  value: "U.S. federal laws"
+  value: "U.S. regulations, executive orders, and agency policies"
+  value: "U.S. state and local laws"
+}
+string_domain {
+  name: "Most recent activity"
+  value: "Defunct"
+  value: "Enacted"
+  value: "Proposed"
+}
+string_domain {
+  name: "Official pdf source"
+  value: "https://ai.gov/wp-content/uploads/2024/10/NSM-Framework-to-Advance-AI-Governance-and-Risk-Management-in-National-Security.pdf"
+  value: "https://assets.anthropic.com/m/24a47b00f10301cd/original/Anthropic-Responsible-Scaling-Policy-2024-10-15.pdf"
+  value: "https://blogs.microsoft.com/wp-content/uploads/prod/sites/5/2022/06/Microsoft-Responsible-AI-Standard-v2-General-Requirements-3.pdf"
+  value: "https://cdn.openai.com/openai-preparedness-framework-beta.pdf"
+  value: "https://deepmind.google/discover/blog/introducing-the-frontier-safety-framework/"
+  value: "https://documents.un.org/doc/undoc/ltd/n24/065/92/pdf/n2406592.pdf"
+  value: "https://leg.colorado.gov/sites/default/files/2024a_205_signed.pdf"
+  value: "https://legalinstruments.oecd.org/en/instruments/OECD-LEGAL-0449"
+  value: "https://mp.weixin.qq.com/s/s-XFKQCWhu0uye4opgb3Ng"
+  value: "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf"
+  value: "https://publications.tnsosfiles.com/acts/113/pub/pc0588.pdf"
+  value: "https://rm.coe.int/1680afae3c"
+  value: "https://www.azleg.gov/legtext/56leg/1R/laws/0154.pdf"
+  value: "https://www.cga.ct.gov/2023/ACT/PA/PDF/2023PA-00016-R00SB-01103-PA.PDF"
+  value: "https://www.esd.whs.mil/portals/54/documents/dd/issuances/dodd/300009p.pdf"
+  value: "https://www.govinfo.gov/content/pkg/FR-2023-03-16/pdf/2023-05321.pdf"
+  value: "https://www.tc260.org.cn/upload/2024-09-09/1725849192841090989.pdf"
+  value: "https://www.whitehouse.gov/wp-content/uploads/2024/10/M-24-18-AI-Acquisition-Memorandum.pdf"
+}
+string_domain {
+  name: "Official pdf retrieved"
+  value: "2024-05-12"
+  value: "2024-09-20"
+  value: "2024-10-02"
+  value: "2024-10-06"
+  value: "2024-10-16"
+  value: "2024-10-17"
+  value: "2024-10-26"
+  value: "2024-10-29"
+  value: "2024-11-04"
+  value: "2024-11-08"
+  value: "2024-12-02"
+  value: "2025-01-30"
+}

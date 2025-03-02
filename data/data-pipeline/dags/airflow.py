@@ -17,7 +17,7 @@ from utils.download_data import download_and_unzip_data_file
 from utils.data_extract_combine import extract_and_merge_documents
 from utils.preprocess_data import preprocess_data
 from airflow import configuration as conf
-
+from utils.data_validation import validate_downloaded_data_files, check_validation_status
 # Enable pickle support for XCom, allowing data to be passed between tasks
 conf.set('core', 'enable_xcom_pickling', 'True')
 
@@ -67,6 +67,52 @@ download_unzip_task = PythonOperator(
         'download_url': 'https://zenodo.org/records/14877811/files/agora.zip', 
         'output_dir_name': 'merged_input',  
     },
+    dag=dag,
+)
+
+# Validation task
+validate_schema_task = PythonOperator(
+    task_id='validate_schema_task',
+    python_callable=validate_downloaded_data_files,
+    op_kwargs={
+        'file_schema_pairs':  [
+            (os.path.join(os.path.dirname(__file__), "merged_input/agora/authorities.csv"),
+            os.path.join(os.path.dirname(__file__), "schema/authorities_data_schema.pbtxt")),
+            (os.path.join(os.path.dirname(__file__), "merged_input/agora/collections.csv"),
+            os.path.join(os.path.dirname(__file__), "schema/collections_data_schema.pbtxt")),
+            (os.path.join(os.path.dirname(__file__), "merged_input/agora/documents.csv"),
+            os.path.join(os.path.dirname(__file__), "schema/documents_data_schema.pbtxt")),
+            (os.path.join(os.path.dirname(__file__), "merged_input/agora/segments.csv"),
+            os.path.join(os.path.dirname(__file__), "schema/segments_data_schema.pbtxt")),
+        ]},
+    dag=dag,
+)
+
+check_validation_task = PythonOperator(
+    task_id='check_validation_status',
+    python_callable=check_validation_status,
+    provide_context=True,
+    dag=dag,
+)
+
+# Email alert for validation failure with anomalies
+def send_validation_failure_email(**kwargs):
+    ti = kwargs['ti']
+    anomalies = ti.xcom_pull(task_ids='check_validation_status', key='anomalies')
+
+    email_task = EmailOperator(
+        task_id='validation_failure_email',
+        to='vedantdas130701@gmail.com',
+        subject='Data Pipeline Alert: Schema Validation Failed',
+        html_content=f'<p>Schema validation failed with the following anomalies:</p><p>{anomalies}</p>',
+        dag=kwargs['dag'],
+    )
+    email_task.execute(context=kwargs)
+
+validation_failure_email = PythonOperator(
+    task_id='validation_failure_email',
+    python_callable=send_validation_failure_email,
+    provide_context=True,
     dag=dag,
 )
 
@@ -140,11 +186,17 @@ send_email = EmailOperator(
 # )
 
 # Set task dependencies
-download_unzip_task >> data_combine_task >> load_data_task >> preprocess_data_task >> clean_text_task >> generate_embeddings_task >> create_index_task  >> upload_to_gcs_task >> send_email
+# download_unzip_task >> data_combine_task >> load_data_task >> preprocess_data_task >> clean_text_task >> generate_embeddings_task >> create_index_task  >> upload_to_gcs_task >> send_email
+# Set task dependencies
+download_unzip_task >> validate_schema_task >> check_validation_task
+check_validation_task >> data_combine_task  # If validation passes, continue
+check_validation_task >> validation_failure_email  # If validation fails, send an alert
+
+# Continue the pipeline after successful validation
+data_combine_task >> load_data_task >> preprocess_data_task >> clean_text_task >> generate_embeddings_task >> create_index_task >> upload_to_gcs_task >> send_email
 
 
 # If this script is run directly, allow command-line interaction with the DAG
 if __name__ == "__main__":
     dag.cli()
 
-# 

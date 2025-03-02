@@ -1,0 +1,56 @@
+feature {
+  name: "Name"
+  type: BYTES
+  domain: "Name"
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Description"
+  type: BYTES
+  domain: "Description"
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+string_domain {
+  name: "Name"
+  value: "Chinese law and policy"
+  value: "Corporate policies and commitments"
+  value: "Editors\' Picks"
+  value: "Enacted laws and policies"
+  value: "FY2025 NDAA"
+  value: "Miscellaneous documents"
+  value: "Multinational"
+  value: "NDAA provisions"
+  value: "U.S. federal laws"
+  value: "U.S. regulations, executive orders, and agency policies"
+  value: "U.S. state and local laws"
+}
+string_domain {
+  name: "Description"
+  value: "AI governance pledges and policy documents from leading companies."
+  value: "AI-related federal laws, both proposed and enacted."
+  value: "AI-related laws from U.S. states and localities (not comprehensive)."
+  value: "AI-related laws, policies, and plans from China."
+  value: "AI-related provisions from recent National Defense Authorization Acts."
+  value: "AI-related provisions from the National Defense Authorization Act for fiscal year 2025."
+  value: "All AGORA governmental documents that have been officially enacted."
+  value: "Documents not covered in other collections."
+  value: "Notable AI governance documents from multinational organizations and venues."
+  value: "Notable AI governance documents from the U.S. and around the world. Selected by ETO and CSET researchers."
+  value: "U.S. federal regulations and other AI-related documents from the executive branch."
+}
