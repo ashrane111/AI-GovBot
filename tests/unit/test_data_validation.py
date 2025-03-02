@@ -2,107 +2,146 @@ import unittest
 import os
 import sys
 import pandas as pd
-import pickle
-import logging
 from unittest.mock import patch, MagicMock
 
 # Add the parent directory to sys.path to import modules correctly
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../data/data-pipeline/dags')))
-from utils.data_validation import format_date, summarize_text, preprocess_data
+from utils.data_validation import validate_downloaded_data_files, check_validation_status
 
 class TestDataValidation(unittest.TestCase):
     def setUp(self):
-        # Sample DataFrame
-        self.test_df = pd.DataFrame({
-            'Authority': ['Auth1', 'Auth2'],
-            'Full Text': ['Text1', 'Text2'],
-            'Most recent activity date': ['2023-01-01', '2022-01-01'],
-            'Proposed date': ['2022-12-01', '2022-02-01'],
-            'Casual name': ['C1', None],
-            'Short summary': ['S1', None],
-            'Long summary': [None, 'L2']
-        })
-        self.serialized_df = pickle.dumps(self.test_df)
-        # Mock logger
-        self.logger = logging.getLogger('data_validation_logger')
-        self.logger.handlers = []
-        self.logger.addHandler(logging.NullHandler())
+        # Sample file-schema pairs
+        self.file_schema_pairs = [("test.csv", "test_schema.pbtxt")]
+        self.test_df = pd.DataFrame({'col1': [1, 2], 'col2': ['a', 'b']})
 
-    def test_format_date_success(self):
-        # Call the function
-        result_df = format_date(self.test_df.copy())
-        
-        # Verify behavior
-        self.assertTrue(pd.api.types.is_datetime64_any_dtype(result_df['Most recent activity date']))
-        self.assertTrue(pd.api.types.is_datetime64_any_dtype(result_df['Proposed date']))
-        self.assertEqual(result_df['Most recent activity date'].iloc[1], pd.Timestamp('2022-02-01'))  # Adjusted to Proposed date
-        self.assertFalse(result_df['Proposed date'].isna().any())  # NaN dropped
-
-    def test_format_date_invalid_dates(self):
-        invalid_df = pd.DataFrame({
-            'Most recent activity date': ['invalid_date'],
-            'Proposed date': ['also_invalid']
-        })
-        result_df = format_date(invalid_df)
-        self.assertTrue(result_df.empty)  # All rows dropped due to invalid dates
-
-    def test_summarize_text_success(self):
-        text = "This is a long text that needs to be summarized."
-        result = summarize_text(text, length=10)
-        self.assertEqual(result, "This is a ")
-        self.assertEqual(summarize_text(None), "")
-        self.assertEqual(summarize_text("short"), "short")
-
+    @patch('utils.data_validation.os.path.exists')
     @patch('utils.data_validation.pd.read_csv')
-    @patch('utils.data_validation.os.path.join')
-    @patch('utils.data_validation.logger')
-    def test_preprocess_data_success(self, mock_logger, mock_join, mock_read_csv):
+    @patch('utils.data_validation.tfdv.generate_statistics_from_dataframe')
+    @patch('utils.data_validation.tfdv.load_schema_text')
+    @patch('utils.data_validation.tfdv.validate_statistics')
+    def test_validate_downloaded_data_files_success(self, mock_validate, mock_load_schema, 
+                                                    mock_generate_stats, mock_read_csv, mock_exists):
         # Configure mocks
-        mock_join.side_effect = lambda *args: '/'.join(args)
-        auth_df = pd.DataFrame({'Name': ['Auth1', 'Auth2']})
-        mock_read_csv.return_value = auth_df
+        mock_exists.return_value = True
+        mock_read_csv.return_value = self.test_df
+        mock_stats = MagicMock()
+        mock_generate_stats.return_value = mock_stats
+        mock_schema = MagicMock()
+        mock_load_schema.return_value = mock_schema
+        mock_anomalies = MagicMock(anomaly_info={})
+        mock_validate.return_value = mock_anomalies
         
         # Call the function
-        result = preprocess_data(self.serialized_df)
+        result = validate_downloaded_data_files(self.file_schema_pairs)
         
         # Verify behavior
-        deserialized = pickle.loads(result)
-        self.assertEqual(len(deserialized), 2)  # All rows valid
-        self.assertEqual(deserialized['Casual name'].iloc[1], "N/A")
-        self.assertEqual(deserialized['Short summary'].iloc[1], "N/A")
-        self.assertEqual(deserialized['Long summary'].iloc[0], "Text1"[:500])
-        mock_logger.info.assert_any_call("Loaded data from serialized input")
-        mock_logger.info.assert_any_call("Serialized validated data")
+        mock_read_csv.assert_called_once_with("test.csv")
+        mock_generate_stats.assert_called_once_with(self.test_df)
+        mock_load_schema.assert_called_once_with("test_schema.pbtxt")
+        mock_validate.assert_called_once_with(mock_stats, mock_schema)
+        self.assertEqual(result, {"result": True, "anomalies": []})
 
-    @patch('utils.data_validation.pd.read_csv')
-    @patch('utils.data_validation.os.path.join')
-    @patch('utils.data_validation.logger')
-    def test_preprocess_data_missing_authorities(self, mock_logger, mock_join, mock_read_csv):
+    @patch('utils.data_validation.os.path.exists')
+    def test_validate_downloaded_data_files_missing_file(self, mock_exists):
         # Configure mocks
-        mock_join.side_effect = lambda *args: '/'.join(args)
-        mock_read_csv.side_effect = FileNotFoundError("authorities.csv not found")
+        mock_exists.side_effect = [False, True]  # File missing, schema exists
+        
+        # Call the function
+        result = validate_downloaded_data_files(self.file_schema_pairs)
+        
+        # Verify behavior
+        self.assertEqual(result, {"result": False, "anomalies": ["File not found: test.csv"]})
+
+    @patch('utils.data_validation.os.path.exists')
+    def test_validate_downloaded_data_files_missing_schema(self, mock_exists):
+        # Configure mocks
+        mock_exists.side_effect = [True, False]  # File exists, schema missing
+        
+        # Call the function
+        result = validate_downloaded_data_files(self.file_schema_pairs)
+        
+        # Verify behavior
+        self.assertEqual(result, {"result": False, "anomalies": ["Schema file not found: test_schema.pbtxt"]})
+
+    @patch('utils.data_validation.os.path.exists')
+    @patch('utils.data_validation.pd.read_csv')
+    def test_validate_downloaded_data_files_empty_csv(self, mock_read_csv, mock_exists):
+        # Configure mocks
+        mock_exists.return_value = True
+        mock_read_csv.return_value = pd.DataFrame()  # Empty DataFrame
+        
+        # Call the function
+        result = validate_downloaded_data_files(self.file_schema_pairs)
+        
+        # Verify behavior
+        self.assertEqual(result, {"result": False, "anomalies": [{"file": "test.csv", "error": "CSV file is empty"}]})
+
+    @patch('utils.data_validation.os.path.exists')
+    @patch('utils.data_validation.pd.read_csv')
+    def test_validate_downloaded_data_files_unreadable_csv(self, mock_read_csv, mock_exists):
+        # Configure mocks
+        mock_exists.return_value = True
+        mock_read_csv.side_effect = pd.errors.EmptyDataError("No columns to parse")
+        
+        # Call the function
+        result = validate_downloaded_data_files(self.file_schema_pairs)
+        
+        # Verify behavior
+        self.assertEqual(result, {"result": False, "anomalies": [{"file": "test.csv", "error": "CSV is empty or unreadable"}]})
+
+    @patch('utils.data_validation.os.path.exists')
+    @patch('utils.data_validation.pd.read_csv')
+    @patch('utils.data_validation.tfdv.generate_statistics_from_dataframe')
+    @patch('utils.data_validation.tfdv.load_schema_text')
+    @patch('utils.data_validation.tfdv.validate_statistics')
+    def test_validate_downloaded_data_files_anomalies(self, mock_validate, mock_load_schema, 
+                                                      mock_generate_stats, mock_read_csv, mock_exists):
+        # Configure mocks
+        mock_exists.return_value = True
+        mock_read_csv.return_value = self.test_df
+        mock_stats = MagicMock()
+        mock_generate_stats.return_value = mock_stats
+        mock_schema = MagicMock()
+        mock_load_schema.return_value = mock_schema
+        mock_anomalies = MagicMock(anomaly_info={'col1': MagicMock(description="Type mismatch")})
+        mock_validate.return_value = mock_anomalies
+        
+        # Call the function
+        result = validate_downloaded_data_files(self.file_schema_pairs)
+        
+        # Verify behavior
+        self.assertEqual(result["result"], False)
+        self.assertEqual(len(result["anomalies"]), 1)
+        self.assertEqual(result["anomalies"][0]["feature"], "col1")
+        self.assertEqual(result["anomalies"][0]["description"], "Type mismatch")
+
+    def test_validate_downloaded_data_files_empty_pairs(self):
+        # Test with empty file-schema pairs
+        result = validate_downloaded_data_files([])
+        
+        # Verify behavior
+        self.assertEqual(result, {"result": True, "anomalies": []})
+
+    def test_check_validation_status_success(self):
+        # Mock Airflow task instance
+        mock_ti = MagicMock()
+        mock_ti.xcom_pull.return_value = {"result": True, "anomalies": []}
+        
+        # Call the function (should not raise)
+        check_validation_status(ti=mock_ti)
+        
+        # Verify no XCom push for anomalies
+        mock_ti.xcom_push.assert_not_called()
+
+    def test_check_validation_status_failure(self):
+        # Mock Airflow task instance
+        mock_ti = MagicMock()
+        mock_ti.xcom_pull.return_value = {"result": False, "anomalies": [{"file": "test.csv", "error": "Empty"}]}
         
         # Expect an exception
-        with self.assertRaises(FileNotFoundError):
-            preprocess_data(self.serialized_df)
+        with self.assertRaises(ValueError) as context:
+            check_validation_status(ti=mock_ti)
         
-        # Verify logging
-        mock_logger.error.assert_called_once_with("An error ocurred while validating and processing data: authorities.csv not found")
-
-    @patch('utils.data_validation.pd.read_csv')
-    @patch('utils.data_validation.os.path.join')
-    @patch('utils.data_validation.logger')
-    def test_preprocess_data_empty_input(self, mock_logger, mock_join, mock_read_csv):
-        # Configure mocks
-        mock_join.side_effect = lambda *args: '/'.join(args)
-        auth_df = pd.DataFrame({'Name': ['Auth1']})
-        mock_read_csv.return_value = auth_df
-        empty_df = pd.DataFrame(columns=['Authority', 'Full Text'])
-        serialized_empty = pickle.dumps(empty_df)
-        
-        # Call the function
-        result = preprocess_data(serialized_empty)
-        
-        # Verify behavior
-        deserialized = pickle.loads(result)
-        self.assertTrue(deserialized.empty)
+        # Verify XCom push and error message
+        mock_ti.xcom_push.assert_called_once_with(key='anomalies', value="test.csv: Empty")
+        self.assertIn("Schema validation failed", str(context.exception))
