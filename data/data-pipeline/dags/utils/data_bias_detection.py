@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from collections import Counter
 import os
+import pickle
 import logging
 
 # Set up custom logger
@@ -49,17 +50,17 @@ def count_multi_valued_column(column_data, delimiter=';'):
         raise
 
 # Function to detect bias by analyzing distributions
-def detect_bias(pd_csv_file, feature_name, description):
+def detect_bias(df, feature_name, description):
     try:
         logger.info(f"Detecting {description}")
         print(f"\nDetecting {description}")
 
         # Handle single-valued vs. multi-valued columns
         if feature_name == 'Collections':
-            counts = count_multi_valued_column(pd_csv_file[feature_name])
+            counts = count_multi_valued_column(df[feature_name])
             total = sum(counts.values())
         else:
-            counts = pd_csv_file[feature_name].value_counts(dropna=False)
+            counts = df[feature_name].value_counts(dropna=False)
             total = counts.sum()
 
         # Log and print raw counts and percentages
@@ -100,16 +101,16 @@ def detect_bias(pd_csv_file, feature_name, description):
         raise
 
 # Function to simulate retrieval performance across slices (mock example)
-def simulate_retrieval_performance(pd_csv_file, feature_name):
+def simulate_retrieval_performance(df, feature_name):
     try:
         logger.info(f"Simulating retrieval performance across {feature_name}")
         print(f"\nSimulating retrieval performance across {feature_name} slices")
 
         if feature_name == 'Collections':
-            counts = count_multi_valued_column(pd_csv_file[feature_name])
+            counts = count_multi_valued_column(df[feature_name])
             total_docs = sum(counts.values())
         else:
-            counts = pd_csv_file[feature_name].value_counts(dropna=False)
+            counts = df[feature_name].value_counts(dropna=False)
             total_docs = counts.sum()
 
         for key, value in counts.items():
@@ -125,18 +126,11 @@ def simulate_retrieval_performance(pd_csv_file, feature_name):
         logger.error(f"Error in simulate_retrieval_performance for {feature_name}: {e}")
         raise
 
-# Main bias detection process
-def main():
+# Combined function to detect bias and simulate retrieval
+def detect_and_simulate_bias(data):
     try:
-        # Define input CSV path
-        csv_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'merged_input/Documents_segments_merged.csv')
-        if not os.path.exists(csv_file_path):
-            logger.error(f"CSV file not found: {csv_file_path}")
-            raise FileNotFoundError(f"CSV file not found: {csv_file_path}")
-
-        # Load the dataset
-        pd_csv_file = pd.read_csv(csv_file_path)
-        logger.info("Loaded CSV file for bias detection")
+        df = pickle.loads(data)
+        logger.info("Loaded data from serialized input")
 
         # Create output directory
         output_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), output_dir_name)
@@ -146,8 +140,8 @@ def main():
 
         # Analyze each categorical feature
         for feature, description in categorical_features.items():
-            detect_bias(pd_csv_file, feature, description)
-            simulate_retrieval_performance(pd_csv_file, feature)
+            detect_bias(df, feature, description)
+            simulate_retrieval_performance(df, feature)
 
         # Save summary to a text file
         summary_path = os.path.join(output_dir, 'bias_detection_summary.txt')
@@ -157,10 +151,10 @@ def main():
             for feature, description in categorical_features.items():
                 f.write(f"\n{description}\n")
                 if feature == 'Collections':
-                    counts = count_multi_valued_column(pd_csv_file[feature])
+                    counts = count_multi_valued_column(df[feature])
                     total = sum(counts.values())
                 else:
-                    counts = pd_csv_file[feature].value_counts(dropna=False)
+                    counts = df[feature].value_counts(dropna=False)
                     total = counts.sum()
                 f.write(f"Total entries: {total}\n")
                 for key, value in counts.items():
@@ -168,8 +162,27 @@ def main():
                     f.write(f"{key}: {value} ({percentage:.2f}%)\n")
         logger.info(f"Saved bias detection summary to {summary_path}")
 
-        logger.info("Bias detection complete")
+        logger.info("Bias detection and simulation complete")
         print("\nBias detection complete. Check 'bias_analysis' folder for results.")
+
+    except Exception as e:
+        logger.error(f"Error in detect_and_simulate_bias: {e}")
+        raise
+
+# Main function with limited functionality
+def main():
+    try:
+        csv_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'merged_input/Documents_segments_merged.csv')
+        if not os.path.exists(csv_file_path):
+            logger.error(f"CSV file not found: {csv_file_path}")
+            raise FileNotFoundError(f"CSV file not found: {csv_file_path}")
+
+        df = pd.read_csv(csv_file_path)
+        logger.info("Loaded CSV file for bias detection")
+
+        serialized_data = pickle.dumps(df)
+        detect_and_simulate_bias(serialized_data)
+        logger.info("Bias detection and simulation completed successfully")
 
     except Exception as e:
         logger.error(f"Error in main: {e}")
