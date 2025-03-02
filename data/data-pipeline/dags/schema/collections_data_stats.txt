@@ -1,0 +1,363 @@
+datasets {
+  num_examples: 11
+  features {
+    type: STRING
+    string_stats {
+      common_stats {
+        num_non_missing: 11
+        min_num_values: 1
+        max_num_values: 1
+        avg_num_values: 1.0
+        num_values_histogram {
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 1.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 1.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 1.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 1.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 1.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 1.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 1.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 1.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 1.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 1.1
+          }
+          type: QUANTILES
+        }
+        tot_num_values: 11
+      }
+      unique: 11
+      top_values {
+        value: "U.S. state and local laws"
+        frequency: 1.0
+      }
+      top_values {
+        value: "U.S. regulations, executive orders, and agency policies"
+        frequency: 1.0
+      }
+      top_values {
+        value: "U.S. federal laws"
+        frequency: 1.0
+      }
+      top_values {
+        value: "NDAA provisions"
+        frequency: 1.0
+      }
+      top_values {
+        value: "Multinational"
+        frequency: 1.0
+      }
+      top_values {
+        value: "Miscellaneous documents"
+        frequency: 1.0
+      }
+      top_values {
+        value: "FY2025 NDAA"
+        frequency: 1.0
+      }
+      top_values {
+        value: "Enacted laws and policies"
+        frequency: 1.0
+      }
+      top_values {
+        value: "Editors\' Picks"
+        frequency: 1.0
+      }
+      top_values {
+        value: "Corporate policies and commitments"
+        frequency: 1.0
+      }
+      top_values {
+        value: "Chinese law and policy"
+        frequency: 1.0
+      }
+      avg_length: 23.09091
+      rank_histogram {
+        buckets {
+          label: "U.S. state and local laws"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 1
+          high_rank: 1
+          label: "U.S. regulations, executive orders, and agency policies"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 2
+          high_rank: 2
+          label: "U.S. federal laws"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 3
+          high_rank: 3
+          label: "NDAA provisions"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 4
+          high_rank: 4
+          label: "Multinational"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 5
+          high_rank: 5
+          label: "Miscellaneous documents"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 6
+          high_rank: 6
+          label: "FY2025 NDAA"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 7
+          high_rank: 7
+          label: "Enacted laws and policies"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 8
+          high_rank: 8
+          label: "Editors\' Picks"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 9
+          high_rank: 9
+          label: "Corporate policies and commitments"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 10
+          high_rank: 10
+          label: "Chinese law and policy"
+          sample_count: 1.0
+        }
+      }
+    }
+    path {
+      step: "Name"
+    }
+  }
+  features {
+    type: STRING
+    string_stats {
+      common_stats {
+        num_non_missing: 11
+        min_num_values: 1
+        max_num_values: 1
+        avg_num_values: 1.0
+        num_values_histogram {
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 1.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 1.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 1.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 1.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 1.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 1.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 1.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 1.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 1.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 1.1
+          }
+          type: QUANTILES
+        }
+        tot_num_values: 11
+      }
+      unique: 11
+      top_values {
+        value: "U.S. federal regulations and other AI-related documents from the executive branch."
+        frequency: 1.0
+      }
+      top_values {
+        value: "Notable AI governance documents from the U.S. and around the world. Selected by ETO and CSET researchers."
+        frequency: 1.0
+      }
+      top_values {
+        value: "Notable AI governance documents from multinational organizations and venues."
+        frequency: 1.0
+      }
+      top_values {
+        value: "Documents not covered in other collections."
+        frequency: 1.0
+      }
+      top_values {
+        value: "All AGORA governmental documents that have been officially enacted."
+        frequency: 1.0
+      }
+      top_values {
+        value: "AI-related provisions from the National Defense Authorization Act for fiscal year 2025."
+        frequency: 1.0
+      }
+      top_values {
+        value: "AI-related provisions from recent National Defense Authorization Acts."
+        frequency: 1.0
+      }
+      top_values {
+        value: "AI-related laws, policies, and plans from China."
+        frequency: 1.0
+      }
+      top_values {
+        value: "AI-related laws from U.S. states and localities (not comprehensive)."
+        frequency: 1.0
+      }
+      top_values {
+        value: "AI-related federal laws, both proposed and enacted."
+        frequency: 1.0
+      }
+      top_values {
+        value: "AI governance pledges and policy documents from leading companies."
+        frequency: 1.0
+      }
+      avg_length: 69.36364
+      rank_histogram {
+        buckets {
+          label: "U.S. federal regulations and other AI-related documents from the executive branch."
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 1
+          high_rank: 1
+          label: "Notable AI governance documents from the U.S. and around the world. Selected by ETO and CSET researchers."
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 2
+          high_rank: 2
+          label: "Notable AI governance documents from multinational organizations and venues."
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 3
+          high_rank: 3
+          label: "Documents not covered in other collections."
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 4
+          high_rank: 4
+          label: "All AGORA governmental documents that have been officially enacted."
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 5
+          high_rank: 5
+          label: "AI-related provisions from the National Defense Authorization Act for fiscal year 2025."
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 6
+          high_rank: 6
+          label: "AI-related provisions from recent National Defense Authorization Acts."
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 7
+          high_rank: 7
+          label: "AI-related laws, policies, and plans from China."
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 8
+          high_rank: 8
+          label: "AI-related laws from U.S. states and localities (not comprehensive)."
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 9
+          high_rank: 9
+          label: "AI-related federal laws, both proposed and enacted."
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 10
+          high_rank: 10
+          label: "AI governance pledges and policy documents from leading companies."
+          sample_count: 1.0
+        }
+      }
+    }
+    path {
+      step: "Description"
+    }
+  }
+}
