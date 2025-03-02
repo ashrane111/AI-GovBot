@@ -4,13 +4,12 @@ import sys
 import pandas as pd
 from unittest.mock import patch, MagicMock
 
-# Add the parent directory to sys.path to import modules correctly
+# Add the parent directory to sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../data/data-pipeline/dags')))
 from utils.data_validation import validate_downloaded_data_files, check_validation_status
 
 class TestDataValidation(unittest.TestCase):
     def setUp(self):
-        # Sample file-schema pairs
         self.file_schema_pairs = [("test.csv", "test_schema.pbtxt")]
         self.test_df = pd.DataFrame({'col1': [1, 2], 'col2': ['a', 'b']})
 
@@ -21,7 +20,6 @@ class TestDataValidation(unittest.TestCase):
     @patch('utils.data_validation.tfdv.validate_statistics')
     def test_validate_downloaded_data_files_success(self, mock_validate, mock_load_schema, 
                                                     mock_generate_stats, mock_read_csv, mock_exists):
-        # Configure mocks
         mock_exists.return_value = True
         mock_read_csv.return_value = self.test_df
         mock_stats = MagicMock()
@@ -31,10 +29,8 @@ class TestDataValidation(unittest.TestCase):
         mock_anomalies = MagicMock(anomaly_info={})
         mock_validate.return_value = mock_anomalies
         
-        # Call the function
         result = validate_downloaded_data_files(self.file_schema_pairs)
         
-        # Verify behavior
         mock_read_csv.assert_called_once_with("test.csv")
         mock_generate_stats.assert_called_once_with(self.test_df)
         mock_load_schema.assert_called_once_with("test_schema.pbtxt")
@@ -43,50 +39,38 @@ class TestDataValidation(unittest.TestCase):
 
     @patch('utils.data_validation.os.path.exists')
     def test_validate_downloaded_data_files_missing_file(self, mock_exists):
-        # Configure mocks
-        mock_exists.side_effect = [False, True]  # File missing, schema exists
+        mock_exists.side_effect = [False, True]
         
-        # Call the function
         result = validate_downloaded_data_files(self.file_schema_pairs)
         
-        # Verify behavior
         self.assertEqual(result, {"result": False, "anomalies": ["File not found: test.csv"]})
 
     @patch('utils.data_validation.os.path.exists')
     def test_validate_downloaded_data_files_missing_schema(self, mock_exists):
-        # Configure mocks
-        mock_exists.side_effect = [True, False]  # File exists, schema missing
+        mock_exists.side_effect = [True, False]
         
-        # Call the function
         result = validate_downloaded_data_files(self.file_schema_pairs)
         
-        # Verify behavior
         self.assertEqual(result, {"result": False, "anomalies": ["Schema file not found: test_schema.pbtxt"]})
 
     @patch('utils.data_validation.os.path.exists')
     @patch('utils.data_validation.pd.read_csv')
     def test_validate_downloaded_data_files_empty_csv(self, mock_read_csv, mock_exists):
-        # Configure mocks
         mock_exists.return_value = True
-        mock_read_csv.return_value = pd.DataFrame()  # Empty DataFrame
+        mock_read_csv.return_value = pd.DataFrame()
         
-        # Call the function
         result = validate_downloaded_data_files(self.file_schema_pairs)
         
-        # Verify behavior
         self.assertEqual(result, {"result": False, "anomalies": [{"file": "test.csv", "error": "CSV file is empty"}]})
 
     @patch('utils.data_validation.os.path.exists')
     @patch('utils.data_validation.pd.read_csv')
     def test_validate_downloaded_data_files_unreadable_csv(self, mock_read_csv, mock_exists):
-        # Configure mocks
         mock_exists.return_value = True
         mock_read_csv.side_effect = pd.errors.EmptyDataError("No columns to parse")
         
-        # Call the function
         result = validate_downloaded_data_files(self.file_schema_pairs)
         
-        # Verify behavior
         self.assertEqual(result, {"result": False, "anomalies": [{"file": "test.csv", "error": "CSV is empty or unreadable"}]})
 
     @patch('utils.data_validation.os.path.exists')
@@ -96,7 +80,6 @@ class TestDataValidation(unittest.TestCase):
     @patch('utils.data_validation.tfdv.validate_statistics')
     def test_validate_downloaded_data_files_anomalies(self, mock_validate, mock_load_schema, 
                                                       mock_generate_stats, mock_read_csv, mock_exists):
-        # Configure mocks
         mock_exists.return_value = True
         mock_read_csv.return_value = self.test_df
         mock_stats = MagicMock()
@@ -106,42 +89,32 @@ class TestDataValidation(unittest.TestCase):
         mock_anomalies = MagicMock(anomaly_info={'col1': MagicMock(description="Type mismatch")})
         mock_validate.return_value = mock_anomalies
         
-        # Call the function
         result = validate_downloaded_data_files(self.file_schema_pairs)
         
-        # Verify behavior
         self.assertEqual(result["result"], False)
         self.assertEqual(len(result["anomalies"]), 1)
         self.assertEqual(result["anomalies"][0]["feature"], "col1")
         self.assertEqual(result["anomalies"][0]["description"], "Type mismatch")
 
     def test_validate_downloaded_data_files_empty_pairs(self):
-        # Test with empty file-schema pairs
         result = validate_downloaded_data_files([])
         
-        # Verify behavior
         self.assertEqual(result, {"result": True, "anomalies": []})
 
     def test_check_validation_status_success(self):
-        # Mock Airflow task instance
         mock_ti = MagicMock()
         mock_ti.xcom_pull.return_value = {"result": True, "anomalies": []}
         
-        # Call the function (should not raise)
         check_validation_status(ti=mock_ti)
         
-        # Verify no XCom push for anomalies
         mock_ti.xcom_push.assert_not_called()
 
     def test_check_validation_status_failure(self):
-        # Mock Airflow task instance
         mock_ti = MagicMock()
         mock_ti.xcom_pull.return_value = {"result": False, "anomalies": [{"file": "test.csv", "error": "Empty"}]}
         
-        # Expect an exception
         with self.assertRaises(ValueError) as context:
             check_validation_status(ti=mock_ti)
         
-        # Verify XCom push and error message
         mock_ti.xcom_push.assert_called_once_with(key='anomalies', value="test.csv: Empty")
         self.assertIn("Schema validation failed", str(context.exception))

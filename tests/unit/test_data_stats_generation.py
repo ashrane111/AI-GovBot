@@ -25,7 +25,6 @@ class TestDataStatsGeneration(unittest.TestCase):
     def test_generate_data_statistics_success(self, mock_write_schema, mock_infer_schema, 
                                               mock_write_stats, mock_generate_stats, 
                                               mock_read_csv, mock_makedirs, mock_exists):
-        # Configure mocks
         mock_exists.return_value = True
         mock_read_csv.return_value = self.test_df
         mock_stats = MagicMock()
@@ -33,10 +32,8 @@ class TestDataStatsGeneration(unittest.TestCase):
         mock_schema = MagicMock()
         mock_infer_schema.return_value = mock_schema
         
-        # Call the function
         stats_path, schema_path = generate_data_statistics(self.input_csv, self.output_stats_path, self.output_schema_path)
         
-        # Verify behavior
         mock_read_csv.assert_called_once_with(self.input_csv)
         mock_generate_stats.assert_called_once_with(self.test_df)
         mock_write_stats.assert_called_once_with(mock_stats, self.output_stats_path)
@@ -47,10 +44,8 @@ class TestDataStatsGeneration(unittest.TestCase):
 
     @patch('utils.data_schema_generation.os.path.exists')
     def test_generate_data_statistics_file_not_found(self, mock_exists):
-        # Configure mocks
         mock_exists.return_value = False
         
-        # Expect an exception
         with self.assertRaises(FileNotFoundError) as context:
             generate_data_statistics(self.input_csv, self.output_stats_path, self.output_schema_path)
         self.assertIn(f"Input CSV not found: {self.input_csv}", str(context.exception))
@@ -59,18 +54,18 @@ class TestDataStatsGeneration(unittest.TestCase):
     @patch('utils.data_schema_generation.os.makedirs')
     @patch('utils.data_schema_generation.pd.read_csv')
     @patch('utils.data_schema_generation.tfdv.generate_statistics_from_dataframe')
-    def test_generate_data_statistics_empty_csv(self, mock_generate_stats, mock_read_csv, mock_makedirs, mock_exists):
-        # Configure mocks
+    @patch('utils.data_schema_generation.tfdv.write_stats_text')
+    def test_generate_data_statistics_empty_csv(self, mock_write_stats, mock_generate_stats, 
+                                                mock_read_csv, mock_makedirs, mock_exists):
         mock_exists.return_value = True
         empty_df = pd.DataFrame()
         mock_read_csv.return_value = empty_df
         mock_stats = MagicMock()
         mock_generate_stats.return_value = mock_stats
         
-        # Call the function (should still work with empty data)
         stats_path, schema_path = generate_data_statistics(self.input_csv, self.output_stats_path, self.output_schema_path)
         
-        # Verify behavior
         mock_generate_stats.assert_called_once_with(empty_df)
+        mock_write_stats.assert_called_once_with(mock_stats, self.output_stats_path)
         self.assertEqual(stats_path, self.output_stats_path)
         self.assertEqual(schema_path, self.output_schema_path)
