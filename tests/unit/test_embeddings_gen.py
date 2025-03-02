@@ -57,7 +57,11 @@ class TestEmbeddingsGen(unittest.TestCase):
 
             mock_makedirs.assert_called_once()
             mock_file.assert_called_once_with(output_path, 'wb')
-            mock_pickle_dump.assert_called_once_with(self.mock_embeddings, mock_file())
+            # Manually verify the arguments passed to pickle.dump
+            self.assertEqual(mock_pickle_dump.call_count, 1, "pickle.dump should be called exactly once")
+            call_args = mock_pickle_dump.call_args[0]  # Get the positional arguments
+            self.assertTrue(np.array_equal(call_args[0], self.mock_embeddings), "The embeddings argument does not match")
+            self.assertEqual(call_args[1], mock_file(), "The file object argument does not match")
 
             # Verify the result
             deserialized = pickle.loads(result)
