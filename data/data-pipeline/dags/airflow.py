@@ -102,7 +102,7 @@ def send_validation_failure_email(**kwargs):
 
     email_task = EmailOperator(
         task_id='send_validation_failure_email',
-        to='baravkardhanshree@gmail.com',
+        to='sanjanajd115@gmail.com',
         subject='Data Pipeline Alert: Schema Validation Failed',
         html_content=f'<p>Schema validation failed with the following anomalies:</p><p>{anomalies}</p>',
         dag=kwargs['dag'],
