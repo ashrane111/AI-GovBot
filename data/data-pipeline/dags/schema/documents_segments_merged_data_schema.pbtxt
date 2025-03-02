@@ -1,0 +1,344 @@
+feature {
+  name: "AGORA ID"
+  type: INT
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Official name"
+  type: BYTES
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Casual name"
+  value_count {
+    min: 1
+    max: 1
+  }
+  type: BYTES
+  presence {
+    min_count: 1
+  }
+}
+feature {
+  name: "Link to document"
+  type: BYTES
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Authority"
+  type: BYTES
+  domain: "Authority"
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Collections"
+  value_count {
+    min: 1
+    max: 1
+  }
+  type: BYTES
+  domain: "Collections"
+  presence {
+    min_count: 1
+  }
+}
+feature {
+  name: "Most recent activity"
+  type: BYTES
+  domain: "Most recent activity"
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Most recent activity date"
+  type: BYTES
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Proposed date"
+  type: BYTES
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Primarily applies to the government"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Primarily applies to the private sector"
+  type: INT
+  bool_domain {
+  }
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Short summary"
+  value_count {
+    min: 1
+    max: 1
+  }
+  type: BYTES
+  presence {
+    min_count: 1
+  }
+}
+feature {
+  name: "Long summary"
+  type: BYTES
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Full Text"
+  type: BYTES
+  domain: "Full Text"
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Full Text Summary"
+  type: BYTES
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "cleaned_text"
+  type: BYTES
+  domain: "cleaned_text"
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+string_domain {
+  name: "Authority"
+  value: "Alabama"
+  value: "Arizona"
+  value: "Arkansas"
+  value: "California"
+  value: "Chinese central government"
+  value: "Chinese provincial and local governments"
+  value: "Colorado"
+  value: "Connecticut"
+  value: "Delaware"
+  value: "Department of Agriculture"
+  value: "Department of Commerce"
+  value: "Department of Education"
+  value: "Department of Health and Human Services"
+  value: "Department of Transportation"
+  value: "District of Columbia"
+  value: "European Union"
+  value: "Executive Office of the President"
+  value: "Federal Election Commission"
+  value: "Florida"
+  value: "Georgia"
+  value: "Government of Australia"
+  value: "Government of Canada"
+  value: "Government of Israel"
+  value: "Government of New Zealand"
+  value: "Government of the United Kingdom"
+  value: "Hawaii"
+  value: "Idaho"
+  value: "Illinois"
+  value: "Indiana"
+  value: "Iowa"
+  value: "Louisiana"
+  value: "Maryland"
+  value: "Massachusetts"
+  value: "Michigan"
+  value: "Minnesota"
+  value: "Mississippi"
+  value: "National Institute of Standards and Technology"
+  value: "Nebraska"
+  value: "New Hampshire"
+  value: "New Jersey"
+  value: "New Mexico"
+  value: "New York"
+  value: "New York City"
+  value: "North Carolina"
+  value: "North Dakota"
+  value: "OECD"
+  value: "Office of Management and Budget"
+  value: "Office of Personnel Management"
+  value: "Office of Science and Technology Policy"
+  value: "Oregon"
+  value: "Other authorities"
+  value: "Other multinational"
+  value: "Pennsylvania"
+  value: "Private-sector companies"
+  value: "Rhode Island"
+  value: "South Carolina"
+  value: "South Dakota"
+  value: "Tennessee"
+  value: "Texas"
+  value: "United Nations"
+  value: "United States Congress"
+  value: "Utah"
+  value: "Virginia"
+  value: "Washington"
+  value: "West Virginia"
+  value: "Wisconsin"
+}
+string_domain {
+  name: "Collections"
+  value: "Chinese law and policy"
+  value: "Corporate policies and commitments"
+  value: "Editors\' Picks"
+  value: "Editors\' Picks;Chinese law and policy"
+  value: "Editors\' Picks;Corporate policies and commitments"
+  value: "Editors\' Picks;Multinational"
+  value: "Editors\' Picks;U.S. regulations, executive orders, and agency policies"
+  value: "Editors\' Picks;U.S. state and local laws"
+  value: "Enacted laws and policies;Editors\' Picks;U.S. regulations, executive orders, and agency policies"
+  value: "Enacted laws and policies;U.S. federal laws"
+  value: "Enacted laws and policies;U.S. state and local laws"
+  value: "FY2025 NDAA;NDAA provisions"
+  value: "Miscellaneous documents"
+  value: "Multinational"
+  value: "U.S. federal laws"
+  value: "U.S. regulations, executive orders, and agency policies"
+  value: "U.S. state and local laws"
+}
+string_domain {
+  name: "Most recent activity"
+  value: "Defunct"
+  value: "Enacted"
+  value: "Proposed"
+}
+string_domain {
+  name: "Full Text"
+  value: "(c) Evaluation of State programs.\342\200\224Section 116(e) of the Workforce Innovation and Opportunity Act (29 U.S.C. 3141(e)) is amended\342\200\224\n\n(1) in paragraph (1)\342\200\224\n\n(A) in the first sentence, by striking \342\200\234shall conduct ongoing\342\200\235 and inserting \342\200\234shall use data to conduct analyses and ongoing\342\200\235; and\n\n(B) in the second sentence, by striking \342\200\234conduct the\342\200\235 and inserting \342\200\234conduct such analyses and\342\200\235; and\n\n(2) in paragraph (2), by adding \342\200\234A State may use other forms of analysis, such as machine learning or other advanced analytics, to improve program operations and outcomes and to identify areas for further evaluation.\342\200\235 at the end."
+  value: "A BILL\nTo amend the Communications Act of 1934 to establish technical and procedural standards for artificial or prerecorded voice systems created through generative artificial intelligence, and for other purposes.\n\nBe it enacted by the Senate and House of Representatives of the United States of America in Congress assembled,\n\n, SECTION 1. Technical and procedural standards for artificial or prerecorded voice systems created through generative artificial intelligence.\n\nSection 227(d)(3) of the Communications Act of 1934 (47 U.S.C. 227(d)(3)) is amended by inserting \342\200\234(including those created through generative artificial intelligence (genAI), for example voice cloning, and other subsequent technologies as may be deemed appropriate by the Commission)\342\200\235 after \342\200\234telephone\342\200\235."
+  value: "A BILL\nTo direct the Secretary of Health and Human Services to issue guidance on payment under the Medicare program for certain items involving artificial intelligence.\n\n\nBe it enacted by the Senate and House of Representatives of the United States of America in Congress assembled,\n\n, SECTION 1. Short title.\n\n\nThis Act may be cited as the \342\200\234Maintaining Innovation and Safe Technologies Act\342\200\235.\n\n\nSEC. 2. Guidance on Medicare payment for certain items involving artificial intelligence.\n\n\nNot later than January 1, 2026, the Secretary of Health and Human Services shall use existing communications mechanisms to issue guidance on requirements for payment under part B of title XVIII of the Social Security Act (42 U.S.C. 1395j et seq.) for remote monitoring devices, such as continuous glucose monitors, that\342\200\224\n\n\n(1) use an artificial intelligence component (such as a continuous adjustment component); and\n\n\n(2) transmit information to a health care provider for purposes of management and treatment of an individual."
+  value: "AN ACT to amend and reenact subsection 8 of section 1-01-49 of the North Dakota Century Code,\nrelating to the definition of person; and to declare an emergency.\nBE IT ENACTED BY THE LEGISLATIVE ASSEMBLY OF NORTH DAKOTA:\nSECTION 1. AMENDMENT. Subsection 8 of section 1-01-49 of the North Dakota Century Code is\namended and reenacted as follows:\n1. \"Person\" means an individual, organization, government, political subdivision, or government\nagency or instrumentality. The term does not include environmental elements, artificial\nintelligence, an animal, or an inanimate object.\nSECTION 2. EMERGENCY. This Act is declared to be an emergency measure."
+  value: "SEC. 1007. Use of technology using artificial intelligence to facilitate audit of the financial statements of the Department of Defense for fiscal year 2025.\n\n(a) Use of AI technology for audits.--The Secretary of Defense, the Secretary of the Army, the Secretary of the Navy, and the Secretary of the Air Force shall encourage, to the greatest extent practicable, the use of technology that uses artificial intelligence or machine learning for the purpose of facilitating audits of the financial statements of the Department of Defense.\n\n(b) Implementation of AI technology for audits.--The Director of the Chief Digital and Artificial Intelligence Office of the Department, in coordination with the Under Secretary of Defense for Research and Engineering and the Inspector General of the Department, shall oversee the adoption of artificial intelligence and machine learning technologies in support of financial management and enterprise business operations."
+  value: "SEC. 105. REPORT ON WEARABLE MEDICAL DEVICES.\nNot later than 18 months after the date of the enactment of this Act, the Comptroller General of the United States shall conduct a technology assessment of, and submit to Congress a report on, the capabilities and limitations of wearable medical devices used to support clinical decision-making. Such report shall include a description of\342\200\224\n(1) the potential for such devices to accurately prescribe treatments;\n(2) an examination of the benefits and challenges of artificial intelligence to augment such capabilities; and\n(3) policy options to enhance the benefits and mitigate potential challenges of developing or using such devices."
+  value: "SEC. 125. Designation of official responsible for autonomous surface and underwater dual-modality vehicles.\n\n(a) Designation required.--Not later than 180 days after the date of the enactment of this Act, the Secretary of the Navy shall designate an appropriate official within the Department of the Navy to have primary responsibility for the development and acquisition of surface and underwater dual-modality, advanced autonomous vehicles, consistent with warfighter requirements.\n\n(b) Program element.--The Secretary of the Navy shall ensure, within budget program elements for the Navy, that there is a dedicated program element for the development and acquisition of surface and underwater dual-modality, advanced autonomous vehicles."
+  value: "SEC. 13. EQUIPMENT INSPECTIONS.\nNot later than 12 months after the date of enactment of this Act, the Secretary of Transportation shall issue such regulations as are necessary to\342\200\224\n(1) prohibit any train from being moved out of a switchyard before all required brake inspections of locomotives and rail cars have been completed;\n(2) allow only the Qualified Mechanical Inspector assigned to inspect a locomotive or rail car to sign off on the Form FRA F6180\342\200\22349A (commonly known as the \342\200\234blue card\342\200\235) for locomotive inspections or the satisfactory Class I brake inspection or end of train device form relating to such locomotive or rail car related to rail car inspections; and\n(3) ensure that any inspection conducted under part 215 of title 49, Code of Federal Regulations, utilizing inspection technologies, including artificial intelligence or camera-based systems, require verification or validation by a Qualified Mechanical Inspector."
+  value: "SEC. 235. Competitive demonstration of automated target recognition algorithms.\n\n(a) Venue, process, and scenarios.--Not later than June 1, 2025, the Chief Digital and Artificial Intelligence Officer of the Department of Defense, in coordination with appropriate counterparts in the military departments, shall develop a venue and processes, including a specified set of baseline scenarios, for comparative testing of automated target recognition algorithms to evaluate mission efficacy.\n\n(b) Demonstration.--Not later than September 1, 2025, the Secretary of Defense shall use the venue developed under subsection (a) to test the mission capability of at least two relevant programs included in the Replicator initiative.\n\n(c) Briefing.--Not later than one year after the date of the enactment of this Act, the Secretary of Defense shall provide to the Committees on Armed Services of the Senate and the House of Representatives a briefing on the activities carried out under this section."
+  value: "SEC. 5. GUIDANCE ON MEDICARE PAYMENT FOR CERTAIN ITEMS INVOLVING ARTIFICIAL INTELLIGENCE.\nNot later than January 1, 2026, the Secretary of Health and Human Services shall use existing communications mechanisms to issue guidance on requirements for payment under part B of title XVIII of the Social Security Act (42 U.S.C. 1395j et seq.) for remote monitoring devices, such as continuous glucose monitors, that\342\200\224\n(1) use an artificial intelligence component (such as a continuous adjustment component); and\n(2) transmit information to a health care provider for purposes of management and treatment of an individual."
+  value: "SEC. 7. IDENTIFICATION OF UNFAIR SCREENING PRACTICES.\nThe Secretary, the Federal Trade Commission, and the Bureau of Consumer Financial Protection shall jointly\342\200\224\n(1) carry out a program to collect information to identify practices that unfairly prevent applicants and tenants of rental housing from accessing or staying in housing, including the establishment and use of tenant or applicant background checks, the use of algorithms in tenant screenings, the provision of adverse action notices by landlords and property management companies, and the use of information regarding tenant income sources; and, (2) submit a report to the Congress annually describing the information collected under the program carried out pursuant to paragraph (1)."
+  value: "SECTION 1. SHORT TITLE.\nThis Act may be cited as the \342\200\234AI for National Security Act\342\200\235., SEC. 2. DEPARTMENT OF DEFENSE ENTERPRISE-WIDE PROCUREMENT OF CYBER DATA PRODUCTS AND SERVICES.\nSection 1521 of the National Defense Authorization Act for Fiscal Year 2022 (Public Law 117\342\200\22381; 10 U.S.C. 2224 note) is amended\342\200\224\n(1) in subsection (a)(5), by inserting \342\200\234, including the use of artificial intelligence-based endpoint security that prevents cyber attacks and does not require constant internet connectivity to function,\342\200\235 after \342\200\234services\342\200\235; and\n(2) in subsection (b), by inserting \342\200\234, including by enhancing the security of the software supply chain of the Department\342\200\235 after \342\200\234best interests of the Department\342\200\235."
+  value: "SECTION 1. SHORT TITLE.\nThis Act may be cited as the \342\200\234Civilian Agency AI Watermark Act\342\200\235.\nSEC. 2. CIVILIAN AGENCY ARTIFICIAL INTELLIGENCE WATERMARK SYSTEM.\n(a) In General.\342\200\224Not later than eight months after the date of the enactment of this Act, the Secretary of Homeland Security shall seek to consult with the Director of the National Institute of Standards and Technology and the Director of the United States Patent and Trademark Office regarding development of an artificial intelligence watermark and trademark system to identify Federal agency approved artificial intelligence applications for civilian agency use.\n(b) Authorization Of Appropriations.\342\200\224There is authorized to be appropriated to the Secretary of Homeland Security each fiscal year to carry out this section such sums as may be necessary."
+  value: "SECTION 1. SHORT TITLE.\nThis Act may be cited as the \342\200\234Ending FCC Meddling in Our Elections Act\342\200\235.\nSEC. 2. PROHIBITION ON FEDERAL COMMUNICATIONS COMMISSION RULES REGARDING DISCLOSURE OF AI-GENERATED CONTENT IN POLITICAL ADVERTISEMENTS.\n(a) Definition.\342\200\224In this section, the term \342\200\234rule\342\200\235 has the meaning given the term in section 804 of title 5, United States Code.\n(b) Prohibition.\342\200\224The Federal Communications Commission may not promulgate or enforce any rule\342\200\224\n(1) relating to the draft notice of proposed rulemaking circulated by the Chairwoman of the Commission on May 22, 2024, regarding disclosure of the use of artificial intelligence-generated content in political advertisements on television, radio, or any other service covered by the proposal; or\n(2) that is substantially similar to a rule described in paragraph (1)."
+  value: "SECTION 1. SHORT TITLE.\nThis Act may be cited as the \342\200\234Healthy Technology Act of 2023\342\200\235., SEC. 2. PRESCRIPTION OF DRUGS BY ARTIFICIAL INTELLIGENCE OR MACHINE LEARNING TECHNOLOGIES.\nSection 503(b) of Federal Food, Drug, and Cosmetic Act (21 U.S.C. 353(b)) is amended by adding at the end the following:\n\342\200\234(6) In this subsection, the term \342\200\230practitioner licensed by law to administer such drug\342\200\231 includes artificial intelligence and machine learning technology that are\342\200\224\n\342\200\234(A) authorized pursuant to a statute of the State involved to prescribe the drug involved; and\n\342\200\234(B) approved, cleared, or authorized under section 510(k), 513, 515, or 564.\342\200\235."
+  value: "__LARGE_BYTES__"
+}
+string_domain {
+  name: "cleaned_text"
+  value: "(c) evaluation of state programs.section 116(e) of the workforce innovation and opportunity act (29 u.s.c. 3141(e)) is amended (1) in paragraph (1) (a) in the first sentence, by striking shall conduct ongoing and inserting shall use data to conduct analyses and ongoing; and (b) in the second sentence, by striking conduct the and inserting conduct such analyses and; and (2) in paragraph (2), by adding a state may use other forms of analysis, such as machine learning or other advanced analytics, to improve program operations and outcomes and to identify areas for further evaluation. at the end."
+  value: "__LARGE_BYTES__"
+  value: "a bill to amend the communications act of 1934 to establish technical and procedural standards for artificial or prerecorded voice systems created through generative artificial intelligence, and for other purposes. be it enacted by the senate and house of representatives of the united states of america in congress assembled, , section 1. technical and procedural standards for artificial or prerecorded voice systems created through generative artificial intelligence. section 227(d)(3) of the communications act of 1934 (47 u.s.c. 227(d)(3)) is amended by inserting (including those created through generative artificial intelligence (genai), for example voice cloning, and other subsequent technologies as may be deemed appropriate by the commission) after telephone."
+  value: "a bill to direct the secretary of health and human services to issue guidance on payment under the medicare program for certain items involving artificial intelligence. be it enacted by the senate and house of representatives of the united states of america in congress assembled, , section 1. short title. this act may be cited as the maintaining innovation and safe technologies act. sec. 2. guidance on medicare payment for certain items involving artificial intelligence. not later than january 1, 2026, the secretary of health and human services shall use existing communications mechanisms to issue guidance on requirements for payment under part b of title xviii of the social security act (42 u.s.c. 1395j et seq.) for remote monitoring devices, such as continuous glucose monitors, that (1) use an artificial intelligence component (such as a continuous adjustment component); and (2) transmit information to a health care provider for purposes of management and treatment of an individual."
+  value: "an act to amend and reenact subsection 8 of section 1-01-49 of the north dakota century code, relating to the definition of person; and to declare an emergency. be it enacted by the legislative assembly of north dakota section 1. amendment. subsection 8 of section 1-01-49 of the north dakota century code is amended and reenacted as follows 1. person means an individual, organization, government, political subdivision, or government agency or instrumentality. the term does not include environmental elements, artificial intelligence, an animal, or an inanimate object. section 2. emergency. this act is declared to be an emergency measure."
+  value: "sec. 1007. use of technology using artificial intelligence to facilitate audit of the financial statements of the department of defense for fiscal year 2025. (a) use of ai technology for audits.--the secretary of defense, the secretary of the army, the secretary of the navy, and the secretary of the air force shall encourage, to the greatest extent practicable, the use of technology that uses artificial intelligence or machine learning for the purpose of facilitating audits of the financial statements of the department of defense. (b) implementation of ai technology for audits.--the director of the chief digital and artificial intelligence office of the department, in coordination with the under secretary of defense for research and engineering and the inspector general of the department, shall oversee the adoption of artificial intelligence and machine learning technologies in support of financial management and enterprise business operations."
+  value: "sec. 105. report on wearable medical devices. not later than 18 months after the date of the enactment of this act, the comptroller general of the united states shall conduct a technology assessment of, and submit to congress a report on, the capabilities and limitations of wearable medical devices used to support clinical decision-making. such report shall include a description of (1) the potential for such devices to accurately prescribe treatments; (2) an examination of the benefits and challenges of artificial intelligence to augment such capabilities; and (3) policy options to enhance the benefits and mitigate potential challenges of developing or using such devices."
+  value: "sec. 125. designation of official responsible for autonomous surface and underwater dual-modality vehicles. (a) designation required.--not later than 180 days after the date of the enactment of this act, the secretary of the navy shall designate an appropriate official within the department of the navy to have primary responsibility for the development and acquisition of surface and underwater dual-modality, advanced autonomous vehicles, consistent with warfighter requirements. (b) program element.--the secretary of the navy shall ensure, within budget program elements for the navy, that there is a dedicated program element for the development and acquisition of surface and underwater dual-modality, advanced autonomous vehicles."
+  value: "sec. 13. equipment inspections. not later than 12 months after the date of enactment of this act, the secretary of transportation shall issue such regulations as are necessary to (1) prohibit any train from being moved out of a switchyard before all required brake inspections of locomotives and rail cars have been completed; (2) allow only the qualified mechanical inspector assigned to inspect a locomotive or rail car to sign off on the form fra f618049a (commonly known as the blue card) for locomotive inspections or the satisfactory class i brake inspection or end of train device form relating to such locomotive or rail car related to rail car inspections; and (3) ensure that any inspection conducted under part 215 of title 49, code of federal regulations, utilizing inspection technologies, including artificial intelligence or camera-based systems, require verification or validation by a qualified mechanical inspector."
+  value: "sec. 235. competitive demonstration of automated target recognition algorithms. (a) venue, process, and scenarios.--not later than june 1, 2025, the chief digital and artificial intelligence officer of the department of defense, in coordination with appropriate counterparts in the military departments, shall develop a venue and processes, including a specified set of baseline scenarios, for comparative testing of automated target recognition algorithms to evaluate mission efficacy. (b) demonstration.--not later than september 1, 2025, the secretary of defense shall use the venue developed under subsection (a) to test the mission capability of at least two relevant programs included in the replicator initiative. (c) briefing.--not later than one year after the date of the enactment of this act, the secretary of defense shall provide to the committees on armed services of the senate and the house of representatives a briefing on the activities carried out under this section."
+  value: "sec. 5. guidance on medicare payment for certain items involving artificial intelligence. not later than january 1, 2026, the secretary of health and human services shall use existing communications mechanisms to issue guidance on requirements for payment under part b of title xviii of the social security act (42 u.s.c. 1395j et seq.) for remote monitoring devices, such as continuous glucose monitors, that (1) use an artificial intelligence component (such as a continuous adjustment component); and (2) transmit information to a health care provider for purposes of management and treatment of an individual."
+  value: "sec. 7. identification of unfair screening practices. the secretary, the federal trade commission, and the bureau of consumer financial protection shall jointly (1) carry out a program to collect information to identify practices that unfairly prevent applicants and tenants of rental housing from accessing or staying in housing, including the establishment and use of tenant or applicant background checks, the use of algorithms in tenant screenings, the provision of adverse action notices by landlords and property management companies, and the use of information regarding tenant income sources; and, (2) submit a report to the congress annually describing the information collected under the program carried out pursuant to paragraph (1)."
+  value: "section 1. short title. this act may be cited as the ai for national security act., sec. 2. department of defense enterprise-wide procurement of cyber data products and services. section 1521 of the national defense authorization act for fiscal year 2022 (public law 11781; 10 u.s.c. 2224 note) is amended (1) in subsection (a)(5), by inserting , including the use of artificial intelligence-based endpoint security that prevents cyber attacks and does not require constant internet connectivity to function, after services; and (2) in subsection (b), by inserting , including by enhancing the security of the software supply chain of the department after best interests of the department."
+  value: "section 1. short title. this act may be cited as the civilian agency ai watermark act. sec. 2. civilian agency artificial intelligence watermark system. (a) in general.not later than eight months after the date of the enactment of this act, the secretary of homeland security shall seek to consult with the director of the national institute of standards and technology and the director of the united states patent and trademark office regarding development of an artificial intelligence watermark and trademark system to identify federal agency approved artificial intelligence applications for civilian agency use. (b) authorization of appropriations.there is authorized to be appropriated to the secretary of homeland security each fiscal year to carry out this section such sums as may be necessary."
+  value: "section 1. short title. this act may be cited as the ending fcc meddling in our elections act. sec. 2. prohibition on federal communications commission rules regarding disclosure of ai-generated content in political advertisements. (a) definition.in this section, the term rule has the meaning given the term in section 804 of title 5, united states code. (b) prohibition.the federal communications commission may not promulgate or enforce any rule (1) relating to the draft notice of proposed rulemaking circulated by the chairwoman of the commission on may 22, 2024, regarding disclosure of the use of artificial intelligence-generated content in political advertisements on television, radio, or any other service covered by the proposal; or (2) that is substantially similar to a rule described in paragraph (1)."
+  value: "section 1. short title. this act may be cited as the healthy technology act of 2023., sec. 2. prescription of drugs by artificial intelligence or machine learning technologies. section 503(b) of federal food, drug, and cosmetic act (21 u.s.c. 353(b)) is amended by adding at the end the following (6) in this subsection, the term practitioner licensed by law to administer such drug includes artificial intelligence and machine learning technology that are (a) authorized pursuant to a statute of the state involved to prescribe the drug involved; and (b) approved, cleared, or authorized under section 510(k), 513, 515, or 564.."
+}

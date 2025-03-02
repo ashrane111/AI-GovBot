@@ -71,7 +71,7 @@ def main():
         serialized_data = pickle.dumps(pd_csv_file)
 
         # Validate and clean the data
-        validated_data = validate_and_clean_data(serialized_data)
+        validated_data = preprocess_data(serialized_data)
         logger.info("Data validated and cleaned successfully")
 
         # Save the validated data back to a CSV file
