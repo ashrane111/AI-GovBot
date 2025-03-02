@@ -1,8 +1,8 @@
 tensorflow-cpu
 tensorflow-data-validation
 faiss-cpu==1.8.0
-pandas==2.2.2
-numpy==1.26.4
+pandas
+numpy
 sentence-transformers==3.0.1
 google-cloud-storage
 requests==2.32.3
