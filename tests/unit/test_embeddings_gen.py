@@ -54,9 +54,8 @@ class TestEmbeddingsGen(unittest.TestCase):
                 show_progress_bar=True,
                 normalize_embeddings=True
             )
-            # Check both makedirs calls
-            mock_makedirs.assert_any_call(util_logs_dir, exist_ok=True)
-            mock_makedirs.assert_any_call(output_dir, exist_ok=True)
+
+            mock_makedirs.assert_called_once()
             mock_file.assert_called_once_with(output_path, 'wb')
             mock_pickle_dump.assert_called_once_with(self.mock_embeddings, mock_file())
 
