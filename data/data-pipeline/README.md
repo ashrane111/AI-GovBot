@@ -33,6 +33,13 @@ GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/secrets/google_cloud_key.json
 ```
 
 
+### Initialize Data Version Control (DVC)
+Run the following command in the root folder.
+
+```bash
+dvc init
+```
+
 
 ### Initialize the database
 
@@ -60,6 +67,16 @@ docker compose up
 
 After every changes, can restart using this.
 
+### DVC Push
+
+- Use version control on the the data.
+
+```bash
+dvc add data/data-pipeline/dags/merged_input
+dvc add data/data-pipeline/dags/embeddings
+dvc add data/data-pipeline/dags/FAISS_Index
+dvc push
+```
 
 ### Temp Credentials for airflow
 
