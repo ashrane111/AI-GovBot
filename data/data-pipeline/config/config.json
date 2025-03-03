@@ -1,0 +1,29 @@
+{
+    "TO_EMAIL": "vedantrishidas@gmail.com",
+    "embedding_model": "multi-qa-MiniLM-L6-dot-v1",
+    "file_schema_pairs": [
+        {
+            "file": "merged_input/agora/authorities.csv",
+            "schema": "schema/authorities_data_schema.pbtxt"
+        },
+        {
+            "file": "merged_input/agora/collections.csv",
+            "schema": "schema/collections_data_schema.pbtxt"
+        },
+        {
+            "file": "merged_input/agora/documents.csv",
+            "schema": "schema/documents_data_schema.pbtxt"
+        },
+        {
+            "file": "merged_input/agora/segments.csv",
+            "schema": "schema/segments_data_schema.pbtxt"
+        }
+    ],
+    "download_url": "https://zenodo.org/records/14877811/files/agora.zip",
+    "output_dir_name": "merged_input",
+    "airflow_owner": "RiXiRx",
+    "data_dir": {
+        "agora_dir": "merged_input/agora",
+        "merged_data_file": "merged_input/Documents_segments_merged.csv"
+    }
+}

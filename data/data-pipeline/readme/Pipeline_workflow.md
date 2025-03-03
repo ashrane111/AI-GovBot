@@ -9,39 +9,44 @@ This document provides a detailed overview of the data pipeline workflow impleme
 ├── Dockerfile                     # Defines Airflow container with dependencies
 ├── docker-compose.yaml            # Orchestrates Airflow services
 ├── requirements.txt               # Python package dependencies
-├── .env                           # Environment variables and credentials
 │
 ├── dags/                          # Airflow DAG definitions
 │   ├── airflow.py                 # Main DAG defining the data pipeline workflow
 │   │
-│   └── utils/                     # Utility functions for pipeline tasks
-│       ├── create_vector_index.py # Creates FAISS vector index from embeddings
-│       ├── data_extract_combine.py# Extracts and merges document data
-│       ├── data_loader.py         # Loads and prepares data for processing
-│       ├── data_validation.py     # Validates data against defined schemas
-│       ├── download_data.py       # Downloads and extracts source data files
-│       ├── embeddings_gen.py      # Generates text embeddings using transformers
-│       ├── gcs_upload.py          # Uploads processed data to Google Cloud Storage
-│       ├── preprocess_data.py     # Preprocesses text data for embedding
-│       └── text_clean.py          # Cleans and normalizes text content
+│   ├── utils/                       # Utility functions for pipeline tasks
+│   │   ├── bias_detection.py        # Detects bias in data and provides a report
+│   │   ├── create_vector_index.py   # Creates FAISS vector index from embeddings
+│   │   ├── data_extract_combine.py  # Extracts and merges document data
+│   │   ├── data_loader.py           # Loads and prepares data for processing
+│   │   ├── data_schema_generation.py# Generates schema definitions (.pbtxt) for data validation
+│   │   ├── data_validation.py       # Validates data against defined schemas
+│   │   ├── download_data.py         # Downloads and extracts source data files
+│   │   ├── embeddings_gen.py        # Generates text embeddings using transformers
+│   │   ├── gcs_upload.py            # Uploads processed data to Google Cloud Storage
+│   │   ├── preprocess_data.py       # Preprocesses text data for embedding
+|   |   └── text_clean.py            # Cleans and normalizes text content
+│   │
+│   └── schema/                    # Schema definitions for data validation used in the pipeline
+│       ├── authorities_data_schema.pbtxt  # Defines schema for authority-related data
+│       ├── collections_data_schema.pbtxt  # Defines schema for collection-related data
+│       ├── documents_data_schema.pbtxt    # Defines schema for document-related data
+│       ├── documents_segments_merged_data_schema.pbtxt  # Defines schema for merged document segments data
+│       ├── segments_data_schema.pbtxt     # Defines schema for segment-related data
 │
 ├── config/                        # Configuration files
 │   └── config.json                # Central configuration for pipeline parameters
 │
-├── merged_input/                  # Storage for downloaded and processed data
-│   └── agora/                     # Directory containing source files
-│
-├── schema/                        # Schema definitions for data validation
-│   ├── authorities_data_schema.pbtxt
-│   ├── collections_data_schema.pbtxt
-│   ├── documents_data_schema.pbtxt
-│   └── segments_data_schema.pbtxt
+├── merged_input/                  # Storage for downloaded and processed data (during run)
+│   └── agora/                     # Directory containing source files 
 │
 ├── FAISS_Index/                   # Output directory for vector indices
-│   └── legal_embeddings.index     # Generated vector index file
+│   └── legal_embeddings.index     # Generated vector index file (during run)
+│
+├── bias_analysis/                    # Directory containing bias analysis report
+│   └── bias_detection_summary.txt    # Generated bias analysis report during run
 │
 └── embeddings/                    # Storage for generated embeddings
-    └── embeddings.pkl             # Serialized text embeddings
+    └── embeddings.pkl             # Serialized text embeddings (during run)
 ```
 
 ## Workflow Overview
