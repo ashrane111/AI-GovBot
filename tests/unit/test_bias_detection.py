@@ -52,7 +52,6 @@ class TestBiasDetection(unittest.TestCase):
         detect_and_simulate_bias(self.serialized_df)
         
         # Verify behavior
-        # Check directory creation within the function
         mock_makedirs.assert_any_call(output_dir, exist_ok=True)
         mock_chdir.assert_called_once_with(output_dir)
         
@@ -74,12 +73,14 @@ class TestBiasDetection(unittest.TestCase):
     @patch('utils.bias_detection.os.makedirs')
     @patch('utils.bias_detection.os.path.join')
     @patch('utils.bias_detection.os.chdir')
+    @patch('utils.bias_detection.plt.figure')  # Mock figure creation to prevent plotting errors
     @patch('utils.bias_detection.plt.savefig')
     @patch('utils.bias_detection.plt.close')
-    def test_detect_and_simulate_bias_empty_df(self, mock_close, mock_savefig, mock_chdir, mock_join, mock_makedirs):
+    def test_detect_and_simulate_bias_empty_df(self, mock_close, mock_savefig, mock_figure, mock_chdir, mock_join, mock_makedirs):
         """Test bias detection with an empty DataFrame."""
         # Configure mocks
         mock_join.side_effect = lambda *args: '/'.join(args)
+        mock_figure.return_value = MagicMock()  # Mock figure object to avoid plotting empty data
         
         # Call the function (should handle empty data gracefully)
         detect_and_simulate_bias(self.serialized_empty)
