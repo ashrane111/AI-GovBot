@@ -1,19 +1,22 @@
-import tensorflow_data_validation as tfdv
-import pandas as pd
 import os
+import pandas as pd
+import tensorflow_data_validation as tfdv
 
 def validate_downloaded_data_files(file_schema_pairs):
     """Validate multiple data files against their corresponding schema and return a result dictionary."""
     
-    anomalies_found = []
+    anomalies_found = {}
 
     for file, schema_path in file_schema_pairs:
+        # Initialize anomalies list for this file
+        anomalies_found[file] = []
+
         # Check if both file and schema exist
         if not os.path.exists(file):
-            anomalies_found.append(f"File not found: {file}")
+            anomalies_found[file].append("File not found")
             continue
         if not os.path.exists(schema_path):
-            anomalies_found.append(f"Schema file not found: {schema_path}")
+            anomalies_found[file].append("Schema file not found")
             continue
 
         print(f"Validating file: {file} against schema: {schema_path}")
@@ -23,7 +26,7 @@ def validate_downloaded_data_files(file_schema_pairs):
             df = pd.read_csv(file)
 
             if df.empty:
-                anomalies_found.append({"file": file, "error": "CSV file is empty"})
+                anomalies_found[file].append("CSV file is empty")
                 continue
 
             # Generate statistics for the new data
@@ -37,33 +40,48 @@ def validate_downloaded_data_files(file_schema_pairs):
 
             if anomalies.anomaly_info:
                 for feature, info in anomalies.anomaly_info.items():
-                    anomalies_found.append({
-                        "file": file, 
-                        "feature": feature, 
-                        "description": info.description
-                    })
+                    anomalies_found[file].append(f"Feature: {feature}, Error: {info.description}")
         except pd.errors.EmptyDataError:
-            anomalies_found.append({"file": file, "error": "CSV is empty or unreadable"})
+            anomalies_found[file].append("CSV is empty or unreadable")
         except Exception as e:
-            anomalies_found.append({"file": file, "error": str(e)})
+            anomalies_found[file].append(str(e))
+
+        # Remove files with no anomalies
+        if not anomalies_found[file]:
+            del anomalies_found[file]
 
     # If any anomalies are found, return failure
-    if anomalies_found:
-        return {"result": False, "anomalies": anomalies_found}
+    return {"result": not bool(anomalies_found), "anomalies": anomalies_found}
 
-    return {"result": True, "anomalies": []}
 
 
 # Check validation result and store anomalies in XCom
+# def check_validation_status(**kwargs):
+#     ti = kwargs['ti']
+#     result = ti.xcom_pull(task_ids='validate_schema_task')
+    
+#     if not result["result"]:  # If validation failed
+#         anomalies = result['anomalies']
+#         formatted_anomalies = "<br>".join([f"File: {a['file']}, Error: {a['error']}" for a in anomalies])
+#         ti.xcom_push(key='anomalies', value=formatted_anomalies)  # Store formatted anomalies for email
+#         raise ValueError(f"Schema validation failed: {formatted_anomalies}")
+
 def check_validation_status(**kwargs):
     ti = kwargs['ti']
     result = ti.xcom_pull(task_ids='validate_schema_task')
     
     if not result["result"]:  # If validation failed
-        anomalies = result['anomalies']
-        formatted_anomalies = "<br>".join(anomalies)  # Convert list to HTML format
-        ti.xcom_push(key='anomalies', value=formatted_anomalies)  # Store anomalies for email
-        raise ValueError(f"Schema validation failed: {result['anomalies']}")
+        anomalies = result['anomalies']  # Dictionary of file -> list of errors
+        
+        # Convert the structured anomalies into a readable HTML format
+        formatted_anomalies = "<br>".join(
+            [f"File: {file}<br>" + "<br>".join([f"&nbsp;&nbsp;- {error}" for error in errors])
+             for file, errors in anomalies.items()]
+        )
+
+        ti.xcom_push(key='anomalies', value=formatted_anomalies)  # Store formatted anomalies for email
+        raise ValueError(f"Schema validation failed: {formatted_anomalies}")
+
 
 # Test the function manually
 if __name__ == "__main__":
