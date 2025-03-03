@@ -2,6 +2,48 @@
 
 This document provides a detailed overview of the data pipeline workflow implemented using Apache Airflow. The pipeline is designed to take raw data from external sources through a series of structured processing stages—from data acquisition and validation to data transformation, feature engineering, indexing, and finally uploading to a cloud storage endpoint. Each stage is encapsulated in an Airflow task, ensuring modular, reproducible, and easily maintainable code.
 
+## Data-pipeline Directory Structure
+
+```
+│
+├── Dockerfile                     # Defines Airflow container with dependencies
+├── docker-compose.yaml            # Orchestrates Airflow services
+├── requirements.txt               # Python package dependencies
+├── .env                           # Environment variables and credentials
+│
+├── dags/                          # Airflow DAG definitions
+│   ├── airflow.py                 # Main DAG defining the data pipeline workflow
+│   │
+│   └── utils/                     # Utility functions for pipeline tasks
+│       ├── create_vector_index.py # Creates FAISS vector index from embeddings
+│       ├── data_extract_combine.py# Extracts and merges document data
+│       ├── data_loader.py         # Loads and prepares data for processing
+│       ├── data_validation.py     # Validates data against defined schemas
+│       ├── download_data.py       # Downloads and extracts source data files
+│       ├── embeddings_gen.py      # Generates text embeddings using transformers
+│       ├── gcs_upload.py          # Uploads processed data to Google Cloud Storage
+│       ├── preprocess_data.py     # Preprocesses text data for embedding
+│       └── text_clean.py          # Cleans and normalizes text content
+│
+├── config/                        # Configuration files
+│   └── config.json                # Central configuration for pipeline parameters
+│
+├── merged_input/                  # Storage for downloaded and processed data
+│   └── agora/                     # Directory containing source files
+│
+├── schema/                        # Schema definitions for data validation
+│   ├── authorities_data_schema.pbtxt
+│   ├── collections_data_schema.pbtxt
+│   ├── documents_data_schema.pbtxt
+│   └── segments_data_schema.pbtxt
+│
+├── FAISS_Index/                   # Output directory for vector indices
+│   └── legal_embeddings.index     # Generated vector index file
+│
+└── embeddings/                    # Storage for generated embeddings
+    └── embeddings.pkl             # Serialized text embeddings
+```
+
 ## Workflow Overview
 
 Below is the graphical representation of the pipeline

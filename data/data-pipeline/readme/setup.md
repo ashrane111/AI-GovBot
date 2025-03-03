@@ -1,4 +1,5 @@
 ## How to use Airflow
+
 We will be using the dockerized version of Airflow. For windows, Docker Desktop will be required with work in WSL.
 For Mac and Linux, docker should be self-explanatory.
 
