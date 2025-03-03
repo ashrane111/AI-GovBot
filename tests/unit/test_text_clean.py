@@ -22,7 +22,7 @@ class TestTextClean(unittest.TestCase):
         self.expected_cleaned = pd.DataFrame({
             'Full Text': ['Text with  extra  spaces!', 'Special $#@ characters', 'UPPERCASE text'],
             'cleaned_text': ['text with extra spaces', 'special  characters', 'uppercase text'],
-            'Link to document': ['http://example.com/test', 'http://special', 'http://uppercase']  # Assuming clean_url behavior
+            'Link to document': ['http://example.com/test', 'http://special', 'http://uppercase']
         })
 
     def test_clean_text(self):
@@ -43,6 +43,16 @@ class TestTextClean(unittest.TestCase):
         # Configure mocks
         mock_join.side_effect = lambda *args: '/'.join(args)
         
+        # Import the function after patching to get its location
+        from utils.text_clean import clean_full_text
+        
+        # Calculate base_dir based on text_clean.py's location
+        module_dir = os.path.dirname(clean_full_text.__code__.co_filename)
+        base_dir = os.path.dirname(module_dir)  # Should be /home/runner/work/AI-GovBot/AI-GovBot/data/data-pipeline/dags
+        
+        # Expected directory (matching the actual call from the error)
+        merged_input_dir = os.path.join(base_dir, 'merged_input')
+        
         # Patch both DataFrame.to_csv and DataFrame.to_excel to prevent file writing
         with patch.object(pd.DataFrame, 'to_csv'):
             with patch.object(pd.DataFrame, 'to_excel'):
@@ -50,12 +60,7 @@ class TestTextClean(unittest.TestCase):
                 result = clean_full_text(self.serialized_df)
                 
                 # Verify behavior
-                # Adjust the expected directory based on your clean_full_text implementation
-                # If it no longer uses os.makedirs, this can be removed
-                mock_makedirs.assert_called_once_with(
-                    os.path.join(os.path.dirname(os.path.dirname(__file__)), 'cleaned_data'),
-                    exist_ok=True
-                )  # Replace 'cleaned_data' with the actual directory name if different
+                mock_makedirs.assert_called_once_with(merged_input_dir, exist_ok=True)
                 
                 # Deserialize the result and check cleaned text
                 deserialized = pickle.loads(result)
