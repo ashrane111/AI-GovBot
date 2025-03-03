@@ -9,15 +9,28 @@ For Mac and Linux, docker should be self-explanatory.
 For linux (even WSL), will need to run this in the main data-pipeline directory. Assume the same for Mac.
 ```bash
 cd data/data-pipeline
-mkdir -p ./dags ./logs ./plugins ./config ./secrets
+mkdir -p ./logs ./plugins ./secrets
 echo -e "AIRFLOW_UID=$(id -u)" > .env
 ```
 
-If "warning that AIRFLOW_UID is not set" then create a .env file manually with the following.
+If "warning that AIRFLOW_UID is not set" then create a .env file manually with the following for windows.
 ```bash
 AIRFLOW_UID=50000
 ```
 
+### Set up .env file
+A .env file should be present from the previous steps. If not, create one on the same level as the data-pipeline folder. \\
+Add 
+```bash
+AIRFLOW_UID=1000
+GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/secrets/google_cloud_key.json
+SMTP_EMAIL=<your_email_account_to_send_email_from>
+SMTP_PASSWORD=<your_app_code_for_email>
+```
+
+
+### Set up config.json
+In data/data-pipeline/config/, edit config.json to add your own email id, SentenceTransformer embedding model and owner name. This email will be used to receive the data.
 
 ### Create a GCP key 
 
@@ -76,6 +89,7 @@ After every changes, can restart using this.
 dvc add data/data-pipeline/dags/merged_input
 dvc add data/data-pipeline/dags/embeddings
 dvc add data/data-pipeline/dags/FAISS_Index
+dvc add data/data-pipeline/dags/bias_analysis
 dvc push
 ```
 
