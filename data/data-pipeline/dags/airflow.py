@@ -19,6 +19,7 @@ from utils.data_extract_combine import extract_and_merge_documents
 from utils.preprocess_data import preprocess_data
 from airflow import configuration as conf
 from utils.data_validation import validate_downloaded_data_files, check_validation_status
+from utils.bias_detection import detect_and_simulate_bias
 # Enable pickle support for XCom, allowing data to be passed between tasks
 conf.set('core', 'enable_xcom_pickling', 'True')
 
@@ -143,6 +144,14 @@ load_data_task = PythonOperator(
     dag=dag,
 )
 
+data_bias_task = PythonOperator(
+    task_id='data_bias_task',
+    python_callable=detect_and_simulate_bias,
+    op_args=[load_data_task.output],  # Pass the loaded data to the bias function
+    dag=dag,
+)
+
+
 preprocess_data_task = PythonOperator(
     task_id='preprocess_data_task',
     python_callable=preprocess_data,
@@ -194,6 +203,7 @@ check_validation_task >> trigger_validation_failure_email  # If validation fails
 
 # Continue the pipeline after successful validation
 data_combine_task >> load_data_task >> preprocess_data_task >> clean_text_task >> generate_embeddings_task >> create_index_task >> upload_to_gcs_task >> send_email
+load_data_task >> data_bias_task
 
 # If this script is run directly, allow command-line interaction with the DAG
 if __name__ == "__main__":
