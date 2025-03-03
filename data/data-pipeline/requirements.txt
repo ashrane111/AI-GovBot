@@ -1,0 +1,11 @@
+tensorflow-cpu
+tensorflow-data-validation
+matplotlib
+faiss-cpu
+sentence-transformers
+google-cloud-storage
+requests
+openpyxl
+dvc
+tf-keras
+keras==2.15.0 

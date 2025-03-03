@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.DS_Store
+airflow_env/
+.vscode/
+airflow-trials/
+data/data-pipeline/.secret/

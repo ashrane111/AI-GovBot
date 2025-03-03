@@ -1,0 +1,5 @@
+[core]
+    remote = dvc-ai-govbot
+['remote "dvc-ai-govbot"']
+    url = gs://dvc-ai-govbot
+    credentialpath = ../data/data-pipeline/secrets/google_cloud_key.json

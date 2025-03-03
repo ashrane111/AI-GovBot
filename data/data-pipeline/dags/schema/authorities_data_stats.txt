@@ -1,0 +1,899 @@
+datasets {
+  num_examples: 89
+  features {
+    type: STRING
+    string_stats {
+      common_stats {
+        num_non_missing: 89
+        min_num_values: 1
+        max_num_values: 1
+        avg_num_values: 1.0
+        num_values_histogram {
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 8.9
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 8.9
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 8.9
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 8.9
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 8.9
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 8.9
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 8.9
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 8.9
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 8.9
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 8.9
+          }
+          type: QUANTILES
+        }
+        tot_num_values: 89
+      }
+      unique: 89
+      top_values {
+        value: "Wyoming"
+        frequency: 1.0
+      }
+      top_values {
+        value: "Wisconsin"
+        frequency: 1.0
+      }
+      top_values {
+        value: "West Virginia"
+        frequency: 1.0
+      }
+      top_values {
+        value: "Washington"
+        frequency: 1.0
+      }
+      top_values {
+        value: "Virginia"
+        frequency: 1.0
+      }
+      top_values {
+        value: "Vermont"
+        frequency: 1.0
+      }
+      top_values {
+        value: "Utah"
+        frequency: 1.0
+      }
+      top_values {
+        value: "United States Congress"
+        frequency: 1.0
+      }
+      top_values {
+        value: "United Nations"
+        frequency: 1.0
+      }
+      top_values {
+        value: "Texas"
+        frequency: 1.0
+      }
+      top_values {
+        value: "Tennessee"
+        frequency: 1.0
+      }
+      top_values {
+        value: "State governments"
+        frequency: 1.0
+      }
+      top_values {
+        value: "South Dakota"
+        frequency: 1.0
+      }
+      top_values {
+        value: "South Carolina"
+        frequency: 1.0
+      }
+      top_values {
+        value: "Rhode Island"
+        frequency: 1.0
+      }
+      top_values {
+        value: "Private-sector companies"
+        frequency: 1.0
+      }
+      top_values {
+        value: "Pennsylvania"
+        frequency: 1.0
+      }
+      top_values {
+        value: "Other multinational"
+        frequency: 1.0
+      }
+      top_values {
+        value: "Other authorities"
+        frequency: 1.0
+      }
+      top_values {
+        value: "Oregon"
+        frequency: 1.0
+      }
+      avg_length: 16.033709
+      rank_histogram {
+        buckets {
+          label: "Wyoming"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 1
+          high_rank: 1
+          label: "Wisconsin"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 2
+          high_rank: 2
+          label: "West Virginia"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 3
+          high_rank: 3
+          label: "Washington"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 4
+          high_rank: 4
+          label: "Virginia"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 5
+          high_rank: 5
+          label: "Vermont"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 6
+          high_rank: 6
+          label: "Utah"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 7
+          high_rank: 7
+          label: "United States Congress"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 8
+          high_rank: 8
+          label: "United Nations"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 9
+          high_rank: 9
+          label: "Texas"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 10
+          high_rank: 10
+          label: "Tennessee"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 11
+          high_rank: 11
+          label: "State governments"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 12
+          high_rank: 12
+          label: "South Dakota"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 13
+          high_rank: 13
+          label: "South Carolina"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 14
+          high_rank: 14
+          label: "Rhode Island"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 15
+          high_rank: 15
+          label: "Private-sector companies"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 16
+          high_rank: 16
+          label: "Pennsylvania"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 17
+          high_rank: 17
+          label: "Other multinational"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 18
+          high_rank: 18
+          label: "Other authorities"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 19
+          high_rank: 19
+          label: "Oregon"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 20
+          high_rank: 20
+          label: "Oklahoma"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 21
+          high_rank: 21
+          label: "Ohio"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 22
+          high_rank: 22
+          label: "Office of Science and Technology Policy"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 23
+          high_rank: 23
+          label: "Office of Personnel Management"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 24
+          high_rank: 24
+          label: "Office of Management and Budget"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 25
+          high_rank: 25
+          label: "OECD"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 26
+          high_rank: 26
+          label: "North Dakota"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 27
+          high_rank: 27
+          label: "North Carolina"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 28
+          high_rank: 28
+          label: "New York City"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 29
+          high_rank: 29
+          label: "New York"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 30
+          high_rank: 30
+          label: "New Mexico"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 31
+          high_rank: 31
+          label: "New Jersey"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 32
+          high_rank: 32
+          label: "New Hampshire"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 33
+          high_rank: 33
+          label: "Nevada"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 34
+          high_rank: 34
+          label: "Nebraska"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 35
+          high_rank: 35
+          label: "National Institute of Standards and Technology"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 36
+          high_rank: 36
+          label: "Montana"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 37
+          high_rank: 37
+          label: "Missouri"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 38
+          high_rank: 38
+          label: "Mississippi"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 39
+          high_rank: 39
+          label: "Minnesota"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 40
+          high_rank: 40
+          label: "Michigan"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 41
+          high_rank: 41
+          label: "Massachusetts"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 42
+          high_rank: 42
+          label: "Maryland"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 43
+          high_rank: 43
+          label: "Maine"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 44
+          high_rank: 44
+          label: "Louisiana"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 45
+          high_rank: 45
+          label: "Local governments"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 46
+          high_rank: 46
+          label: "Kentucky"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 47
+          high_rank: 47
+          label: "Kansas"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 48
+          high_rank: 48
+          label: "Iowa"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 49
+          high_rank: 49
+          label: "Indiana"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 50
+          high_rank: 50
+          label: "Illinois"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 51
+          high_rank: 51
+          label: "Idaho"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 52
+          high_rank: 52
+          label: "Hawaii"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 53
+          high_rank: 53
+          label: "Government of the United Kingdom"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 54
+          high_rank: 54
+          label: "Government of the United Arab Emirates"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 55
+          high_rank: 55
+          label: "Government of Singapore"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 56
+          high_rank: 56
+          label: "Government of New Zealand"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 57
+          high_rank: 57
+          label: "Government of Israel"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 58
+          high_rank: 58
+          label: "Government of Canada"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 59
+          high_rank: 59
+          label: "Government of Australia"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 60
+          high_rank: 60
+          label: "Georgia"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 61
+          high_rank: 61
+          label: "Food and Drug Administration"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 62
+          high_rank: 62
+          label: "Florida"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 63
+          high_rank: 63
+          label: "Federal government"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 64
+          high_rank: 64
+          label: "Federal Election Commission"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 65
+          high_rank: 65
+          label: "Executive Office of the President"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 66
+          high_rank: 66
+          label: "European Union"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 67
+          high_rank: 67
+          label: "District of Columbia"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 68
+          high_rank: 68
+          label: "Department of Transportation"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 69
+          high_rank: 69
+          label: "Department of Housing and Urban Development"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 70
+          high_rank: 70
+          label: "Department of Homeland Security"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 71
+          high_rank: 71
+          label: "Department of Health and Human Services"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 72
+          high_rank: 72
+          label: "Department of Energy"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 73
+          high_rank: 73
+          label: "Department of Education"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 74
+          high_rank: 74
+          label: "Department of Defense"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 75
+          high_rank: 75
+          label: "Department of Commerce"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 76
+          high_rank: 76
+          label: "Department of Agriculture"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 77
+          high_rank: 77
+          label: "Delaware"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 78
+          high_rank: 78
+          label: "Copyright Office, Library of Congress"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 79
+          high_rank: 79
+          label: "Consumer Financial Protection Bureau"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 80
+          high_rank: 80
+          label: "Connecticut"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 81
+          high_rank: 81
+          label: "Colorado"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 82
+          high_rank: 82
+          label: "Chinese provincial and local governments"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 83
+          high_rank: 83
+          label: "Chinese central government"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 84
+          high_rank: 84
+          label: "California"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 85
+          high_rank: 85
+          label: "Arkansas"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 86
+          high_rank: 86
+          label: "Arizona"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 87
+          high_rank: 87
+          label: "Alaska"
+          sample_count: 1.0
+        }
+        buckets {
+          low_rank: 88
+          high_rank: 88
+          label: "Alabama"
+          sample_count: 1.0
+        }
+      }
+    }
+    path {
+      step: "Name"
+    }
+  }
+  features {
+    type: STRING
+    string_stats {
+      common_stats {
+        num_non_missing: 86
+        num_missing: 3
+        min_num_values: 1
+        max_num_values: 1
+        avg_num_values: 1.0
+        num_values_histogram {
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 8.6
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 8.6
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 8.6
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 8.6
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 8.6
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 8.6
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 8.6
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 8.6
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 8.6
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 8.6
+          }
+          type: QUANTILES
+        }
+        tot_num_values: 86
+      }
+      unique: 4
+      top_values {
+        value: "United States"
+        frequency: 74.0
+      }
+      top_values {
+        value: "Other countries"
+        frequency: 6.0
+      }
+      top_values {
+        value: "Multinational"
+        frequency: 4.0
+      }
+      top_values {
+        value: "China"
+        frequency: 2.0
+      }
+      avg_length: 12.953488
+      rank_histogram {
+        buckets {
+          label: "United States"
+          sample_count: 74.0
+        }
+        buckets {
+          low_rank: 1
+          high_rank: 1
+          label: "Other countries"
+          sample_count: 6.0
+        }
+        buckets {
+          low_rank: 2
+          high_rank: 2
+          label: "Multinational"
+          sample_count: 4.0
+        }
+        buckets {
+          low_rank: 3
+          high_rank: 3
+          label: "China"
+          sample_count: 2.0
+        }
+      }
+    }
+    path {
+      step: "Jurisdiction"
+    }
+  }
+  features {
+    type: STRING
+    string_stats {
+      common_stats {
+        num_non_missing: 71
+        num_missing: 18
+        min_num_values: 1
+        max_num_values: 1
+        avg_num_values: 1.0
+        num_values_histogram {
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 7.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 7.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 7.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 7.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 7.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 7.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 7.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 7.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 7.1
+          }
+          buckets {
+            low_value: 1.0
+            high_value: 1.0
+            sample_count: 7.1
+          }
+          type: QUANTILES
+        }
+        tot_num_values: 71
+      }
+      unique: 3
+      top_values {
+        value: "State governments"
+        frequency: 51.0
+      }
+      top_values {
+        value: "Federal government"
+        frequency: 19.0
+      }
+      top_values {
+        value: "Local governments"
+        frequency: 1.0
+      }
+      avg_length: 17.267605
+      rank_histogram {
+        buckets {
+          label: "State governments"
+          sample_count: 51.0
+        }
+        buckets {
+          low_rank: 1
+          high_rank: 1
+          label: "Federal government"
+          sample_count: 19.0
+        }
+        buckets {
+          low_rank: 2
+          high_rank: 2
+          label: "Local governments"
+          sample_count: 1.0
+        }
+      }
+    }
+    path {
+      step: "Parent authority"
+    }
+  }
+}

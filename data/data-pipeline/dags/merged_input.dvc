@@ -1,0 +1,6 @@
+outs:
+- md5: a7fa40cdae4a8d7b12f22a9c04e1e8e0.dir
+  size: 41368876
+  nfiles: 765
+  hash: md5
+  path: merged_input

@@ -1,0 +1,16 @@
+tensorflow-cpu
+tensorflow-data-validation
+matplotlib
+faiss-cpu
+sentence-transformers
+google-cloud-storage
+requests
+openpyxl
+pytest
+pytest-mock
+pytest-cov
+pytest-timeout
+unittest2
+dvc
+tf-keras
+keras==2.15.0 

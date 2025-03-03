@@ -1,0 +1,143 @@
+feature {
+  name: "Name"
+  type: BYTES
+  domain: "Name"
+  presence {
+    min_fraction: 1.0
+    min_count: 1
+  }
+  shape {
+    dim {
+      size: 1
+    }
+  }
+}
+feature {
+  name: "Jurisdiction"
+  value_count {
+    min: 1
+    max: 1
+  }
+  type: BYTES
+  domain: "Jurisdiction"
+  presence {
+    min_count: 1
+  }
+}
+feature {
+  name: "Parent authority"
+  value_count {
+    min: 1
+    max: 1
+  }
+  type: BYTES
+  domain: "Parent authority"
+  presence {
+    min_count: 1
+  }
+}
+string_domain {
+  name: "Name"
+  value: "Alabama"
+  value: "Alaska"
+  value: "Arizona"
+  value: "Arkansas"
+  value: "California"
+  value: "Chinese central government"
+  value: "Chinese provincial and local governments"
+  value: "Colorado"
+  value: "Connecticut"
+  value: "Consumer Financial Protection Bureau"
+  value: "Copyright Office, Library of Congress"
+  value: "Delaware"
+  value: "Department of Agriculture"
+  value: "Department of Commerce"
+  value: "Department of Defense"
+  value: "Department of Education"
+  value: "Department of Energy"
+  value: "Department of Health and Human Services"
+  value: "Department of Homeland Security"
+  value: "Department of Housing and Urban Development"
+  value: "Department of Transportation"
+  value: "District of Columbia"
+  value: "European Union"
+  value: "Executive Office of the President"
+  value: "Federal Election Commission"
+  value: "Federal government"
+  value: "Florida"
+  value: "Food and Drug Administration"
+  value: "Georgia"
+  value: "Government of Australia"
+  value: "Government of Canada"
+  value: "Government of Israel"
+  value: "Government of New Zealand"
+  value: "Government of Singapore"
+  value: "Government of the United Arab Emirates"
+  value: "Government of the United Kingdom"
+  value: "Hawaii"
+  value: "Idaho"
+  value: "Illinois"
+  value: "Indiana"
+  value: "Iowa"
+  value: "Kansas"
+  value: "Kentucky"
+  value: "Local governments"
+  value: "Louisiana"
+  value: "Maine"
+  value: "Maryland"
+  value: "Massachusetts"
+  value: "Michigan"
+  value: "Minnesota"
+  value: "Mississippi"
+  value: "Missouri"
+  value: "Montana"
+  value: "National Institute of Standards and Technology"
+  value: "Nebraska"
+  value: "Nevada"
+  value: "New Hampshire"
+  value: "New Jersey"
+  value: "New Mexico"
+  value: "New York"
+  value: "New York City"
+  value: "North Carolina"
+  value: "North Dakota"
+  value: "OECD"
+  value: "Office of Management and Budget"
+  value: "Office of Personnel Management"
+  value: "Office of Science and Technology Policy"
+  value: "Ohio"
+  value: "Oklahoma"
+  value: "Oregon"
+  value: "Other authorities"
+  value: "Other multinational"
+  value: "Pennsylvania"
+  value: "Private-sector companies"
+  value: "Rhode Island"
+  value: "South Carolina"
+  value: "South Dakota"
+  value: "State governments"
+  value: "Tennessee"
+  value: "Texas"
+  value: "United Nations"
+  value: "United States Congress"
+  value: "Utah"
+  value: "Vermont"
+  value: "Virginia"
+  value: "Washington"
+  value: "West Virginia"
+  value: "Wisconsin"
+  value: "Wyoming"
+}
+string_domain {
+  name: "Jurisdiction"
+  value: "China"
+  value: "Multinational"
+  value: "Other countries"
+  value: "United States"
+}
+string_domain {
+  name: "Parent authority"
+  value: "Federal government"
+  value: "Local governments"
+  value: "State governments"
+}
