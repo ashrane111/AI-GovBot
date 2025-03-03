@@ -76,7 +76,8 @@ class TestBiasDetection(unittest.TestCase):
     @patch('pandas.Series.plot')  # Mock Series.plot to prevent plotting errors with empty data
     @patch('utils.bias_detection.plt.savefig')  # Mock savefig to prevent filesystem access
     @patch('utils.bias_detection.plt.close')
-    def test_detect_and_simulate_bias_empty_df(self, mock_close, mock_savefig, mock_series_plot, mock_chdir, mock_join, mock_makedirs):
+    @patch('utils.bias_detection.open', new_callable=mock_open)  # Mock open to prevent filesystem write
+    def test_detect_and_simulate_bias_empty_df(self, mock_file_open, mock_close, mock_savefig, mock_series_plot, mock_chdir, mock_join, mock_makedirs):
         """Test bias detection with an empty DataFrame."""
         # Configure mocks
         mock_join.side_effect = lambda *args: '/'.join(args)
