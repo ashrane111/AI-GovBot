@@ -6,7 +6,7 @@ from unittest.mock import patch, mock_open, MagicMock
 
 # Add the parent directory to sys.path to import the module
 import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(_file_), '../data/data-pipeline/dags')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../data/data-pipeline/dags')))
 from utils.text_clean import clean_text, clean_full_text
 
 class TestTextClean(unittest.TestCase):
@@ -47,7 +47,7 @@ class TestTextClean(unittest.TestCase):
         from utils.text_clean import clean_full_text
         
         # Calculate base_dir based on text_clean.py's location
-        module_dir = os.path.dirname(clean_full_text._code_.co_filename)
+        module_dir = os.path.dirname(clean_full_text.__code__.co_filename)
         base_dir = os.path.dirname(module_dir)  # Should be /home/runner/work/AI-GovBot/AI-GovBot/data/data-pipeline/dags
         
         # Expected directory (matching the actual call from the error)
