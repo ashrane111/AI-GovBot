@@ -43,26 +43,27 @@ class TestTextClean(unittest.TestCase):
         # Configure mocks
         mock_join.side_effect = lambda *args: '/'.join(args)
         
-        # Patch DataFrame.to_csv to prevent file writing
+        # Patch both DataFrame.to_csv and DataFrame.to_excel to prevent file writing
         with patch.object(pd.DataFrame, 'to_csv'):
-            # Call the function
-            result = clean_full_text(self.serialized_df)
-            
-            # Verify behavior (assuming clean_full_text creates a directory)
-            # If clean_full_text no longer uses os.makedirs after removing merged_inputs,
-            # this assertion can be removed or adjusted based on actual behavior
-            mock_makedirs.assert_called_once_with(
-                os.path.join(os.path.dirname(os.path.dirname(__file__)), 'cleaned_data'),
-                exist_ok=True
-            )  # Adjust 'cleaned_data' to match your actual output_dir_name if different
-            
-            # Deserialize the result and check cleaned text
-            deserialized = pickle.loads(result)
-            self.assertTrue('cleaned_text' in deserialized.columns, "cleaned_text column missing")
-            self.assertEqual(deserialized['cleaned_text'].tolist(), 
-                             ['text with extra spaces', 'special  characters', 'uppercase text'],
-                             "Cleaned text does not match expected output")
-            # Optionally check cleaned URLs if clean_url is part of clean_full_text
-            self.assertEqual(deserialized['Link to document'].tolist(),
-                             ['http://example.com/test', 'http://special', 'http://uppercase'],
-                             "Cleaned URLs do not match expected output")
+            with patch.object(pd.DataFrame, 'to_excel'):
+                # Call the function
+                result = clean_full_text(self.serialized_df)
+                
+                # Verify behavior
+                # Adjust the expected directory based on your clean_full_text implementation
+                # If it no longer uses os.makedirs, this can be removed
+                mock_makedirs.assert_called_once_with(
+                    os.path.join(os.path.dirname(os.path.dirname(__file__)), 'cleaned_data'),
+                    exist_ok=True
+                )  # Replace 'cleaned_data' with the actual directory name if different
+                
+                # Deserialize the result and check cleaned text
+                deserialized = pickle.loads(result)
+                self.assertTrue('cleaned_text' in deserialized.columns, "cleaned_text column missing")
+                self.assertEqual(deserialized['cleaned_text'].tolist(), 
+                                 ['text with extra spaces', 'special  characters', 'uppercase text'],
+                                 "Cleaned text does not match expected output")
+                # Check cleaned URLs if clean_url is part of clean_full_text
+                self.assertEqual(deserialized['Link to document'].tolist(),
+                                 ['http://example.com/test', 'http://special', 'http://uppercase'],
+                                 "Cleaned URLs do not match expected output")
