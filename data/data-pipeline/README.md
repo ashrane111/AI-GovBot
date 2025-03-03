@@ -22,3 +22,6 @@ It would be recommended to run on a system with atleast 16 GB of RAM. Arm archit
    pytest tests/unit/ -v
    ```
    from root directory.
+
+5. **Data Bias Detection Report**
+   This can be found in [Bias Report](./readme/Bias_Detection_Report.md)

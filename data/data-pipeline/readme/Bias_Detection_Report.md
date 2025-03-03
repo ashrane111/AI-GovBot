@@ -2,7 +2,7 @@
 
 ## Overview
 
-This bias detection analysis was conducted to evaluate the dataset used for developing a Retrieval-Augmented Generation (RAG) chatbot focused on AI governance and policy. The dataset, comprising legislative texts, executive orders, and corporate policies, was assessed across five key categorical features: Authority, Collections, Most Recent Activity, Primarily Applies to the Government, and Primarily Applies to the Private Sector. The goal was to identify potential biases that could influence the chatbot’s performance and ensure transparency in its design process.
+This bias detection analysis was conducted to evaluate the dataset used for developing a Retrieval-Augmented Generation (RAG) chatbot focused on AI governance and policy. It is available in the 'data/data-pipeline/dags/bias_analysis' folder.  The dataset, comprising legislative texts, executive orders, and corporate policies, was assessed across five key categorical features: Authority, Collections, Most Recent Activity, Primarily Applies to the Government, and Primarily Applies to the Private Sector. The goal was to identify potential biases that could influence the chatbot’s performance and ensure transparency in its design process.
 
 ## Findings
 

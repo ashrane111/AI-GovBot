@@ -52,7 +52,7 @@ This document provides a detailed overview of the data pipeline workflow impleme
 ## Workflow Overview
 
 Below is the graphical representation of the pipeline
-
+![Data Pipeline](data_pipeline.png)
 
 
 
@@ -104,10 +104,28 @@ Below is the graphical representation of the pipeline
   Once the text is cleaned, this task converts the textual data into numerical embeddings using the `generate_embeddings` function. These embeddings capture semantic meaning and are critical for downstream tasks such as similarity searches or feature extraction.
 
 ### 10. Index Creation
-- **Task:** `create_index_task`
-- **Description:**  
-  Using the generated embeddings, the pipeline creates a vector index with the `create_index` function. This index facilitates efficient retrieval operations and can serve as the basis for similarity matching in applications like search or recommendation systems.
+- *Task:* create_index_task
+- *Description:*  
+  Using the generated embeddings, the pipeline creates a vector index with the create_index function. This index facilitates efficient retrieval operations and can serve as the basis for similarity matching in applications like search or recommendation systems.
 
 ### 11. Upload to Cloud Storage
-- **Task:** `upload_to_gcs_task`
-- **Description:*
+- *Task:* upload_to_gcs_task
+- *Description:*  
+  The final processed data or index is uploaded to Google Cloud Storage (GCS) using the upload_merged_data_to_gcs function. This ensures that the outputs are stored securely and are accessible for future use or further processing in a cloud environment.
+
+### 12. Notification of Completion
+- *Task:* send_email
+- *Description:*  
+  At the end of the pipeline, a success notification is sent via email. This automated alert confirms that all tasks have been executed successfully and the pipeline run has been completed.
+
+## Workflow and Task Dependencies
+
+- *Sequential Flow:*  
+  The pipeline is structured as a Directed Acyclic Graph (DAG) in Airflow. The process starts with data acquisition and sequentially follows through validation, integration, loading, preprocessing, text cleaning, embedding generation, index creation, and cloud upload. Each task's output is used as the input for the subsequent stage.
+
+- *Conditional Branching:*  
+  - If the schema validation fails, an alternate branch triggers an alert (trigger_validation_failure_email), thereby stopping further processing until the data issues are addressed.
+  - If validation passes, the pipeline proceeds smoothly through all the subsequent stages.
+
+- *Error Handling and Logging:*  
+  Robust error handling is in place to log discrepancies and send alerts. Logging is managed by Airflow’s built-in mechanisms, ensuring traceability and prompt troubleshooting.
