@@ -1,86 +1,94 @@
-## How to use Airflow
-We will be using the dockerized version of Airflow. For windows, Docker Desktop will be required with work in WSL.
-For Mac and Linux, docker should be self-explanatory.
 
+# How to Use Apache Airflow with Docker
 
-### Setting up the environment
+This document details the step-by-step process for setting up and running Apache Airflow in a Dockerized environment. The guide is applicable for Linux, macOS, and Windows (using Docker Desktop with WSL). It covers environment preparation, service account key configuration for Google Cloud Platform, database initialization, Docker image build, application startup, and Data Version Control (DVC) integration.
 
-For linux (even WSL), will need to run this in the main data-pipeline directory. Assume the same for Mac.
-```bash
+## 1. Environment Setup
+
+Before running Airflow, set up your project directory by creating the required folders and environment file. Run the following commands in your main data-pipeline directory:
+
+```
 cd data/data-pipeline
 mkdir -p ./dags ./logs ./plugins ./config ./secrets
 echo -e "AIRFLOW_UID=$(id -u)" > .env
 ```
 
-If "warning that AIRFLOW_UID is not set" then create a .env file manually with the following.
-```bash
+If you encounter a warning indicating that `AIRFLOW_UID` is not set, manually create a `.env` file in the root of your project with the following content:
+
+```
 AIRFLOW_UID=50000
 ```
 
+## 2. Creating a Google Cloud Platform (GCP) Service Account Key
 
-### Create a GCP key 
+Apache Airflow can utilize Google Cloud services via a service account key. Follow these steps to configure authentication:
 
-- Create a service account in your Google Cloud project and download the JSON key file.
+- **Create a Service Account:**  
+  In your Google Cloud project, create a service account and download the JSON key file.
 
-- Rename the key file to `google_cloud_key.json`.
+- **Rename and Place the Key File:**  
+  Rename the downloaded key file to `google_cloud_key.json` and place it inside the `data/data-pipeline/secrets/` folder.
 
-- Place the key inside the `data/data-pipeline/secrets/` folder.
+- **Configure the Environment Variable:**  
+  Update your project’s root `.env` file to include the following line so that Airflow can locate your GCP credentials:
 
-- Update a .env file in your project root directory and add the following line:
+  ```
+  GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/secrets/google_cloud_key.json
+  ```
 
-```bash
-GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/secrets/google_cloud_key.json
+## 3. Initializing Data Version Control (DVC)
+
+DVC helps track large data files and manage dataset versions within your project. Initialize DVC in the root folder with:
+
 ```
-
-
-### Initialize Data Version Control (DVC)
-Run the following command in the root folder.
-
-```bash
 dvc init
 ```
 
+## 4. Initializing the Airflow Database
 
-### Initialize the database
+Before starting Airflow, initialize the metadata database. Run the following command in the directory containing your `docker-compose.yaml`:
 
-Run the following docker command in the same directory where the docker-compose.yaml is present.
-
-```bash
+```
 docker compose up airflow-init
 ```
 
-### Build the docker instance
+The initialization process will run database migrations and create the first Airflow user.
 
-Usually you need to do this once at start.
+## 5. Building the Docker Instance
 
-```bash
+Generally, the Docker image is built once at the start of your project. Build your custom Airflow image by executing:
+
+```
 docker compose build
 ```
 
-### Start the application
+## 6. Starting the Application
 
-The following is the command is to start the application :-
+After building the Docker image, start all required containers with:
 
-```bash
+```
 docker compose up
 ```
 
-After every changes, can restart using this.
+For any subsequent changes, simply restart the application using the same command.
 
-### DVC Push
+## 7. Pushing Data with DVC
 
-- Use version control on the the data.
+To maintain version control for your data, add and push the relevant directories. For example, execute the following commands to track merged inputs, embeddings, and the FAISS index:
 
-```bash
+```
 dvc add data/data-pipeline/dags/merged_input
 dvc add data/data-pipeline/dags/embeddings
 dvc add data/data-pipeline/dags/FAISS_Index
 dvc push
 ```
 
-### Temp Credentials for airflow
+## 8. Temporary Airflow Credentials
 
-I have currently set the login and password as the following :-
- 
-username: airflow2
-password: airflow2
+For testing and local development, temporary Airflow credentials have been set. Please note that these should be updated before deploying to a production environment.
+
+- **Username:** airflow2  
+- **Password:** airflow2
+
+---
+
