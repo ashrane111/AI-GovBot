@@ -26,7 +26,7 @@ logger.propagate = False
 def format_date(pd_csv_file):
     pd_csv_file['Most recent activity date'] = pd.to_datetime(pd_csv_file['Most recent activity date'], errors='coerce')
     pd_csv_file['Proposed date'] = pd.to_datetime(pd_csv_file['Proposed date'], errors='coerce')
-    pd_csv_file = pd_csv_file.dropna(subset=['Proposed date'])
+    # pd_csv_file = pd_csv_file.dropna(subset=['Proposed date'])
     pd_csv_file.loc[pd_csv_file['Most recent activity date'] < pd_csv_file['Proposed date'], 'Most recent activity date'] = pd_csv_file['Proposed date']
     return pd_csv_file
 
@@ -51,6 +51,7 @@ def preprocess_data(data):
         pd_csv_file['Casual name'].fillna("N/A", inplace=True)
         pd_csv_file['Short summary'].fillna("N/A", inplace=True)
         pd_csv_file['Long summary'].fillna(pd_csv_file['Full Text'].apply(lambda x: summarize_text(x, 500)), inplace=True)
+        pd_csv_file = pd_csv_file.dropna(subset=['Long summary'])
 
         serialized_data = pickle.dumps(pd_csv_file)
         logger.info("Serialized validated data")   

@@ -262,7 +262,6 @@ airflow-build-dockerfile*
 # Ignore zip files https://github.com/apache/airflow/issues/46449
 *.zip
 
-config/
 plugins/
 working_data/
 secrets/
@@ -275,3 +274,5 @@ util_logs/
 merged_input/
 
 *key.json
+
+*.ipynb

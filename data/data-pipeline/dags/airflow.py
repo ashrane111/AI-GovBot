@@ -1,6 +1,7 @@
 #airflow definition
 # Import necessary libraries and modules
 import os
+import json
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.email_operator import EmailOperator
@@ -21,34 +22,62 @@ from utils.data_validation import validate_downloaded_data_files, check_validati
 # Enable pickle support for XCom, allowing data to be passed between tasks
 conf.set('core', 'enable_xcom_pickling', 'True')
 
+def get_config_value(key, default=None):
+    """Get a value from the config.json file"""
+    try:
+        config_path = os.path.join(os.environ.get('AIRFLOW_HOME', '/opt/airflow'), 'config', 'config.json')
+        with open(config_path, 'r') as config_file:
+            config = json.load(config_file)
+        return config.get(key, default)
+    except Exception as e:
+        print(f"Error reading config file: {e}")
+        return default
+    
+to_email = get_config_value('TO_EMAIL', 'vedantrishidas@gmail.com')
+
+def get_file_schema_pairs():
+    """Get file schema pairs from config.json"""
+    file_schema_pairs = get_config_value('file_schema_pairs', [])
+    
+    # Convert the JSON structure to the format needed by the validation function
+    result = []
+    base_dir = os.path.dirname(__file__)
+    
+    for pair in file_schema_pairs:
+        file_path = os.path.join(base_dir, pair.get('file', ''))
+        schema_path = os.path.join(base_dir, pair.get('schema', ''))
+        result.append((file_path, schema_path))
+    
+    return result
+
+def get_file_path(config_key, default_path=None):
+    """Get full file path from config value"""
+    config_path = get_config_value('data_dir', {}).get(config_key, default_path)
+    if not config_path:
+        return None
+    return os.path.join(os.path.dirname(__file__), config_path)
+
+# Email alert for validation failure with anomalies
+def send_validation_failure_email(**kwargs):
+    ti = kwargs['ti']
+    anomalies = ti.xcom_pull(task_ids='check_validation_status', key='anomalies')
+
+    email_task = EmailOperator(
+        task_id='send_validation_failure_email',
+        to=to_email,
+        subject='Data Pipeline Alert: Schema Validation Failed',
+        html_content=f'<p>Schema validation failed with the following anomalies:</p><p>{anomalies}</p>',
+        dag=kwargs['dag'],
+    )
+    email_task.execute(context=kwargs)
+
 # Define default arguments for your DAG
 default_args = {
-    'owner': 'Vedant Rishi Das',
+    'owner': get_config_value('airflow_owner', 'airflow'),
     'start_date': datetime(2025, 2, 19),
     'retries': 0, # Number of retries in case of task failure
     'retry_delay': timedelta(minutes=5), # Delay before retries
 }
-
-# Define EmailOperators for success and failure notifications
-# def task_success_slack_alert(context):
-#     success_email = EmailOperator(
-#         task_id='send_email',
-#         to='vedantdas130701@gmail.com',
-#         subject='Success Notification from Airflow',
-#         html_content='<p>The task is successful.</p>',
-#         dag=context['dag']
-#     )
-#     success_email.execute(context=context)
-
-# def task_fail_slack_alert(context):
-#     failure_email = EmailOperator(
-#         task_id='send_email',
-#         to='vedantdas130701@gmail.com',
-#         subject='Failure Notification from Airflow',
-#         html_content='<p>The task has failed.</p>',
-#         dag=context['dag']
-#     )
-#     failure_email.execute(context=context)
 
 # Create a DAG instance named 'Airflow_Lab1' with the defined default arguments
 dag = DAG(
@@ -64,8 +93,8 @@ download_unzip_task = PythonOperator(
     task_id='download_unzip_task',
     python_callable=download_and_unzip_data_file,
     op_kwargs={
-        'download_url': 'https://zenodo.org/records/14877811/files/agora.zip', 
-        'output_dir_name': 'merged_input',  
+        'download_url': get_config_value('download_url', 'https://zenodo.org/records/14877811/files/agora.zip'), 
+        'output_dir_name': get_config_value('output_dir_name', 'merged_input'), 
     },
     dag=dag,
 )
@@ -75,16 +104,8 @@ validate_schema_task = PythonOperator(
     task_id='validate_schema_task',
     python_callable=validate_downloaded_data_files,
     op_kwargs={
-        'file_schema_pairs':  [
-            (os.path.join(os.path.dirname(__file__), "merged_input/agora/authorities.csv"),
-            os.path.join(os.path.dirname(__file__), "schema/authorities_data_schema.pbtxt")),
-            (os.path.join(os.path.dirname(__file__), "merged_input/agora/collections.csv"),
-            os.path.join(os.path.dirname(__file__), "schema/collections_data_schema.pbtxt")),
-            (os.path.join(os.path.dirname(__file__), "merged_input/agora/documents.csv"),
-            os.path.join(os.path.dirname(__file__), "schema/documents_data_schema.pbtxt")),
-            (os.path.join(os.path.dirname(__file__), "merged_input/agora/segments.csv"),
-            os.path.join(os.path.dirname(__file__), "schema/segments_data_schema.pbtxt")),
-        ]},
+        'file_schema_pairs':  get_file_schema_pairs()
+        },
     dag=dag,
 )
 
@@ -94,20 +115,6 @@ check_validation_task = PythonOperator(
     provide_context=True,
     dag=dag,
 )
-
-# Email alert for validation failure with anomalies
-def send_validation_failure_email(**kwargs):
-    ti = kwargs['ti']
-    anomalies = ti.xcom_pull(task_ids='check_validation_status', key='anomalies')
-
-    email_task = EmailOperator(
-        task_id='send_validation_failure_email',
-        to='baravkardhanshree@gmail.com',
-        subject='Data Pipeline Alert: Schema Validation Failed',
-        html_content=f'<p>Schema validation failed with the following anomalies:</p><p>{anomalies}</p>',
-        dag=kwargs['dag'],
-    )
-    email_task.execute(context=kwargs)
 
 trigger_validation_failure_email = PythonOperator(
     task_id='trigger_validation_failure_email',
@@ -122,7 +129,7 @@ data_combine_task = PythonOperator(
     task_id='data_combine_task',
     python_callable=extract_and_merge_documents,
     op_kwargs={
-        'temp_dir': os.path.join(os.path.dirname(__file__), "merged_input/agora"), 
+        'temp_dir': get_file_path('agora_dir', "merged_input/agora"), 
     },
     dag=dag,
 )
@@ -132,7 +139,7 @@ data_combine_task = PythonOperator(
 load_data_task = PythonOperator(
     task_id='load_data_task',
     python_callable=load_data,
-    op_args=[os.path.join(os.path.dirname(__file__), "merged_input/Documents_segments_merged.csv")],
+    op_args=[get_file_path('merged_data_file', "merged_input/Documents_segments_merged.csv")],
     dag=dag,
 )
 
@@ -153,7 +160,7 @@ clean_text_task = PythonOperator(
 generate_embeddings_task = PythonOperator(
     task_id='generate_embeddings_task',
     python_callable=generate_embeddings,
-    op_args=[clean_text_task.output],
+    op_args=[clean_text_task.output, get_config_value('embedding_model', "sentence-transformers/multi-qa-mpnet-base-dot-v1")],
     provide_context=True,
     dag=dag,
 )
@@ -174,18 +181,11 @@ upload_to_gcs_task = PythonOperator(
 
 send_email = EmailOperator(
     task_id='send_email',
-    to='baravkardhanshree@gmail.com',
+    to=to_email,
     subject='Notification from Airflow',
     html_content='<p>This task is completed.</p>',
     dag=dag
 )
-
-# TriggerDag = TriggerDagRunOperator(
-#     task_id='my_trigger_task',
-#     trigger_rule=TriggerRule.ALL_DONE,
-#     trigger_dag_id='Airflow_Lab2_Flask',
-#     dag=dag
-# )
 
 # Set task dependencies
 download_unzip_task >> validate_schema_task >> check_validation_task
@@ -194,8 +194,6 @@ check_validation_task >> trigger_validation_failure_email  # If validation fails
 
 # Continue the pipeline after successful validation
 data_combine_task >> load_data_task >> preprocess_data_task >> clean_text_task >> generate_embeddings_task >> create_index_task >> upload_to_gcs_task >> send_email
-
-# download_unzip_task >> data_combine_task >> load_data_task >> preprocess_data_task >> clean_text_task >> generate_embeddings_task >> create_index_task  >> upload_to_gcs_task >> send_email
 
 # If this script is run directly, allow command-line interaction with the DAG
 if __name__ == "__main__":

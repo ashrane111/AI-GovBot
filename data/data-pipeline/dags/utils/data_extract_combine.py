@@ -57,9 +57,17 @@ def extract_and_merge_documents(temp_dir=""):
             documents_extracted,
             segments_required,
             left_on='AGORA ID',
-            right_on='Document ID'
+            right_on='Document ID',
+            how='left'  # Using left join to keep all documents
         ).drop('Document ID', axis=1)
-        logger.info("Merged documents and segments")
+        logger.info("Merged documents and segments using left join")
+
+        # Check for missing Full Text and replace with Long summary
+        missing_full_text_mask = merged_document_segments['Full Text'].isna() | (merged_document_segments['Full Text'] == '')
+        missing_count = missing_full_text_mask.sum()
+        logger.info(f"Found {missing_count} documents with missing Full Text. Using Long summary as fallback.")
+
+        merged_document_segments.loc[missing_full_text_mask, 'Full Text'] = merged_document_segments.loc[missing_full_text_mask, 'Long summary']
 
         save_file_name = 'Documents_segments_merged'
         output_csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), f'merged_input/{save_file_name}.csv')
