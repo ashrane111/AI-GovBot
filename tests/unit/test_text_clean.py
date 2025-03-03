@@ -42,7 +42,7 @@ class TestTextClean(unittest.TestCase):
         # Import the function after patching to get its location
         from utils.text_clean import clean_full_text
         # Calculate base_dir based on text_clean.py's location
-        module_dir = os.path.dirname(clean_full_text._code_.co_filename)
+        module_dir = os.path.dirname(clean_full_text.__code__.co_filename)
         base_dir = os.path.dirname(module_dir)  # Should be /home/runner/work/AI-GovBot/AI-GovBot/data/data-pipeline/dags
         # Expected directory (matching the actual call from the error)
         merged_input_dir = os.path.join(base_dir, 'merged_input')
