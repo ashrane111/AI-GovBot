@@ -73,14 +73,12 @@ class TestBiasDetection(unittest.TestCase):
     @patch('utils.bias_detection.os.makedirs')
     @patch('utils.bias_detection.os.path.join')
     @patch('utils.bias_detection.os.chdir')
-    @patch('utils.bias_detection.plt.figure')  # Mock figure creation to prevent plotting errors
-    @patch('utils.bias_detection.plt.savefig')
-    @patch('utils.bias_detection.plt.close')
-    def test_detect_and_simulate_bias_empty_df(self, mock_close, mock_savefig, mock_figure, mock_chdir, mock_join, mock_makedirs):
+    @patch('pandas.Series.plot')  # Mock Series.plot to prevent plotting errors with empty data
+    def test_detect_and_simulate_bias_empty_df(self, mock_series_plot, mock_chdir, mock_join, mock_makedirs):
         """Test bias detection with an empty DataFrame."""
         # Configure mocks
         mock_join.side_effect = lambda *args: '/'.join(args)
-        mock_figure.return_value = MagicMock()  # Mock figure object to avoid plotting empty data
+        mock_series_plot.return_value = MagicMock()  # Mock plot object to avoid actual plotting
         
         # Call the function (should handle empty data gracefully)
         detect_and_simulate_bias(self.serialized_empty)
@@ -100,6 +98,6 @@ class TestBiasDetection(unittest.TestCase):
         # Invalid serialized data
         invalid_data = pickle.dumps("not a DataFrame")
         
-        # Expect an exception (relaxed message check)
+        # Expect an exception
         with self.assertRaises(Exception):
             detect_and_simulate_bias(invalid_data)
