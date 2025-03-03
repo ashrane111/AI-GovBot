@@ -83,11 +83,16 @@ class TestBiasDetection(unittest.TestCase):
         mock_join.side_effect = lambda *args: '/'.join(args)
         mock_series_plot.return_value = MagicMock()  # Mock plot object to avoid actual plotting
         
+        # Calculate expected paths based on bias_detection.py's location
+        module_dir = os.path.dirname(detect_and_simulate_bias.__code__.co_filename)
+        base_dir = os.path.dirname(module_dir)  # /home/runner/work/AI-GovBot/AI-GovBot/data/data-pipeline/dags
+        output_dir = os.path.join(base_dir, 'bias_analysis')
+        
         # Call the function (should handle empty data gracefully)
         detect_and_simulate_bias(self.serialized_empty)
         
         # Verify minimal behavior
-        mock_makedirs.assert_any_call(mock_join(mock_join(os.path.dirname(os.path.dirname(__file__)), 'bias_analysis'), ''), exist_ok=True)
+        mock_makedirs.assert_any_call(output_dir, exist_ok=True)
         mock_chdir.assert_called_once()
 
     @patch('utils.bias_detection.os.makedirs')
