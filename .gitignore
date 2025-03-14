@@ -5,3 +5,4 @@ airflow_env/
 .vscode/
 airflow-trials/
 data/data-pipeline/.secret/
+data/data-pipeline/dags/utils/downloaded_files/Documents_segments_merged.csv
