@@ -1,0 +1,174 @@
+[
+    {
+        "question": "What restrictions does Rhode Island SB 146 place on artificial intelligence in gaming?",
+        "relevant_documents": [
+            "380"
+        ],
+        "expected_output": "Rhode Island SB 146 (Consumer Protection Gaming Act) prohibits the use of artificial intelligence or automated decision systems in gaming that attempt to promote increased play through intermittent reinforcement based on cognitive-behavioral algorithms and prior gaming data. It also prohibits algorithmic programs that use a consumer's betting history to modify programs in order to increase wagers. The law applies to video-lottery terminals, online betting applications, and sports betting applications, but excludes standardized rewards programs from these prohibitions."
+    },
+    {
+        "question": "How is the FAA planning to use advanced technologies for air traffic controller training?",
+        "relevant_documents": [
+            "839"
+        ],
+        "expected_output": "Under Section 1028 of the Securing Growth and Robust Leadership in American Aviation Act, the FAA Administrator is required to conduct research on using advanced technologies like artificial intelligence, machine learning, adaptive computer-based simulation, virtual reality, and augmented reality to enhance air traffic controller training. The program aims to modernize, enhance, and streamline on-the-job training, improve knowledge retention, strengthen safety, and increase training effectiveness. The Administrator must collaborate with labor organizations and submit findings to Congress within one year of the Act's enactment."
+    },
+    {
+        "question": "What is the HEALTH AI Act and what kind of research does it support?",
+        "relevant_documents": [
+            "410"
+        ],
+        "expected_output": "The HEALTH AI Act (Healthcare Enhancement And Learning Through Harnessing Artificial Intelligence Act) directs the NIH Director to establish a grant program for research on generative AI in healthcare. The research can include using AI to improve practitioner note-taking, reduce administrative burdens, expedite insurance claims, improve customer service efficiency, and other healthcare improvements. The Act prioritizes grants for entities that encourage AI adoption in healthcare, invest in workforce development, mitigate burnout, reduce health disparities, and improve care for medically underserved populations."
+    },
+    {
+        "question": "Which recent regulations address biometric recognition in consumer services?",
+        "relevant_documents": [
+            "380"
+        ],
+        "expected_output": "Rhode Island SB 146 (Consumer Protection Gaming Act) prohibits the use of facial recognition technology and biometric recognition programs in video-lottery terminals and online betting applications. The law defines biometric recognition as automated recognition and identification of an individual based on biological and behavioral traits, including fingerprint mapping, facial recognition, iris scans, palm print, retina, hand geometry, voice, signature, and gait recognition. This prohibition applies to all sports betting applications and vendors of gambling products licensed by Rhode Island."
+    },
+    {
+        "question": "Which regulations specifically mention collaboration with labor organizations?",
+        "relevant_documents": [
+            "839"
+        ],
+        "expected_output": "Section 1028 of the Securing Growth and Robust Leadership in American Aviation Act specifically mentions collaboration with labor organizations. The Act requires that in carrying out research on air traffic controller training, the Administrator must include collaboration with labor organizations, including the exclusive bargaining representative of air traffic controllers of the FAA certified under section 7111 of title 5, United States Code, and other stakeholders."
+    },
+    {
+        "question": "What priority areas are identified for the NIH grant program on AI in healthcare?",
+        "relevant_documents": [
+            "410"
+        ],
+        "expected_output": "The HEALTH AI Act identifies five priority areas for awarding grants for research on generative AI in healthcare: 1) encouraging adoption and deployment of generative AI across the healthcare sector; 2) investing in workforce development of clinicians and administrators; 3) mitigating burnout in the healthcare workforce; 4) reducing gender, racial, and ethnic disparities in health outcomes; and 5) improving the availability of patient care for members of medically underserved populations."
+    },
+    {
+        "question": "How are AI regulations for gaming and healthcare different in their approach?",
+        "relevant_documents": [
+            "380",
+            "410"
+        ],
+        "expected_output": "The approaches to AI regulation in gaming and healthcare differ significantly. Rhode Island SB 146 takes a restrictive approach for gaming, prohibiting specific AI uses such as facial recognition, biometric recognition, and systems that modify gaming based on consumer behavior or promote increased play through reinforcement techniques. In contrast, the HEALTH AI Act takes a promotional approach for healthcare, establishing grants to encourage research on beneficial uses of generative AI, such as improving note-taking, reducing administrative burdens, expediting insurance claims, and improving customer service efficiency. The gaming regulation focuses on consumer protection, while the healthcare initiative emphasizes improving care and operational efficiency."
+    },
+    {
+        "question": "What are the AI Safety Level (ASL) Standards established by Anthropic's Responsible Scaling Policy?",
+        "relevant_documents": [
+            "768"
+        ],
+        "expected_output": "Anthropic's Responsible Scaling Policy establishes AI Safety Level (ASL) Standards to guide the safe deployment and security of AI models. The ASL Standards are categorized into Deployment and Security Standards. Current models must meet ASL-2 standards, which include measures to prevent misuse and unauthorized access. Higher-risk capabilities, such as those related to Chemical, Biological, Radiological, and Nuclear (CBRN) weapon development, require ASL-3 standards. The policy also introduces Capability Thresholds to determine when stronger safeguards are needed and mandates regular assessments and transparency."
+    },
+    {
+        "question": "What are the penalties for violating the TAKE IT DOWN Act?",
+        "relevant_documents": [
+            "1293"
+        ],
+        "expected_output": "The TAKE IT DOWN Act imposes criminal penalties for the non-consensual production and dissemination of intimate visual depictions, including imprisonment and fines. Specifically, violations involving adults can result in imprisonment of up to 2 years, while violations involving minors can result in imprisonment of up to 3 years. The Act also grants the Federal Trade Commission enforcement authority."
+    },
+    {
+        "question": "What are the requirements for developers of frontier AI models under the Safe and Secure Innovation for Frontier AI Act?",
+        "relevant_documents": [
+            "1163"
+        ],
+        "expected_output": "Developers of frontier AI models are required to implement comprehensive safety and security protocols, including cybersecurity protections, full shutdown capabilities, and detailed risk assessments. They must conduct annual independent audits, report AI safety incidents within 72 hours, and ensure that their models do not pose unreasonable risks of causing critical harm. The Act also establishes a regulatory board and introduces plans for a public cloud computing cluster called CalCompute."
+    },
+    {
+        "question": "What are the key principles of OpenAI's Charter regarding AGI development?",
+        "relevant_documents": [
+            "767"
+        ],
+        "expected_output": "OpenAI's Charter commits to ensuring that artificial general intelligence (AGI) benefits all of humanity and avoids harm or undue power concentration. It emphasizes broad distribution of benefits, long-term safety, technical leadership, and a cooperative orientation. OpenAI pledges to assist other safety-conscious AGI projects nearing completion rather than compete with them, and to cooperate with research and policy institutions to address global AGI challenges."
+    },
+    {
+        "question": "What safety measures are mandated for generative AI services under China's National Standard?",
+        "relevant_documents": [
+            "1723"
+        ],
+        "expected_output": "China's National Standard for generative AI services mandates safety measures including training data security, model safety, and service provision. It requires data filtering to remove illegal content, verification of intellectual property rights, and personal information protection. Service providers must conduct regular security audits, ensure transparency in service limitations, and implement mechanisms for user complaints and service continuity. Specific guidelines for minors, such as parental controls, are also required."
+    },
+    {
+        "question": "What are the main safety risks associated with AI models and algorithms according to the AI Safety Governance Framework?",
+        "relevant_documents": [
+            "1802"
+        ],
+        "expected_output": "The AI Safety Governance Framework identifies several safety risks associated with AI models and algorithms, including risks of explainability, bias and discrimination, robustness, stealing and tampering, unreliable output, and adversarial attacks. These risks stem from the complexity of AI systems, potential biases in training data, susceptibility to malicious interference, and the generation of untruthful or misleading content."
+    },
+    {
+        "question": "What are the requirements for deep synthesis service providers under China's Provisions on Deep Synthesis Internet Information Services?",
+        "relevant_documents": [
+            "36"
+        ],
+        "expected_output": "Under China's Provisions on Deep Synthesis Internet Information Services, deep synthesis service providers must verify the real identity of users, conduct security assessments of their AI systems, and notify individuals if their biometric information is edited. They are required to label or watermark realistic deep synthesis content to prevent public confusion, submit filings with authorities, and comply with inspections. Providers must also establish mechanisms for dispelling rumors and handling user complaints."
+    },
+    {
+        "question": "What are the key components of Google DeepMind's Frontier Safety Framework?",
+        "relevant_documents": [
+            "987"
+        ],
+        "expected_output": "Google DeepMind's Frontier Safety Framework establishes protocols to address severe risks from future foundation models' capabilities. It defines Critical Capability Levels (CCLs) to identify when AI models pose heightened risks, focusing on domains like Autonomy, Biosecurity, Cybersecurity, and Machine Learning R&D. The framework includes periodic evaluations to detect when models approach CCLs, implements security and deployment mitigations, and outlines graded mitigation levels. It plans to evolve with emerging risks and insights, involving external parties to guide the approach."
+    },
+    {
+        "question": "What measures are required for AI infrastructure development under the FY2025 NDAA?",
+        "relevant_documents": [
+            "1737"
+        ],
+        "expected_output": "The FY2025 NDAA mandates the development of a roadmap for high-performance computing infrastructure to support advanced AI capabilities. It requires the Secretary of Defense to assess compute requirements, security standards, and resource needs. The Act also requires a plan for budgeting and costs related to data used in AI development and deployment, including data procurement, preparation, protection, and analysis. Additionally, it evaluates the feasibility of centers of excellence for AI-enabled weapon systems."
+    },
+    {
+        "question": "What are the requirements for AI system compatibility in the intelligence community under the FY2023 NDAA?",
+        "relevant_documents": [
+            "1161"
+        ],
+        "expected_output": "The FY2023 NDAA requires heads of intelligence elements to certify that information technology or software systems are compatible with integrating new and emerging technologies, such as artificial intelligence, before renewing or entering into new contracts. It also mandates the Director of National Intelligence to provide guidance on incentives for adopting new technologies, including potential funding enhancements and training programs."
+    },
+    {
+        "question": "What are the key provisions of the Executive Order on Advancing United States Leadership in Artificial Intelligence Infrastructure?",
+        "relevant_documents": [
+            "1763"
+        ],
+        "expected_output": "The Executive Order requires federal agencies to identify, solicit proposals for, and lease federal lands suitable for AI data centers and related clean energy projects. It mandates cybersecurity, model evaluation, supply-chain protection, and other requirements for AI infrastructure. The order directs the Secretary of Energy to facilitate grid interconnection and expedited permitting for AI infrastructure. It also requires a plan to coordinate AI infrastructure development with U.S. allies to ensure security and resilience in international supply chains."
+    },
+    {
+        "question": "What are the safety and security requirements for generative AI services under China's National Standard?",
+        "relevant_documents": [
+            "1723"
+        ],
+        "expected_output": "China's National Standard for generative AI services mandates safety measures including training data security, model safety, and service provision. It requires data filtering to remove illegal content, verification of intellectual property rights, and personal information protection. Service providers must conduct regular security audits, ensure transparency in service limitations, and implement mechanisms for user complaints and service continuity. Specific guidelines for minors, such as parental controls, are also required."
+    },
+    {
+        "question": "What are the key principles of OpenAI's Charter regarding AGI development?",
+        "relevant_documents": [
+            "767"
+        ],
+        "expected_output": "OpenAI's Charter commits to ensuring that artificial general intelligence (AGI) benefits all of humanity and avoids harm or undue power concentration. It emphasizes broad distribution of benefits, long-term safety, technical leadership, and a cooperative orientation. OpenAI pledges to assist other safety-conscious AGI projects nearing completion rather than compete with them, and to cooperate with research and policy institutions to address global AGI challenges."
+    },
+    {
+        "question": "What are the main safety risks associated with AI models and algorithms according to the AI Safety Governance Framework?",
+        "relevant_documents": [
+            "1802"
+        ],
+        "expected_output": "The AI Safety Governance Framework identifies several safety risks associated with AI models and algorithms, including risks of explainability, bias and discrimination, robustness, stealing and tampering, unreliable output, and adversarial attacks. These risks stem from the complexity of AI systems, potential biases in training data, susceptibility to malicious interference, and the generation of untruthful or misleading content."
+    },
+    {
+        "question": "What are the requirements for deep synthesis service providers under China's Provisions on Deep Synthesis Internet Information Services?",
+        "relevant_documents": [
+            "36"
+        ],
+        "expected_output": "Under China's Provisions on Deep Synthesis Internet Information Services, deep synthesis service providers must verify the real identity of users, conduct security assessments of their AI systems, and notify individuals if their biometric information is edited. They are required to label or watermark realistic deep synthesis content to prevent public confusion, submit filings with authorities, and comply with inspections. Providers must also establish mechanisms for dispelling rumors and handling user complaints."
+    },
+    {
+        "question": "What are the key components of Anthropic's Responsible Scaling Policy?",
+        "relevant_documents": [
+            "768"
+        ],
+        "expected_output": "Anthropic's Responsible Scaling Policy establishes AI Safety Level (ASL) Standards to guide the safe deployment and security of AI models. It requires current models to meet ASL-2 standards, with higher-risk capabilities like Chemical, Biological, Radiological, and Nuclear (CBRN) weapon development requiring ASL-3 standards. The policy introduces Capability Thresholds to determine when stronger safeguards are needed and mandates regular assessments, transparency, and internal governance practices."
+    },
+    {
+        "question": "What are the key measures for AI infrastructure development and safety across multiple frameworks?",
+        "relevant_documents": [
+            "987",
+            "1737",
+            "1763",
+            "1723"
+        ],
+        "expected_output": "Multiple frameworks address AI infrastructure development and safety. Google DeepMind's Frontier Safety Framework focuses on identifying Critical Capability Levels (CCLs) and implementing security and deployment mitigations. The FY2025 NDAA mandates a roadmap for high-performance computing infrastructure and budgeting for AI data. The Executive Order on Advancing U.S. Leadership in AI Infrastructure requires federal agencies to lease lands for AI data centers and ensure cybersecurity. China's National Standard for generative AI services mandates data filtering, IPR verification, and transparency in service provision."
+    }
+]
