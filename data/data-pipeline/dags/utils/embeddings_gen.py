@@ -31,7 +31,7 @@ embeddings_file_path = "embeddings.pkl"
 
 ## TODO: DVC - with gcloud
 
-def generate_embeddings(data, transformer_model="sentence-transformers/multi-qa-mpnet-base-dot-v1"):
+def generate_embeddings(data, transformer_model="all-MiniLM-L6-v2"):
     try:
         pd_csv_file = pickle.loads(data)
         logger.info("Loaded data from serialized input")

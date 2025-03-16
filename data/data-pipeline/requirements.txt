@@ -1,6 +1,8 @@
 tensorflow-cpu
 tensorflow-data-validation
 matplotlib
+langchain 
+langchain_community 
 faiss-cpu
 sentence-transformers
 google-cloud-storage

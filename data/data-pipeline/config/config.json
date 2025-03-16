@@ -1,6 +1,6 @@
 {
     "TO_EMAIL": "vedantrishidas@gmail.com",
-    "embedding_model": "multi-qa-MiniLM-L6-dot-v1",
+    "embedding_model": "sentence-transformers/all-mpnet-base-v2",
     "file_schema_pairs": [
         {
             "file": "merged_input/agora/authorities.csv",
