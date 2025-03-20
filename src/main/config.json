@@ -1,7 +1,7 @@
 {
     "huggingface": {
         "llama_model": "meta-llama/Llama-2-7b-chat-hf",
-        "hf_token": "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"
+        "hf_token": "hfxx"
     },
     "embedding": {
         "model": "sentence-transformers/all-MiniLM-L6-v2"
