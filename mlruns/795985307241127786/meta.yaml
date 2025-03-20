@@ -1,0 +1,6 @@
+artifact_location: mlflow-artifacts:/795985307241127786
+creation_time: 1742347963666
+experiment_id: '795985307241127786'
+last_update_time: 1742347963666
+lifecycle_stage: active
+name: RAG_Pipeline_Experiment

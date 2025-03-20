@@ -1,0 +1,19 @@
+{
+    "huggingface": {
+        "llama_model": "meta-llama/Llama-2-7b-chat-hf",
+        "hf_token": "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"
+    },
+    "embedding": {
+        "model": "sentence-transformers/all-MiniLM-L6-v2"
+    },
+    "paths": {
+        "index_dir": "src/index",
+        "faiss_index_path": "src/index/index.faiss",
+        "faiss_meta_path": "src/index/index.pkl",
+        "data_path": "src/index/Documents_segments_merged.csv"
+    },
+    "mlflow": {
+        "tracking_uri": "http://localhost:5000",
+        "experiment_name": "RAG_Pipeline_Experiment"
+    }
+}

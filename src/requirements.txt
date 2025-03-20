@@ -1,0 +1,12 @@
+langchain
+langchain-community
+transformers
+sentence-transformers
+faiss-cpu
+python-dotenv==1.0.0
+numpy
+pandas
+scikit-learn
+mlflow
+pytest
+

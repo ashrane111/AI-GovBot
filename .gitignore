@@ -5,3 +5,4 @@ airflow_env/
 .vscode/
 airflow-trials/
 data/data-pipeline/.secret/
+mlruns/
