@@ -16,6 +16,7 @@ class TestEmbeddingsGen(unittest.TestCase):
         })
         self.serialized_df = pickle.dumps(self.test_df)
         self.mock_embeddings = np.random.random((2, 128)).astype('float32')
+        self.model_name = "sentence-transformers/all-mpnet-base-v2"
 
     @patch('utils.embeddings_gen.os.makedirs')
     @patch('utils.embeddings_gen.os.path.join')
@@ -47,7 +48,7 @@ class TestEmbeddingsGen(unittest.TestCase):
             result = generate_embeddings(self.serialized_df)
 
             # Verify behavior
-            mock_transformer.assert_called_once_with("sentence-transformers/multi-qa-mpnet-base-dot-v1")
+            mock_transformer.assert_called_once_with(self.model_name)
             mock_model.encode.assert_called_once_with(
                 ['This is a test', 'Another test sentence'],
                 batch_size=32,
