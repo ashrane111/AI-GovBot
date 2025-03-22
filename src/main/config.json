@@ -1,0 +1,17 @@
+{
+    "novita": {
+        "provider": "novita",
+        "token": "Hf_xxx"
+    },
+    "embedding": {
+        "model": "sentence-transformers/all-MiniLM-L6-v2"
+    },
+    "paths": {
+        "index_dir": "src/index",
+        "data_path": "src/index/Documents_segments_merged.csv"
+    },
+    "mlflow": {
+        "tracking_uri": "http://localhost:5000",
+        "experiment_name": "RAG_Pipeline_Experiment"
+    }
+}
