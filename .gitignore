@@ -7,3 +7,4 @@ airflow-trials/
 data/data-pipeline/.secret/
 mlruns/
 
+src/main/config.json
