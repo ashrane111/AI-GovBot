@@ -60,11 +60,8 @@ def download_latest_file(bucket_name, blob_prefix, local_destination):
         raise
 
 if __name__ == '__main__':
-    # Replace these configuration parameters with your actual values
     BUCKET_NAME = "datasets-mlops-25"
-    # Specify the blob name or prefix (for example, a full file name)
     BLOB_PREFIX = "result_data/Documents_segments_merged.csv"
-    # Destination path for the downloaded file
     LOCAL_DESTINATION = os.path.join(current_dir, "downloaded_files", "Documents_segments_merged.csv")
 
     download_latest_file(BUCKET_NAME, BLOB_PREFIX, LOCAL_DESTINATION)
