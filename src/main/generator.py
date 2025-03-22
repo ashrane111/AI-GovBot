@@ -1,34 +1,26 @@
-import requests
-from .config_loader import config_loader
+from huggingface_hub import InferenceClient
+from main.config_loader import config_loader
 
 class Generator:
     def __init__(self):
-        self.api_url = "https://api-inference.huggingface.co/models/meta-llama/Llama-2-7b-chat-hf"
-        self.api_token = config_loader.get("huggingface.hf_token")
-        self.headers = {"Authorization": f"Bearer {self.api_token}"}
+        # Load provider and token from config
+        provider = config_loader.get("novita.provider", "novita")
+        token = config_loader.get("novita.token")
+        self.client = InferenceClient(provider=provider, token=token)
 
     def generate(self, context, query):
-        # Truncate context to ~500 characters to stay within token limits
-        truncated_context = context[:500] + "..." if len(context) > 500 else context
-        prompt = f"Context: {truncated_context}\nQuery: {query}\nAnswer:"
-        
-        payload = {
-            "inputs": prompt,
-            "parameters": {
-                "max_new_tokens": 100,
-                "temperature": 0.7,
-                "top_p": 0.9,
-                "return_full_text": False
-            }
-        }
+        # Combine context and query into a single prompt, truncating context if too long
+        prompt = f"Context: {context[:500]}...\nQuery: {query}\nAnswer:"
         try:
-            response = requests.post(self.api_url, headers=self.headers, json=payload)
-            response.raise_for_status()
-            content = response.json()[0]["generated_text"]
-        except requests.exceptions.RequestException as e:
-            error_msg = f"Error with Inference API: {str(e)}"
-            if hasattr(e.response, 'text'):
-                error_msg += f" - Details: {e.response.text}"
-            print(error_msg)
+            completion = self.client.chat.completions.create(
+                model="deepseek-ai/DeepSeek-R1",
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=500,  # Increased from 100 to match your provided code
+                temperature=0.7,
+                top_p=0.9,
+            )
+            content = completion.choices[0].message["content"]
+        except Exception as e:
+            print(f"Error with Inference API: {e}")
             content = "Fallback: Unable to generate response."
         return {"content": content}
