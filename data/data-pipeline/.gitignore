@@ -279,3 +279,4 @@ merged_input/
 *key.json
 
 *.ipynb
+*.faiss

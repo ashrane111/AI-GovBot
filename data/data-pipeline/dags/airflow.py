@@ -17,9 +17,12 @@ from utils.gcs_upload import upload_merged_data_to_gcs
 from utils.download_data import download_and_unzip_data_file
 from utils.data_extract_combine import extract_and_merge_documents
 from utils.preprocess_data import preprocess_data
+from utils.data_vector_formatter import format_documents_dict
+from utils.create_lang_vector_index import create_lang_index
 from airflow import configuration as conf
 from utils.data_validation import validate_downloaded_data_files, check_validation_status
 from utils.bias_detection import detect_and_simulate_bias
+# from utils.sentence_transformer_encoder import SentenceTransformerEmbeddings
 # Enable pickle support for XCom, allowing data to be passed between tasks
 conf.set('core', 'enable_xcom_pickling', 'True')
 
@@ -166,25 +169,39 @@ clean_text_task = PythonOperator(
     dag=dag,
 )
 # Task to generate embeddings of the full text, depends on 'clean_text_task'
-generate_embeddings_task = PythonOperator(
-    task_id='generate_embeddings_task',
-    python_callable=generate_embeddings,
-    op_args=[clean_text_task.output, get_config_value('embedding_model', "sentence-transformers/multi-qa-mpnet-base-dot-v1")],
-    provide_context=True,
+# generate_embeddings_task = PythonOperator(
+#     task_id='generate_embeddings_task',
+#     python_callable=generate_embeddings,
+#     op_args=[clean_text_task.output, get_config_value('embedding_model', "sentence-transformers/all-mpnet-base-v2")],
+#     provide_context=True,
+#     dag=dag,
+# )
+
+format_vector_data_task = PythonOperator(
+    task_id='format_vector_data_task',
+    python_callable=format_documents_dict,
+    op_args=[clean_text_task.output],
     dag=dag,
 )
 # Task to load a model using the 'load_model_elbow' function, depends on 'build_save_model_task'
-create_index_task = PythonOperator(
-    task_id='create_index_task',
-    python_callable=create_index,
-    op_args=[generate_embeddings_task.output],
+# create_index_task = PythonOperator(
+#     task_id='create_index_task',
+#     python_callable=create_index,
+#     op_args=[generate_embeddings_task.output],
+#     dag=dag,
+# )
+
+create_lang_index_task = PythonOperator(
+    task_id='create_lang_index_task',
+    python_callable=create_lang_index,
+    op_args=[format_vector_data_task.output, get_config_value('embedding_model', "sentence-transformers/all-mpnet-base-v2")],
     dag=dag,
 )
 
 upload_to_gcs_task = PythonOperator(
     task_id='upload_to_gcs_task',
     python_callable=upload_merged_data_to_gcs,
-    op_args=[create_index_task.output],
+    op_args=[create_lang_index_task.output],
     dag=dag,
 )
 
@@ -202,7 +219,8 @@ check_validation_task >> data_combine_task  # If validation passes, continue
 check_validation_task >> trigger_validation_failure_email  # If validation fails, send an alert
 
 # Continue the pipeline after successful validation
-data_combine_task >> load_data_task >> preprocess_data_task >> clean_text_task >> generate_embeddings_task >> create_index_task >> upload_to_gcs_task >> send_email
+# data_combine_task >> load_data_task >> preprocess_data_task >> clean_text_task >> generate_embeddings_task >> create_index_task >> upload_to_gcs_task >> send_email
+data_combine_task >> load_data_task >> preprocess_data_task >> clean_text_task >> format_vector_data_task >> create_lang_index_task >> upload_to_gcs_task >> send_email
 load_data_task >> data_bias_task
 
 # If this script is run directly, allow command-line interaction with the DAG
