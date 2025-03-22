@@ -4,7 +4,7 @@
         "token": "Hf_xxx"
     },
     "embedding": {
-        "model": "sentence-transformers/all-MiniLM-L6-v2"
+        "model": "sentence-transformers/all-mpnet-base-v2"
     },
     "paths": {
         "index_dir": "src/index",
@@ -13,5 +13,9 @@
     "mlflow": {
         "tracking_uri": "http://localhost:5000",
         "experiment_name": "RAG_Pipeline_Experiment"
+    },
+    "llm" : {
+        "client": "huggingface",
+        "model_name": "deepseek-ai/DeepSeek-R1"
     }
 }

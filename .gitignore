@@ -6,4 +6,5 @@ airflow_env/
 airflow-trials/
 data/data-pipeline/.secret/
 mlruns/
+*.env
 
