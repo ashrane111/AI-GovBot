@@ -18,7 +18,7 @@ class HuggingFaceClient(LLMClient):
         token = os.getenv("HUGGINGFACE_KEY") or config_loader.get("novita.token")
         self.client = AsyncInferenceClient(provider=provider, token=token)
         # self.client = InferenceClient(provider=provider, token=token)
-        self.model = config_loader.get("llm.model_name", "deepseek-ai/DeepSeek-R1")
+        self.model = config_loader.get("huggingface.model_name", "deepseek-ai/DeepSeek-R1")
         
     async def generate_completion(self, user_messages, max_tokens=500, temperature=0.7, top_p=0.9):
         try:

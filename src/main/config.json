@@ -15,7 +15,14 @@
         "experiment_name": "RAG_Pipeline_Experiment"
     },
     "llm" : {
+        "client": "ollama_local"
+    },
+    "huggingface": {
         "client": "huggingface",
         "model_name": "deepseek-ai/DeepSeek-R1"
+    },
+    "ollama_local" : {
+        "client": "ollama_local",
+        "model_name": "llama3.2"
     }
 }
