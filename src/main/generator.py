@@ -7,14 +7,14 @@ class Generator:
         self.client = create_llm_client(config_loader.get("llm.client", "huggingface"))
         self.messages = []
 
-    def generate(self, context, query):
+    async def generate(self, context, query):
         # Combine context and query into a single prompt, truncating context if too long
         prompt = f"Context: {context[:500]}...\nQuery: {query}\nAnswer:"
         prompt_message = {"role": "user", "content": prompt}
         self.messages.append(prompt_message)
         
         try:
-            content = self.client.generate_completion(self.messages)
+            content = await self.client.generate_completion(self.messages)
         except Exception as e:
             print(f"Error generating response: {e}")
             content = "Fallback: Unable to generate response."

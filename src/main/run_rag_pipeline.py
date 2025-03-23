@@ -1,13 +1,15 @@
 import sys
 import os
+import asyncio
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from main.rag_pipeline import RAGPipeline
 
-def main():
+async def main():
     pipeline = RAGPipeline()
     query = input("Enter your query: ")
-    pipeline.run(query)
+    query_dict = [{"role": "user", "content": query}]
+    await pipeline.run(query_dict)
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
