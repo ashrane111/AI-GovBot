@@ -1,4 +1,9 @@
 {
+    "retriever_args": {
+        "score_threshold": 1.2,
+        "n_docs": 3
+        
+    },
     "novita": {
         "provider": "novita",
         "token": "Hf_xxx"
@@ -23,6 +28,6 @@
     },
     "ollama_local" : {
         "client": "ollama_local",
-        "model_name": "llama3.2"
+        "model_name": "gemma3:4b"
     }
 }
