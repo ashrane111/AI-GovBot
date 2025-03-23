@@ -1,4 +1,9 @@
 {
+    "retriever_args": {
+        "score_threshold": 1.2,
+        "n_docs": 3
+        
+    },
     "novita": {
         "provider": "novita",
         "token": "Hf_xxx"

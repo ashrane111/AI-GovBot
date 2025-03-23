@@ -11,7 +11,7 @@ class Retriever:
             self.embeddings,
             allow_dangerous_deserialization=True
         )
-        self.retriever = self.vector_store.as_retriever(search_kwargs={"k": 5})
+        self.retriever = self.vector_store.as_retriever(search_kwargs={"k": config_loader.get("retriever_args.n_docs", 5)})
 
     def retrieve(self, query):
         # Use similarity_search_with_score for actual scores
