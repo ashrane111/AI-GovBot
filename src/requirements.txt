@@ -10,3 +10,4 @@ scikit-learn
 mlflow
 pytest
 fastapi[standard]
+ollama
