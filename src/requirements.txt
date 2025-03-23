@@ -11,3 +11,4 @@ mlflow
 pytest
 fastapi[standard]
 ollama
+streamlit
