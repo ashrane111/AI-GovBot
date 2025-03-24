@@ -16,7 +16,7 @@
         "data_path": "src/index/Documents_segments_merged.csv"
     },
     "mlflow": {
-        "tracking_uri": "http://localhost:5000",
+        "tracking_uri": "http://localhost:8001",
         "experiment_name": "RAG_Pipeline_Experiment"
     },
     "llm" : {
