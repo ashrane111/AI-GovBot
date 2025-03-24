@@ -8,4 +8,4 @@ data/data-pipeline/.secret/
 mlruns/
 *.env
 
-src/main/config.json
+*key.json

@@ -15,3 +15,4 @@ streamlit
 ragas
 openai
 seaborn
+google-cloud-storage
