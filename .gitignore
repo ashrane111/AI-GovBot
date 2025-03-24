@@ -7,5 +7,6 @@ airflow-trials/
 data/data-pipeline/.secret/
 mlruns/
 *.env
+.venv
 
 *key.json
