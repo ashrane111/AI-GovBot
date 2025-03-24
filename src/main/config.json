@@ -20,7 +20,7 @@
         "experiment_name": "RAG_Pipeline_Experiment"
     },
     "llm" : {
-        "client": "ollama_local"
+        "client": "openai"
     },
     "huggingface": {
         "client": "huggingface",
@@ -29,5 +29,11 @@
     "ollama_local" : {
         "client": "ollama_local",
         "model_name": "gemma3:4b"
+    },
+    "openai" : {
+        "client": "openai",
+        "model_name": "gpt-4o-mini",
+        "api_key": "sk-xxx"
     }
+    
 }
