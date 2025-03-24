@@ -8,8 +8,6 @@
 - **Configuration Management**: JSON-based endpoint configuration
 - **Production-Ready**: Port management and service orchestration
 
-![Web App Architecture](https://via.placeholder.com/800x400.png?text=Web+App+Architecture) architecture diagram showing Frontend/Backend interaction*
-
 ## 🖥️ Web-Specific Requirements
 - **Core Services**:  
   ```bash
