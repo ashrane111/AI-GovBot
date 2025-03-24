@@ -5,6 +5,11 @@ A chatbot powered by Retrieval-Augmented Generation (RAG) that leverages the AI 
 ## Accessing Data Pipeline Information
 Please refer to [Data Pipeline Readme](data/data-pipeline/README.md)
 
+## Accessing RAG Information
+Please refer to [RAG Readme](data/data-pipeline/README.md)
+
+## Accessing Web App Information
+Please refer to [Web App Readme](src/main/readme/README_web_app.md)
 
 Features:
 
