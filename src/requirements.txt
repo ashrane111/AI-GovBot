@@ -14,5 +14,4 @@ ollama
 streamlit
 ragas
 openai
-nltk
-rouge-score
+seaborn

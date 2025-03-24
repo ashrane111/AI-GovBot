@@ -9,3 +9,4 @@ mlruns/
 *.env
 .venv
 
+src/main/config.json
