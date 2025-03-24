@@ -43,15 +43,24 @@ def upload_merged_data_to_gcs(data):
 
 
 
-        source_file_name = os.path.join(os.path.dirname(os.path.dirname(__file__)),  "merged_input/Documents_segments_merged.csv")
-        destination_blob_name = "result_data/Documents_segments_merged.csv"
+        source_file_name = os.path.join(os.path.dirname(os.path.dirname(__file__)),  "faiss_index/index.faiss")
+        destination_blob_name = "faiss_index/index.faiss"
 
-        logger.info(f"Preparing to upload merged data to GCS")
+        logger.info(f"Preparing to upload .faiss to GCS")
         upload_to_gcs(bucket_name, source_file_name, destination_blob_name)
-        logger.info(f"Merged data uploaded to GCS successfully")
+        logger.info(f".faiss uploaded to GCS successfully")
+
+        source_file_name = os.path.join(os.path.dirname(os.path.dirname(__file__)),  "faiss_index/index.pkl")
+        destination_blob_name = "faiss_index/index.pkl"
+
+        logger.info(f"Preparing to upload .pkl to GCS")
+        upload_to_gcs(bucket_name, source_file_name, destination_blob_name)
+        logger.info(f".pkl data uploaded to GCS successfully")
     except Exception as e:
         logger.error(f"Error uploading merged data to GCS: {e}")
         raise
 
+if __name__ == "__main__":
+    upload_merged_data_to_gcs()
 
 

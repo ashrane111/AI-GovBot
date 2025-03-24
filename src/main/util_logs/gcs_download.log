@@ -1,0 +1,21 @@
+2025-03-23 20:42:02,715 - INFO - Searching for blobs in bucket 'datasets-mlops-25' with prefix 'faiss_index/index.pkl'.
+2025-03-23 20:42:02,999 - INFO - Latest blob found: 'faiss_index/index.pkl' updated at 2025-03-24 00:32:05.278000+00:00.
+2025-03-23 20:42:07,949 - INFO - Blob 'faiss_index/index.pkl' downloaded successfully to '/home/rixirx/Trials and Experiments/MLOps Trials/AI-GovBot/src/main/downloaded_files/index.pkl'.
+2025-03-23 20:42:32,511 - INFO - Searching for blobs in bucket 'datasets-mlops-25' with prefix 'faiss_index/index.faiss'.
+2025-03-23 20:42:32,713 - INFO - Latest blob found: 'faiss_index/index.faiss' updated at 2025-03-24 00:32:01.517000+00:00.
+2025-03-23 20:42:33,116 - INFO - Blob 'faiss_index/index.faiss' downloaded successfully to '/home/rixirx/Trials and Experiments/MLOps Trials/AI-GovBot/src/main/downloaded_files/index.faiss'.
+2025-03-23 20:42:33,117 - INFO - Searching for blobs in bucket 'datasets-mlops-25' with prefix 'faiss_index/index.pkl'.
+2025-03-23 20:42:33,319 - INFO - Latest blob found: 'faiss_index/index.pkl' updated at 2025-03-24 00:32:05.278000+00:00.
+2025-03-23 20:42:36,156 - INFO - Blob 'faiss_index/index.pkl' downloaded successfully to '/home/rixirx/Trials and Experiments/MLOps Trials/AI-GovBot/src/main/downloaded_files/index.pkl'.
+2025-03-23 20:44:35,578 - INFO - Searching for blobs in bucket 'datasets-mlops-25' with prefix 'faiss_index/index.faiss'.
+2025-03-23 20:44:35,809 - INFO - Latest blob found: 'faiss_index/index.faiss' updated at 2025-03-24 00:32:01.517000+00:00.
+2025-03-23 20:44:36,161 - INFO - Blob 'faiss_index/index.faiss' downloaded successfully to '/home/rixirx/Trials and Experiments/MLOps Trials/AI-GovBot/src/downloaded/index.faiss'.
+2025-03-23 20:44:36,161 - INFO - Searching for blobs in bucket 'datasets-mlops-25' with prefix 'faiss_index/index.pkl'.
+2025-03-23 20:44:36,362 - INFO - Latest blob found: 'faiss_index/index.pkl' updated at 2025-03-24 00:32:05.278000+00:00.
+2025-03-23 20:44:39,713 - INFO - Blob 'faiss_index/index.pkl' downloaded successfully to '/home/rixirx/Trials and Experiments/MLOps Trials/AI-GovBot/src/downloaded/index.pkl'.
+2025-03-23 20:44:54,709 - INFO - Searching for blobs in bucket 'datasets-mlops-25' with prefix 'faiss_index/index.faiss'.
+2025-03-23 20:44:54,910 - INFO - Latest blob found: 'faiss_index/index.faiss' updated at 2025-03-24 00:32:01.517000+00:00.
+2025-03-23 20:44:55,167 - INFO - Blob 'faiss_index/index.faiss' downloaded successfully to '/home/rixirx/Trials and Experiments/MLOps Trials/AI-GovBot/src/index/index.faiss'.
+2025-03-23 20:44:55,167 - INFO - Searching for blobs in bucket 'datasets-mlops-25' with prefix 'faiss_index/index.pkl'.
+2025-03-23 20:44:55,362 - INFO - Latest blob found: 'faiss_index/index.pkl' updated at 2025-03-24 00:32:05.278000+00:00.
+2025-03-23 20:44:58,984 - INFO - Blob 'faiss_index/index.pkl' downloaded successfully to '/home/rixirx/Trials and Experiments/MLOps Trials/AI-GovBot/src/index/index.pkl'.
