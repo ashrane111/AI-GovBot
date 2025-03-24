@@ -92,5 +92,5 @@ Final Answer
 
 
 ## About Bias Detection
-Please refer to [Bias Detection Readme](src/readme/README_bias_detection.md)
+Please refer to [Bias Detection Readme](README_bias_detection.md)
 
