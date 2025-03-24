@@ -1,33 +1,36 @@
-from rag_evaluator import RAGEvaluator
-import os
-import sys
-import asyncio
+# import pytest
+# import os
+# import sys
+# import asyncio
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from main.rag_pipeline import RAGPipeline
-async def generate_results():
-    # Initialize the pipeline
-    pipeline = RAGPipeline()
+# from main.rag_pipeline import RAGPipeline
+# from rag_evaluator import RAGEvaluator
 
-    # Initialize the evaluator
-    evaluator = RAGEvaluator(pipeline)
-    results = await evaluator.evaluate_generation()
+# @pytest.mark.asyncio
+# async def test_ragas_evaluation():
+#     # Initialize the pipeline
+#     pipeline = RAGPipeline()
 
-    # Summarize results
-    results_dict = evaluator.summarize_results(results)
+#     # Initialize the evaluator
+#     evaluator = RAGEvaluator(pipeline)
+#     results = await evaluator.evaluate_generation()
 
-    return results_dict
+#     # Summarize results
+#     results_dict = evaluator.summarize_results(results)
 
-# Example usage
-if __name__ == "__main__":
-    # Initialize the pipeline
-    # pipeline = RAGPipeline()
+#     # Add assertions to validate the results
+#     assert results_dict is not None
+#     assert "avg_faithfulness" in results_dict
+#     assert "avg_relevance" in results_dict
+#     assert "avg_generation_time" in results_dict
 
-    # # Initialize the evaluator
-    # evaluator = RAGEvaluator(pipeline)
-    # results = asyncio.run(evaluator.evaluate_generation())
+#     # Example assertion for faithfulness score
+#     assert results_dict["avg_faithfulness"] >= 0.5
 
-    # # Summarize results
-    # evaluator.summarize_results(results)
-    asyncio.run(generate_results())
+#     # Example assertion for answer relevancy score
+#     assert results_dict["avg_relevance"] >= 0.5
+
+# if __name__ == "__main__":
+#     pytest.main([__file__])

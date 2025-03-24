@@ -15,7 +15,7 @@ class OpenAIClient(LLMClient):
     """Client for OpenAI API"""
     
     def __init__(self):
-        api_key = os.getenv("OPENAI_KEY") or config_loader.get("openai.api_key")
+        api_key = os.getenv("OPENAI_API_KEY") or config_loader.get("openai.api_key")
         self.client = AsyncOpenAI(api_key=api_key)
         self.model = config_loader.get("openai.model_name", "gpt-4o-mini")
         

@@ -1,7 +1,5 @@
 tensorflow-cpu
 tensorflow-data-validation
-langchain
-langchain-community
 matplotlib
 faiss-cpu
 sentence-transformers
@@ -16,15 +14,3 @@ unittest2
 dvc
 tf-keras
 keras==2.15.0 
-mlflow
-python-dotenv==1.0.0
-transformers
-numpy
-pandas
-scikit-learn
-fastapi[standard]
-ollama
-streamlit
-ragas
-openai
-seaborn

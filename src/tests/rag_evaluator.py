@@ -2,33 +2,14 @@ import os
 import json
 import time
 import mlflow
-import sys
-import asyncio
-import pathlib
-import re
 from dotenv import load_dotenv
 from ragas import evaluate
 from ragas.metrics import faithfulness, answer_relevancy
 from datasets import Dataset  # Import Dataset to convert dict to Dataset
-import openai  # For setting the API key for RAGAS
 
 
-# Load environment variables from .env file
-# project_root = pathlib.Path(__file__).parent.parent.parent
-# env_path = project_root / "main" / ".env"  # Corrected path to main/.env
-# load_dotenv(dotenv_path=env_path)
-# print(f"Loaded .env file from: {env_path}")
 load_dotenv()
 
-# Verify that the OpenAI API keys are loaded
-# if "OPENAI_KEY" not in os.environ:
-#     raise ValueError("OPENAI_KEY not found in .env file. Please ensure it is set correctly.")
-# if "OPENAI_API_KEY" not in os.environ:
-#     raise ValueError("OPENAI_API_KEY not found in .env file. Please ensure it is set correctly for RAGAS.")
-
-
-# Set the OpenAI API key for RAGAS explicitly
-# openai.api_key = os.environ["OPENAI_API_KEY"]
 
 class RAGEvaluator:
     def __init__(self, pipeline):
@@ -73,7 +54,7 @@ class RAGEvaluator:
 
             # Run the pipeline (await the async function)
             start_time = time.time()
-            answer = await self.pipeline.run(query_message)  # Remove try-except to see the full error
+            answer, doc_id = await self.pipeline.run(query_message)  # Remove try-except to see the full error
             generated_response = answer["content"]
             generation_time = time.time() - start_time
 
@@ -161,12 +142,4 @@ class RAGEvaluator:
         }
 
         return results_dict
-        # Print individual results
-        # for result in results:
-        #     print(f"\nQuery: {result['query']}")
-        #     print(f"Generated: {result['generated_response']}")
-        #     print(f"Ground Truth: {result['ground_truth']}")
-        #     print(f"Faithfulness: {result['faithfulness']:.2f}")
-        #     print(f"Relevance: {result['relevance']:.2f}")
-        #     print(f"Generation Time: {result['generation_time']:.2f} seconds")
 
