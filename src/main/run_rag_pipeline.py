@@ -9,7 +9,7 @@ async def main():
     pipeline = RAGPipeline()
     query = input("Enter your query: ")
     query_dict = [{"role": "user", "content": query}]
-    messages = await pipeline.run(query_dict)
+    messages, _ = await pipeline.run(query_dict)
     print(messages)
 
 if __name__ == "__main__":

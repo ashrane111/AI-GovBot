@@ -20,11 +20,12 @@ class RAGPipeline:
         query = required_query['content']
         start_time = time.time()
         retrieved_docs, retrieval_scores = self.retriever.retrieve(query)
+        document_id = [str(item).split()[0] if str(item).split() else "" for item in retrieved_docs]
         context = self.__generate_context(retrieved_docs, retrieval_scores)
         print("\n🔍 Retrieved Context:\n", context)
         prompted_messages = self.prompter.generate_user_prompt(query_message, context)
         retrieval_time = time.time() - start_time
-
+        
         start_time = time.time()
           # Use the filtered context
         answer = await self.generator.generate(prompted_messages)
@@ -33,7 +34,7 @@ class RAGPipeline:
 
         self.tracker.log_metrics(query, answer, retrieved_docs, retrieval_scores, retrieval_time, generation_time)
 
-        return answer
+        return answer, document_id
     
     def __generate_context(self, retrieved_docs, retrieval_scores):
         print("\n🔍 Retrieved Documents:")
