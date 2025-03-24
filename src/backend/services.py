@@ -6,7 +6,7 @@ mlflow_process = None
 
 def start_mlflow():
     global mlflow_process
-    mlflow_process = subprocess.Popen(["mlflow", "server", "--host", "0.0.0.0", "--port", "5000"])
+    mlflow_process = subprocess.Popen(["mlflow", "server", "--host", "0.0.0.0", "--port", "8001"])
 
 def stop_mlflow():
     global mlflow_process
