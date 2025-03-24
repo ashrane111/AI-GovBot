@@ -11,11 +11,11 @@ class Retriever:
             self.embeddings,
             allow_dangerous_deserialization=True
         )
-        self.retriever = self.vector_store.as_retriever(search_kwargs={"k": 5})
+        self.retriever = self.vector_store.as_retriever()
 
     def retrieve(self, query):
         # Use similarity_search_with_score for actual scores
-        docs_and_scores = self.vector_store.similarity_search_with_score(query, k=5)
+        docs_and_scores = self.vector_store.similarity_search_with_score(query, k=config_loader.get("retriever_args.n_docs", 3))
         documents = [doc.page_content for doc, score in docs_and_scores]
         scores = [score for doc, score in docs_and_scores]  # Distance scores (lower is better)
         return documents, scores

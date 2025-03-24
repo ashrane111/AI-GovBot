@@ -1,10 +1,15 @@
 {
+    "retriever_args": {
+        "score_threshold": 1.2,
+        "n_docs": 3
+        
+    },
     "novita": {
         "provider": "novita",
         "token": "Hf_xxx"
     },
     "embedding": {
-        "model": "sentence-transformers/all-MiniLM-L6-v2"
+        "model": "sentence-transformers/all-mpnet-base-v2"
     },
     "paths": {
         "index_dir": "src/index",
@@ -13,5 +18,22 @@
     "mlflow": {
         "tracking_uri": "http://localhost:5000",
         "experiment_name": "RAG_Pipeline_Experiment"
+    },
+    "llm" : {
+        "client": "openai"
+    },
+    "huggingface": {
+        "client": "huggingface",
+        "model_name": "deepseek-ai/DeepSeek-R1"
+    },
+    "ollama_local" : {
+        "client": "ollama_local",
+        "model_name": "gemma3:4b"
+    },
+    "openai" : {
+        "client": "openai",
+        "model_name": "gpt-4o-mini",
+        "api_key": "sk-xxx"
     }
+    
 }

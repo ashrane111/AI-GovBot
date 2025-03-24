@@ -1,26 +1,20 @@
-from huggingface_hub import InferenceClient
 from main.config_loader import config_loader
+from main.llm_clients.client_factory import create_llm_client
 
 class Generator:
     def __init__(self):
         # Load provider and token from config
-        provider = config_loader.get("novita.provider", "novita")
-        token = config_loader.get("novita.token")
-        self.client = InferenceClient(provider=provider, token=token)
+        self.client = create_llm_client(config_loader.get("llm.client", "openai"))
+        # self.messages = []
 
-    def generate(self, context, query):
-        # Combine context and query into a single prompt, truncating context if too long
-        prompt = f"Context: {context[:500]}...\nQuery: {query}\nAnswer:"
+    async def generate(self, query_message):        
         try:
-            completion = self.client.chat.completions.create(
-                model="deepseek-ai/DeepSeek-R1",
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=500,  # Increased from 100 to match your provided code
-                temperature=0.7,
-                top_p=0.9,
-            )
-            content = completion.choices[0].message["content"]
+            content = await self.client.generate_completion(query_message)
         except Exception as e:
-            print(f"Error with Inference API: {e}")
+            print(f"Error generating response: {e}")
             content = "Fallback: Unable to generate response."
-        return {"content": content}
+        
+        assistant_prompt = {"role": "assistant", "content": content}
+        query_message.append(assistant_prompt)
+            
+        return {"content": content, "messages": query_message}
