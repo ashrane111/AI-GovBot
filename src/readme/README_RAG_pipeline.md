@@ -4,7 +4,7 @@ This module implements a Retrieval-Augmented Generation (RAG) pipeline that comb
 
 ## Overview
 
-![Rag Flowchart](Rag_flowchart.drawio.png)
+![Rag Flowchart](Rag_flowchart.png)
 
 The RAG Pipeline performs the following steps:
 
@@ -79,7 +79,7 @@ Generated Response
    ↓
 MLflow Logs (Query, Docs, Times)
    ↓
-Final Answer
+Final Answer```
 
 
 *Since this pipeline uses pretrained large language models (LLMs), tasks such as hyperparameter tuning, sensitivity analysis, and pushing models to an artifact registry are not applicable.*  
