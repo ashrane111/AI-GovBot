@@ -9,6 +9,8 @@ logger.setLevel(logging.INFO)
 
 # Create a directory for logs if it doesn't exist
 current_dir = os.path.dirname(os.path.abspath(__file__))
+# parent dir is directory above current directory
+parent_dir = os.path.dirname(current_dir)
 log_dir = os.path.join(current_dir, 'util_logs')
 os.makedirs(log_dir, exist_ok=True)
 log_file = os.path.join(log_dir, 'gcs_download.log')
@@ -61,7 +63,15 @@ def download_latest_file(bucket_name, blob_prefix, local_destination):
 
 if __name__ == '__main__':
     BUCKET_NAME = "datasets-mlops-25"
-    BLOB_PREFIX = "result_data/Documents_segments_merged.csv"
-    LOCAL_DESTINATION = os.path.join(current_dir, "downloaded_files", "Documents_segments_merged.csv")
+
+    # Specify the blob name or prefix (for example, a full file name)
+    BLOB_PREFIX = "faiss_index/index.faiss"
+    # Destination path for the downloaded file
+    LOCAL_DESTINATION = os.path.join(parent_dir, "index", "index.faiss")
+    download_latest_file(BUCKET_NAME, BLOB_PREFIX, LOCAL_DESTINATION)
+
+    BLOB_PREFIX = "faiss_index/index.pkl"
+    # Destination path for the downloaded file
+    LOCAL_DESTINATION = os.path.join(parent_dir, "index", "index.pkl")
 
     download_latest_file(BUCKET_NAME, BLOB_PREFIX, LOCAL_DESTINATION)

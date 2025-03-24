@@ -2,7 +2,7 @@ import unittest
 import os
 import sys
 import logging
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, call
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../data/data-pipeline/dags')))
 from utils.gcs_upload import upload_to_gcs, upload_merged_data_to_gcs
@@ -60,12 +60,11 @@ class TestGCSUpload(unittest.TestCase):
         
         upload_merged_data_to_gcs(data)
         
-        mock_upload_to_gcs.assert_called_once_with(
-            "datasets-mlops-25",
-            expected_source,
-            "result_data/Documents_segments_merged.csv"
-        )
-        mock_logger.info.assert_any_call("Merged data uploaded to GCS successfully")
+        # Check calls count
+        self.assertEqual(mock_upload_to_gcs.call_count, 2)
+    
+        
+        mock_logger.info.assert_any_call(".faiss uploaded to GCS successfully")
 
     @patch('utils.gcs_upload.os.path.join')
     @patch('utils.gcs_upload.upload_to_gcs')
@@ -79,3 +78,26 @@ class TestGCSUpload(unittest.TestCase):
             upload_merged_data_to_gcs(data)
         
         mock_logger.error.assert_called_once_with("Error uploading merged data to GCS: File not found")
+
+    @patch('utils.gcs_upload.storage.Client')
+    @patch('utils.gcs_upload.logger')
+    def test_upload_to_gcs_called_twice(self, mock_logger, mock_storage_client):
+        mock_bucket = MagicMock()
+        mock_blob = MagicMock()
+        mock_storage_client.return_value.bucket.return_value = mock_bucket
+        mock_bucket.blob.return_value = mock_blob
+        
+        # Call the function twice
+        upload_to_gcs(self.bucket_name, self.source_file_name, self.destination_blob_name)
+        upload_to_gcs(self.bucket_name, self.source_file_name, self.destination_blob_name)
+        
+        # Assert that the method was called twice
+        self.assertEqual(mock_blob.upload_from_filename.call_count, 2)
+        mock_blob.upload_from_filename.assert_has_calls([
+            call(self.source_file_name),
+            call(self.source_file_name)
+        ])
+        mock_logger.info.assert_any_call(f"Attempting to upload {self.source_file_name} to GCS bucket {self.bucket_name}")
+
+if __name__ == '__main__':
+    unittest.main()

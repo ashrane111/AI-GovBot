@@ -15,14 +15,12 @@ class RAGPipeline:
         self.prompter = PromptGen()
 
     async def run(self, query_message):
-        print(query_message)
         required_query = query_message[-1]
         query = required_query['content']
         start_time = time.time()
         retrieved_docs, retrieval_scores = self.retriever.retrieve(query)
         document_id = [str(item).split()[0] if str(item).split() else "" for item in retrieved_docs]
         context = self.__generate_context(retrieved_docs, retrieval_scores)
-        print("\n🔍 Retrieved Context:\n", context)
         prompted_messages = self.prompter.generate_user_prompt(query_message, context)
         retrieval_time = time.time() - start_time
         
@@ -37,12 +35,10 @@ class RAGPipeline:
         return answer, document_id
     
     def __generate_context(self, retrieved_docs, retrieval_scores):
-        print("\n🔍 Retrieved Documents:")
         filtered_docs = []
         for i, (doc, score) in enumerate(zip(retrieved_docs, retrieval_scores)):
             # Convert score to double (float)
             score_double = float(score)
-            print(f"Document {i+1} ({score_double:.4f}): {doc[:100]}...")
             if score_double < self.SCORE_THRESHOLD:
                 context_doc = f"Rank {i+1}: " + self.__get_context_doc(doc)
                 filtered_docs.append(context_doc)
