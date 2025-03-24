@@ -12,3 +12,5 @@ pytest
 fastapi[standard]
 ollama
 streamlit
+ragas
+openai
