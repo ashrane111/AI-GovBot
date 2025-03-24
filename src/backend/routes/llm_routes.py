@@ -12,7 +12,7 @@ async def answer_query(query_body: MessagesList):
     pipeline = RAGPipeline()
     messages_dicts = [{"role": msg.role, "content": msg.content} for msg in query_body.messages]
     try:
-        answer = await pipeline.run(messages_dicts)
+        answer, _ = await pipeline.run(messages_dicts)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     return {"res": "success", "answer": answer}
