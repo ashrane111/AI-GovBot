@@ -1,0 +1,32 @@
+Jurisdictional Bias Report
+==================================================
+
+Query: What regulations globally address the use of biometric recognition in consumer services?
+Retrieved Docs: 327, 637, 837
+Jurisdictions: {'US': 3}
+Bias Score: 1.00
+Assessment: Strong Bias
+
+Query: What are the safety requirements for generative AI services across different jurisdictions?
+Retrieved Docs: 1723, 1151, 1044
+Jurisdictions: {'China': 2, 'Other': 1}
+Bias Score: 0.67
+Assessment: Moderate Bias
+
+Query: Which frameworks globally outline ethical principles for AI development?
+Retrieved Docs: 1125, 35, 1129
+Jurisdictions: {'China': 3}
+Bias Score: 1.00
+Assessment: Strong Bias
+
+Query: What laws regulate AI use in national security across jurisdictions?
+Retrieved Docs: 1385, 1387, 1380
+Jurisdictions: {'US': 2, 'Multi': 1}
+Bias Score: 0.67
+Assessment: Moderate Bias
+
+Query: What regulations address AI transparency and labeling worldwide?
+Retrieved Docs: 906, 554, 1129
+Jurisdictions: {'US': 2, 'China': 1}
+Bias Score: 0.67
+Assessment: Moderate Bias
