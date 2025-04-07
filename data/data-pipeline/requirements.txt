@@ -8,6 +8,6 @@ sentence-transformers
 google-cloud-storage
 requests
 openpyxl
-dvc
+dvc[gs]
 tf-keras
 keras==2.15.0 
