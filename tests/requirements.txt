@@ -19,6 +19,3 @@ ollama
 openai
 mlflow
 pytest-asyncio
-ragas
-seaborn
-transformers==4.36.2

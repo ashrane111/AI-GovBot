@@ -36,10 +36,8 @@ jobs:
 
       - name: Run Data Pipeline tests
         run: |
-          export PYTHONPATH=$(pwd)/data/data-pipeline/dags
           pytest tests/unit/ -v
 
-      
   notify:
     needs: [test]
     runs-on: ubuntu-latest
