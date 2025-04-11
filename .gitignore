@@ -10,3 +10,5 @@ mlruns/
 .venv
 
 *key.json
+*-trials/
+*-trial/

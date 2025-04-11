@@ -25,8 +25,19 @@ class RAGPipeline:
         retrieval_time = time.time() - start_time
         
         start_time = time.time()
-          # Use the filtered context
-        answer = await self.generator.generate(prompted_messages)
+        # Add try-except block to handle generator errors
+        try:
+            answer = await self.generator.generate(prompted_messages)
+        except Exception as e:
+            print(f"Error generating response: {e}")
+            # Create a fallback response
+            fallback_message = {"role": "assistant", "content": "Fallback: Unable to generate response."}
+            prompted_messages.append(fallback_message)
+            answer = {
+                "content": "Fallback: Unable to generate response.",
+                "messages": prompted_messages
+            }
+        
         answer['messages'] = self.prompter.remove_system_prompt(answer['messages'])
         generation_time = time.time() - start_time
 

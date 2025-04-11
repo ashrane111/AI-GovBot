@@ -14,3 +14,8 @@ unittest2
 dvc
 tf-keras
 keras==2.15.0 
+langchain-community
+ollama
+openai
+mlflow
+pytest-asyncio

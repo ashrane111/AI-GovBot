@@ -30,10 +30,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r tests/requirements.txt
 
-      - name: Run tests
+      - name: Run RAG tests
         run: |
-          export PYTHONPATH=$(pwd)/data/data-pipeline/dags
+            pytest tests/rag_pipeline_unit/ -v
+
+      - name: Run Data Pipeline tests
+        run: |
           pytest tests/unit/ -v
+
   notify:
     needs: [test]
     runs-on: ubuntu-latest
@@ -49,8 +53,8 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "CI Pipeline Passed - Ready to Merge to Staging"
-          to: pappuru.d@northeastern.edu
-          from: mlopsgroup11@gmail.com
+          to: vedantrishidas@gmail.com
+          from: sanjanajd115@gmail.com
           body: |
             All tests have passed. The PR can be merged to staging.
             
@@ -65,7 +69,7 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "CI Pipeline Failed"
-          to: barakardhanshree@gmail.com
+          to: vedantrishidas@gmail.com
           from: sanjanajd115@gmail.com
           body: |
             Some tests have failed. Please check the logs.
