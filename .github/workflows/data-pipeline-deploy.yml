@@ -47,7 +47,8 @@ jobs:
           set -euxo pipefail
           
           # Go to home directory
-          cd $HOME
+          cd /home
+          cd /rixirx
           
           # Check if repository exists and update, fail if not present
           if [ -d "AI-GovBot" ]; then
