@@ -35,7 +35,6 @@ jobs:
           # Create public key from private key and verify it exists
           ssh-keygen -y -f ~/.ssh/gcp_airflow_key > ~/.ssh/gcp_airflow_key.pub
           ls -la ~/.ssh/gcp_airflow_key.pub  # Debug: Verify file exists
-          cat ~/.ssh/gcp_airflow_key.pub     # Debug: Show content of the public key
       
       - name: Configure OS Login
         run: |
@@ -100,8 +99,8 @@ jobs:
           
           # Unpause and trigger the DAG
           echo "Unpausing and triggering DAG: Data_pipeline_HARVEY"
-          docker compose exec -T airflow-webserver airflow dags unpause Data_pipeline_HARVEY
-          docker compose exec -T airflow-webserver airflow dags trigger Data_pipeline_HARVEY
+          docker compose exec airflow-webserver airflow dags unpause Data_pipeline_HARVEY
+          docker compose exec airflow-webserver airflow dags trigger Data_pipeline_HARVEY
           
           echo "✅ Deployment completed successfully!"
           EOL
