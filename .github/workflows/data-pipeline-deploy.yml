@@ -18,12 +18,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0
+      - name: Authenticate to Google Cloud
+        id: 'auth'
+        uses: 'google-github-actions/auth@v2'
         with:
-          project_id: ${{ env.PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          export_default_credentials: true
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+          
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
       
       - name: Create SSH key
         run: |
@@ -69,14 +71,16 @@ jobs:
           # Ensure directories exist
           mkdir -p ./logs ./plugins ./secrets
           
-          # Check if environment file exists, if not copy from original setup
+          # Check if environment file exists, fail if not
           if [ ! -f .env ]; then
-            echo "ERROR: .env file not found. You may need to restore this file manually."
+            echo "ERROR: .env file not found. Required for pipeline operation."
+            exit 1
           fi
           
-          # Check if secrets file exists
+          # Check if secrets file exists, fail if not
           if [ ! -f ./secrets/google_cloud_key.json ]; then
-            echo "ERROR: google_cloud_key.json not found. You may need to restore this file manually."
+            echo "ERROR: google_cloud_key.json not found. Required for pipeline operation."
+            exit 1
           fi
           
           # Build and start Docker containers
@@ -88,7 +92,6 @@ jobs:
           echo "Unpausing and triggering DAG: Data_pipeline_HARVEY"
           docker compose exec -T airflow-webserver airflow dags unpause Data_pipeline_HARVEY
           docker compose exec -T airflow-webserver airflow dags trigger Data_pipeline_HARVEY
-  
           
           echo "✅ Deployment completed successfully!"
           EOL
