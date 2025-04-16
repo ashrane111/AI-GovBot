@@ -32,6 +32,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.GCP_SSH_PRIVATE_KEY }}" > ~/.ssh/gcp_airflow_key
           chmod 600 ~/.ssh/gcp_airflow_key
+          ssh-keyscan -H $(gcloud compute addresses describe airflow-access-ip --region=us-east1 --format='get(address)') >> ~/.ssh/known_hosts
           
       - name: Get VM IP address
         id: get-ip
@@ -41,12 +42,14 @@ jobs:
           
       - name: Deploy to VM
         run: |
-          # Create deployment script
-          cd /home
-          cd /rixirx
-          cat > deploy.sh << 'EOL'
+          # Execute directly via SSH instead of using gcloud compute ssh
+          ssh -i ~/.ssh/gcp_airflow_key -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=~/.ssh/known_hosts $(whoami)@$VM_IP << 'EOL'
           #!/bin/bash
           set -euxo pipefail
+          
+          # Go to home directory
+          cd $HOME
+          
           # Check if repository exists and update, fail if not present
           if [ -d "AI-GovBot" ]; then
             echo "Repository exists, updating..."
@@ -93,15 +96,6 @@ jobs:
           
           echo "✅ Deployment completed successfully!"
           EOL
-          
-          # Make script executable
-          chmod +x deploy.sh
-          
-          # Copy script to VM
-          gcloud compute scp deploy.sh $VM_NAME:~/deploy.sh --zone=$ZONE
-          
-          # Execute script on VM
-          gcloud compute ssh $VM_NAME --zone=$ZONE -- "sudo bash ~/deploy.sh"
           
           echo "🎉 Data pipeline deployment complete!"
           echo "🌐 Access Airflow UI at: http://$VM_IP:8080"
