@@ -32,7 +32,13 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.GCP_SSH_PRIVATE_KEY }}" > ~/.ssh/gcp_airflow_key
           chmod 600 ~/.ssh/gcp_airflow_key
-          ssh-keyscan -H $(gcloud compute addresses describe airflow-access-ip --region=us-east1 --format='get(address)') >> ~/.ssh/known_hosts
+          # Create public key from private key
+          ssh-keygen -y -f ~/.ssh/gcp_airflow_key > ~/.ssh/gcp_airflow_key.pub
+          
+      - name: Configure OS Login
+        run: |
+          # Add SSH key to OS Login
+          gcloud compute os-login ssh-keys add --key-file=~/.ssh/gcp_airflow_key.pub
           
       - name: Get VM IP address
         id: get-ip
@@ -42,13 +48,14 @@ jobs:
           
       - name: Deploy to VM
         run: |
-          # Execute directly via SSH instead of using gcloud compute ssh
-          ssh -i ~/.ssh/gcp_airflow_key -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=~/.ssh/known_hosts $(whoami)@$VM_IP << 'EOL'
+          # Create deployment script
+          cat > deploy.sh << 'EOL'
           #!/bin/bash
           set -euxo pipefail
           
           # Go to home directory
-          cd $HOME
+          cd /home
+          cd rixirx
           
           # Check if repository exists and update, fail if not present
           if [ -d "AI-GovBot" ]; then
@@ -96,6 +103,18 @@ jobs:
           
           echo "✅ Deployment completed successfully!"
           EOL
+          
+          # Make script executable
+          chmod +x deploy.sh
+          
+          # Copy script to VM
+          gcloud compute scp deploy.sh $VM_NAME:~/deploy.sh --zone=$ZONE --ssh-key-file=~/.ssh/gcp_airflow_key
+          
+          # Execute script on VM
+          gcloud compute ssh $VM_NAME --zone=$ZONE --ssh-key-file=~/.ssh/gcp_airflow_key -- "sudo bash ~/deploy.sh"
+          
+          echo "🎉 Data pipeline deployment complete!"
+          echo "🌐 Access Airflow UI at: http://$VM_IP:8080"
           
           echo "🎉 Data pipeline deployment complete!"
           echo "🌐 Access Airflow UI at: http://$VM_IP:8080"
