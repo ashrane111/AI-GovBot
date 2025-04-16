@@ -26,19 +26,21 @@ jobs:
           
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v2'
-      
+        
       - name: Create SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.GCP_SSH_PRIVATE_KEY }}" > ~/.ssh/gcp_airflow_key
           chmod 600 ~/.ssh/gcp_airflow_key
-          # Create public key from private key
+          # Create public key from private key and verify it exists
           ssh-keygen -y -f ~/.ssh/gcp_airflow_key > ~/.ssh/gcp_airflow_key.pub
-          
+          ls -la ~/.ssh/gcp_airflow_key.pub  # Debug: Verify file exists
+          cat ~/.ssh/gcp_airflow_key.pub     # Debug: Show content of the public key
+      
       - name: Configure OS Login
         run: |
-          # Add SSH key to OS Login
-          gcloud compute os-login ssh-keys add --key-file=~/.ssh/gcp_airflow_key.pub
+          # Add SSH key to OS Login with explicit file path
+          gcloud compute os-login ssh-keys add --key-file="${HOME}/.ssh/gcp_airflow_key.pub"
           
       - name: Get VM IP address
         id: get-ip
