@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-govbot-frontend-deployment
+  namespace: mlscopers
+  labels:
+    app: ai-govbot-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-govbot-frontend
+  template:
+    metadata:
+      namespace: mlscopers
+      labels:
+        app: ai-govbot-frontend
+    spec:
+      # --- Add this section if your Docker Hub repo is PRIVATE ---
+      # imagePullSecrets:
+      # - name: dockerhub-secret # You'll create this secret later if needed
+      containers:
+      - name: frontend
+        # --- CHANGE THIS LINE ---
+        image: sanj004/ai-govbot-frontend:v1 # Use Docker Hub path ${{ secrets.DOCKERHUB_USERNAME }}
+        ports:
+        - containerPort: 8501
+        env:
+        - name: BACKEND_API_URL
+          value: "http://ai-govbot-backend-service:8000/answer_query/"
+        # Add other env vars, resources as before
+      # Add volumes, serviceAccountName as before

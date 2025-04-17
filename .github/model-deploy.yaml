@@ -1,0 +1,109 @@
+name: Build, Push, and Deploy Model to GKE
+
+on:
+  push:
+    branches: [ dev ]
+    paths:
+      # Trigger on changes in src, deployment scripts, compose file, or workflow
+      - 'src/**'
+      - 'deployment_scripts/**'
+      - 'docker-compose.yaml'
+      - '.github/workflows/deploy.yaml'
+  workflow_dispatch:  
+
+env:
+  PROJECT_ID: data-pipeline-deployment-trial
+  ZONE: us-east1-d 
+  CLUSTER_NAME: ai-govbot-cluster 
+  NAMESPACE: mlscopers
+  API_KEY_PLACEHOLDER: "__API_KEY_PLACEHOLDER__"
+  # Define Docker Image Names dynamically using secrets
+  BACKEND_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/ai-govbot-backend:v1
+  FRONTEND_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/ai-govbot-frontend:v1
+
+jobs:
+  build-push-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # --- Docker Hub Login ---
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3 # Using dedicated action is robust
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # --- Build and Push using Docker Compose ---
+      - name: Build and Push Docker images via Docker Compose
+        # Pass Image Names as environment variables to docker-compose
+        env:
+          BACKEND_IMAGE_NAME: ${{ env.BACKEND_IMAGE_NAME }}
+          FRONTEND_IMAGE_NAME: ${{ env.FRONTEND_IMAGE_NAME }}
+        run: |
+          docker-compose build
+          docker-compose push
+
+      # --- Authenticate to Google Cloud ---
+      - name: Authenticate to Google Cloud
+        id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      # --- Get GKE Credentials ---
+      - name: Get GKE Cluster Credentials
+        run: gcloud container clusters get-credentials ${{ env.CLUSTER_NAME }} --zone ${{ env.ZONE }} --project ${{ env.PROJECT_ID }}
+
+      # --- Prepare & Deploy Kubernetes Manifests ---
+      # --- Inject API Key Secret into K8s Manifest ---
+      - name: Prepare Backend Manifest (Inject API Key for K8s)
+        run: |
+          # Define the target file path
+          BACKEND_DEPLOYMENT_FILE="deployment_scripts/model_deployment/backend/k8s-deployment.yaml"
+
+          if grep -q "${{ env.API_KEY_PLACEHOLDER }}" ${BACKEND_DEPLOYMENT_FILE}; then
+            echo "Replacing API key placeholder in ${BACKEND_DEPLOYMENT_FILE}..."
+            # Use the API key secret directly here for substitution
+            sed -i "s|${{ env.API_KEY_PLACEHOLDER }}|${{ secrets.OPENAI_API_KEY }}|g" ${BACKEND_DEPLOYMENT_FILE}
+          else
+            echo "Placeholder '${{ env.API_KEY_PLACEHOLDER }}' not found in ${BACKEND_DEPLOYMENT_FILE}. Check the file."
+            exit 1
+          fi
+
+      # --- Apply K8s Manifests ---
+      # Uses the NEW paths for backend and frontend manifests
+      - name: Deploy to GKE
+        run: |
+          echo "Applying Kubernetes manifests to namespace: ${{ env.NAMESPACE }}"
+
+          echo "Applying Namespace..."
+          kubectl apply -f ${BACKEND_DEPLOYMENT_FILE}/k8s-namespace.yaml
+
+          # Apply Backend (using new paths)
+          echo "Applying Backend Deployment..."
+          kubectl apply -f deployment_scripts/model_deployment/backend/k8s-deployment.yaml -n ${{ env.NAMESPACE }}
+          echo "Applying Backend Service..."
+          kubectl apply -f deployment_scripts/model_deployment/backend/k8s-service.yaml -n ${{ env.NAMESPACE }}
+
+          # Apply Frontend (using new paths)
+          echo "Applying Frontend Deployment..."
+          kubectl apply -f deployment_scripts/model_deployment/frontend/k8s-deployment.yaml -n ${{ env.NAMESPACE }}
+          echo "Applying Frontend Service..."
+          kubectl apply -f deployment_scripts/model_deployment/frontend/k8s-service.yaml -n ${{ env.NAMESPACE }}
+
+
+      - name: Verify Deployment
+        run: |
+          echo "Waiting for deployments to rollout..."
+          kubectl rollout status deployment/ai-govbot-backend-deployment -n ${{ env.NAMESPACE }} --timeout=120s
+          kubectl rollout status deployment/ai-govbot-frontend-deployment -n ${{ env.NAMESPACE }} --timeout=120s
+          # ... other verification steps ...

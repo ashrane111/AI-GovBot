@@ -5,7 +5,6 @@ import os
 import sys
 import json
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from main.config_loader import ConfigLoader
 
 # Define config file path
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), 'frontend_config.json')

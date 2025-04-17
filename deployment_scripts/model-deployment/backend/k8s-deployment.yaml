@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-govbot-backend-deployment
+  namespace: mlscopers
+  labels:
+    app: ai-govbot-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-govbot-backend
+  template:
+    metadata:
+      namespace: mlscopers
+      labels:
+        app: ai-govbot-backend
+    spec:
+      # --- Add this section if your Docker Hub repo is PRIVATE ---
+      # imagePullSecrets:
+      # - name: dockerhub-secret # You'll create this secret later if needed
+      containers:
+      - name: backend
+        # --- CHANGE THIS LINE ---
+        image: sanj004/ai-govbot-backend:v1 # Use Docker Hub path ${{ secrets.DOCKERHUB_USERNAME }}
+        ports:
+        - containerPort: 8000
+        env:
+        - name: OPENAI_API_KEY
+          value: TNAEH2YwsobFg2itapy_l0OoToj1y4DHMqO6ZimaGlZ4R9h6Xfnd0I1zo8XqnFzHGWKhMFD-DXT3BlbkFJGt-qFFULAttQ5g7BMI7bbjrTAZs6qcg7s17OGGt7dugYRxjunFM7K5VS1ZebbiV48YZOvdYCsA
+        # Add other env vars, resources, volumes as before
+      # Add volumes, serviceAccountName as before
