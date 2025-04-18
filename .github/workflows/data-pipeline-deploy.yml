@@ -13,6 +13,7 @@ jobs:
       PROJECT_ID: data-pipeline-deployment-trial
       ZONE: us-east1-d
       VM_NAME: airflow-vm
+      SSH_USERNAME: ${{ vars.SSH_USERNAME}}
       
     steps:
       - name: Checkout repository
@@ -54,6 +55,9 @@ jobs:
           #!/bin/bash
           set -euxo pipefail
           
+          # Go to home directory
+          cd /home/$SSH_USERNAME
+          
           # Check if repository exists and update, fail if not present
           if [ -d "AI-GovBot" ]; then
             echo "Repository exists, updating..."
@@ -72,9 +76,6 @@ jobs:
           # Stop any running Docker containers
           echo "Stopping any running Docker containers..."
           docker compose down || true
-          
-          # Ensure directories exist
-          mkdir -p ./logs ./plugins ./secrets
           
           # Check if environment file exists, fail if not
           if [ ! -f .env ]; then
