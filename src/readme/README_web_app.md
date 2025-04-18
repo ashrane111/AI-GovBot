@@ -29,24 +29,19 @@ pip install -r src/requirements.txt
 ```bash
 # Start services (MLflow + FastAPI) from project root
 python src/backend/services.py
-
-# Verify endpoints
-curl http://localhost:8000/answer_query/healthcheck
 ```
+# View MLFlow
+MLFLOW can be viewed below link after this log - INFO: Application startup complete.
 
-**Expected Output**:  
-```json
-{"status":"API operational","timestamp":"2025-03-23T18:52:00"}
-```
+MLFLOW Link - http://0.0.0.0:8001
 
 ### 3. Frontend Activation
+Open another terminal for frontend and run below command.
 ```bash
-# Option 1 - Via wrapper (recommended)
-python src/frontend/frontend.py
-
-# Option 2 - Direct Streamlit (might need to provide email)
-streamlit run streamlit.py --server.port 8501
+streamlit run src/frontend/streamlit.py --server.port 8501
 ```
+
+Frontend can be viewed on this link - http://localhost:8501
 
 ## 🔄 API-Frontend Integration
 
