@@ -51,12 +51,12 @@ jobs:
       - name: Deploy to VM
         run: |
           # Create deployment script
-          cat > deploy.sh << 'EOL'
+          cat > deploy.sh << EOL
           #!/bin/bash
           set -euxo pipefail
           
           # Go to home directory
-          cd /home/$SSH_USERNAME
+          cd /home/${SSH_USERNAME}
           
           # Check if repository exists and update, fail if not present
           if [ -d "AI-GovBot" ]; then
@@ -110,9 +110,6 @@ jobs:
           
           # Execute script on VM
           gcloud compute ssh $VM_NAME --zone=$ZONE --ssh-key-file=~/.ssh/gcp_airflow_key -- "sudo bash ~/deploy.sh"
-          
-          echo "🎉 Data pipeline deployment complete!"
-          echo "🌐 Access Airflow UI at: http://$VM_IP:8080"
           
           echo "🎉 Data pipeline deployment complete!"
           echo "🌐 Access Airflow UI at: http://$VM_IP:8080"
