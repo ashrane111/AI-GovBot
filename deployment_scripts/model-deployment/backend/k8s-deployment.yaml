@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: us-east1-docker.pkg.dev/data-pipeline-deployment-trial/ai-govbot-repo/ai-govbot-backend:v1 #rixirx/harvey-backend:v1 
+        image: us-east1-docker.pkg.dev/data-pipeline-deployment-trial/ai-govbot-repo/ai-govbot-backend:latest 
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
