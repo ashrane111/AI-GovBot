@@ -17,3 +17,4 @@ openai
 seaborn
 google-cloud-storage
 aiohttp
+langfuse

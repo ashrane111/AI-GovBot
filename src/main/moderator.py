@@ -2,12 +2,14 @@ from main.config_loader import config_loader
 import re
 import aiohttp
 import asyncio
+from langfuse.decorators import observe
 
 
 class Moderator:
     def __init__(self):
         self.openai_api_key = config_loader.get("openai.api_key")
 
+    @observe()
     async def moderate_content(self, content, sensitivity_level="medium"):
         """
         Multi-level content moderation
