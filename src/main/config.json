@@ -34,6 +34,13 @@
         "client": "openai",
         "model_name": "gpt-4o-mini",
         "api_key": "sk-xxx"
+    },
+    "moderation": {
+        "enabled": true,
+        "sensitivity_level": "medium",
+        "input_check": true,
+        "output_check": true,
+        "log_flagged": true
     }
     
 }
