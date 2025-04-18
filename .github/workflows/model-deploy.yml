@@ -20,8 +20,8 @@ env:
   # --- Define GAR image names ---
   GAR_LOCATION: us-east1 
   GAR_REPOSITORY_NAME: ai-govbot-repo 
-  BACKEND_IMAGE_NAME: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY_NAME }}/ai-govbot-backend:v1
-  FRONTEND_IMAGE_NAME: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY_NAME }}/ai-govbot-frontend:v1
+  BACKEND_IMAGE_NAME: us-east1-docker.pkg.dev/data-pipeline-deployment-trial/ai-govbot-repo/ai-govbot-backend:v1
+  FRONTEND_IMAGE_NAME: us-east1-docker.pkg.dev/data-pipeline-deployment-trial/ai-govbot-repo/ai-govbot-frontend:v1
   # Define K8s manifest paths
   NAMESPACE_FILE: k8s/namespace.yaml
   BACKEND_DEPLOYMENT_FILE: deployment_scripts/model_deployment/backend/k8s-deployment.yaml
@@ -56,7 +56,7 @@ jobs:
 
       # --- ADD Step to Configure Docker for GAR ---
       - name: Configure Docker for Artifact Registry
-        run: gcloud auth configure-docker ${{ env.GAR_LOCATION }}-docker.pkg.dev --project=${{ env.PROJECT_ID }}
+        run: gcloud auth configure-docker us-east1-docker.pkg.dev --project=data-pipeline-deployment-trial
 
       # --- Set Full Image Name Environment Variables (uses updated names from env block) ---
       - name: Set Full Image Names
@@ -85,11 +85,11 @@ jobs:
           file: ${{ env.FRONTEND_DOCKERFILE }}
           platforms: linux/amd64,linux/arm64
           push: true
-        tags: ${{ env.FRONTEND_IMAGE_NAME }} # Pushes to the GAR path
+          tags: ${{ env.FRONTEND_IMAGE_NAME }} # Pushes to the GAR path
 
       # --- Get GKE Credentials ---
       - name: Get GKE Cluster Credentials
-        run: gcloud container clusters get-credentials ${{ env.CLUSTER_NAME }} --zone ${{ env.ZONE }} --project ${{ env.PROJECT_ID }}
+        run: gcloud container clusters get-credentials ${{ env.CLUSTER_NAME }} --zone ${{ env.ZONE }} --project data-pipeline-deployment-trial
 
       # --- Inject API Key Secret from github secrets ---
       - name: Create temporary .env file
