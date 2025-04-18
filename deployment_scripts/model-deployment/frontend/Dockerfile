@@ -21,7 +21,7 @@ EXPOSE 8501
 
 # Define environment variables
 # The backend service URL uses the K8s service name created in backend/k8s-service.yaml
-ENV BACKEND_API_URL="http://ai-govbot-backend-service:8000/answer_query/"
+#ENV BACKEND_API_URL="http://35.229.115.215:8000"
 # Ensure streamlit.py uses this env var, or hardcode carefully:
 # ENV STREAMLIT_SERVER_PORT=8501 # Already set in CMD below
 

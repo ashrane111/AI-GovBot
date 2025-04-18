@@ -4,7 +4,6 @@ set -x
 
 PROJECT_ID="data-pipeline-deployment-trial"
 ZONE="us-east1-d"
-REGION="us-east1"
 
 
 # --- Configuration ---

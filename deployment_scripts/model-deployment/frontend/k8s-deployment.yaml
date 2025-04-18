@@ -22,11 +22,12 @@ spec:
       containers:
       - name: frontend
         # --- CHANGE THIS LINE ---
-        image: sanj004/ai-govbot-frontend:v1 # Use Docker Hub path ${{ secrets.DOCKERHUB_USERNAME }}
+        image: sanj004/ai-govbot-frontend:v2 # Use Docker Hub path ${{ secrets.DOCKERHUB_USERNAME }}
+        imagePullPolicy: Always
         ports:
         - containerPort: 8501
-        env:
-        - name: BACKEND_API_URL
-          value: "http://ai-govbot-backend-service:8000/answer_query/"
+        # env:
+        # - name: BACKEND_API_URL
+        #   value: "http://ai-govbot-backend-service:8000/answer_query/"
         # Add other env vars, resources as before
       # Add volumes, serviceAccountName as before
