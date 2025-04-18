@@ -8,7 +8,7 @@ on:
       # Trigger only if relevant source or config files change
       - 'src/**'
       - 'deployment_scripts/**'
-      - '.github/workflows/model-deploy.yaml'
+      - '.github/workflows/model-deploy.yml'
   workflow_dispatch:
 
 env:
