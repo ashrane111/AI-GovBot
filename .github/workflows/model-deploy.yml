@@ -87,6 +87,9 @@ jobs:
       #     push: true
       #     tags: ${{ env.FRONTEND_IMAGE_NAME }} # Pushes to the GAR path
 
+      - name: Install GKE Auth Plugin
+        run: sudo apt-get update && sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin -y
+
       # --- Get GKE Credentials ---
       - name: Get GKE Cluster Credentials
         run: gcloud container clusters get-credentials ${{ env.CLUSTER_NAME }} --zone ${{ env.ZONE }} --project data-pipeline-deployment-trial
