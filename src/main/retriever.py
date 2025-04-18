@@ -1,6 +1,7 @@
 from langchain_community.vectorstores import FAISS
 from main.embeddings_model import SentenceTransformerEmbeddings
 from main.config_loader import config_loader
+from langfuse.decorators import observe
 
 class Retriever:
     def __init__(self):
@@ -12,7 +13,7 @@ class Retriever:
             allow_dangerous_deserialization=True
         )
         self.retriever = self.vector_store.as_retriever()
-
+    @observe()
     def retrieve(self, query):
         # Use similarity_search_with_score for actual scores
         docs_and_scores = self.vector_store.similarity_search_with_score(query, k=config_loader.get("retriever_args.n_docs", 3))
