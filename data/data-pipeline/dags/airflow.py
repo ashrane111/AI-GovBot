@@ -22,9 +22,17 @@ from utils.create_lang_vector_index import create_lang_index
 from airflow import configuration as conf
 from utils.data_validation import validate_downloaded_data_files, check_validation_status
 from utils.bias_detection import detect_and_simulate_bias
+from utils.update_config import update_config_with_download_url
 # from utils.sentence_transformer_encoder import SentenceTransformerEmbeddings
 # Enable pickle support for XCom, allowing data to be passed between tasks
 conf.set('core', 'enable_xcom_pickling', 'True')
+
+def update_download_url_task():
+    config_path = os.path.join(os.environ.get('AIRFLOW_HOME', '/opt/airflow'), 'config', 'config.json')
+    success = update_config_with_download_url(config_path)
+    if not success:
+        raise Exception("Failed to update config.json")
+
 
 def get_config_value(key, default=None):
     """Get a value from the config.json file"""
@@ -90,6 +98,13 @@ dag = DAG(
     description='Dag for the data pipeline',
     schedule_interval=None,  # Set the schedule interval or use None for manual triggering
     catchup=False,
+)
+
+# Task 0: Update config.json
+update_config_operator = PythonOperator(
+    task_id='update_config_task',
+    python_callable=update_download_url_task,
+    dag=dag,
 )
 
 # Task to download data in zip, calls the 'download_zip_file' Python function
@@ -214,6 +229,7 @@ send_email = EmailOperator(
 )
 
 # Set task dependencies
+update_config_operator >> download_unzip_task
 download_unzip_task >> validate_schema_task >> check_validation_task
 check_validation_task >> data_combine_task  # If validation passes, continue
 check_validation_task >> trigger_validation_failure_email  # If validation fails, send an alert
