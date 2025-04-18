@@ -7,11 +7,13 @@ spec:
   selector:
     app: ai-govbot-backend         # Selects pods managed by the backend Deployment
   ports:
-  - protocol: TCP
+  - name: http-fastapi
+    protocol: TCP
     port: 8000                     # Port the service listens on internally
     targetPort: 8000               # Port on the pods to forward traffic to
     #add 8001 port for health check
-  - protocol: TCP
+  - name: http-mlflow
+    protocol: TCP
     port: 8001                     # Port the service listens on internally
     targetPort: 8001               # Port on the pods to forward traffic to
   type: LoadBalancer                  # Only expose internally within the cluster

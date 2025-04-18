@@ -1,53 +1,49 @@
-name: Build, Push, and Deploy Model to GKE
+name: Build and Deploy AI-GovBot to GKE (Dev Branch)
 
 on:
   push:
-    branches: [ dev ]
+    branches:
+      - sanjana-dev # Trigger on pushes to the 'dev' branch
     paths:
-      # Trigger on changes in src, deployment scripts, compose file, or workflow
+      # Trigger only if relevant source or config files change
       - 'src/**'
       - 'deployment_scripts/**'
-      - 'docker-compose.yaml'
+      - 'k8s/**'
       - '.github/workflows/deploy.yaml'
-  workflow_dispatch:  
+  workflow_dispatch:
 
 env:
   PROJECT_ID: data-pipeline-deployment-trial
   ZONE: us-east1-d 
-  CLUSTER_NAME: ai-govbot-cluster 
+  CLUSTER_NAME: ai-govbot-cluster
   NAMESPACE: mlscopers
   API_KEY_PLACEHOLDER: "__API_KEY_PLACEHOLDER__"
-  # Define Docker Image Names dynamically using secrets
-  BACKEND_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/ai-govbot-backend:v1
-  FRONTEND_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/ai-govbot-frontend:v1
+  # --- Define GAR image names ---
+  GAR_LOCATION: us-east1 
+  GAR_REPOSITORY_NAME: ai-govbot-repo 
+  BACKEND_IMAGE_NAME: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY_NAME }}/ai-govbot-backend:v1
+  FRONTEND_IMAGE_NAME: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY_NAME }}/ai-govbot-frontend:v1
+  # Define K8s manifest paths
+  NAMESPACE_FILE: k8s/namespace.yaml
+  BACKEND_DEPLOYMENT_FILE: deployment_scripts/model_deployment/backend/k8s-deployment.yaml
+  BACKEND_SERVICE_FILE: deployment_scripts/model_deployment/backend/k8s-service.yaml
+  FRONTEND_DEPLOYMENT_FILE: deployment_scripts/model_deployment/frontend/k8s-deployment.yaml
+  FRONTEND_SERVICE_FILE: deployment_scripts/model_deployment/frontend/k8s-service.yaml
+  # Define Dockerfile paths
+  BACKEND_DOCKERFILE: deployment_scripts/model-deployment/backend/Dockerfile
+  FRONTEND_DOCKERFILE: deployment_scripts/model-deployment/frontend/Dockerfile
 
 jobs:
-  build-push-deploy:
+  build-and-deploy:
+    name: Build and Deploy
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
-      id-token: 'write'
+      id-token: 'write' 
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # --- Docker Hub Login ---
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3 # Using dedicated action is robust
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      # --- Build and Push using Docker Compose ---
-      - name: Build and Push Docker images via Docker Compose
-        # Pass Image Names as environment variables to docker-compose
-        env:
-          BACKEND_IMAGE_NAME: ${{ env.BACKEND_IMAGE_NAME }}
-          FRONTEND_IMAGE_NAME: ${{ env.FRONTEND_IMAGE_NAME }}
-        run: |
-          docker-compose build
-          docker-compose push
 
       # --- Authenticate to Google Cloud ---
       - name: Authenticate to Google Cloud
@@ -59,51 +55,86 @@ jobs:
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v2'
 
+      # --- ADD Step to Configure Docker for GAR ---
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.GAR_LOCATION }}-docker.pkg.dev --project=${{ env.PROJECT_ID }}
+
+      # --- Set Full Image Name Environment Variables (uses updated names from env block) ---
+      - name: Set Full Image Names
+        run: |
+          echo "Using Backend Image: ${{ env.BACKEND_IMAGE_NAME }}"
+          echo "Using Frontend Image: ${{ env.FRONTEND_IMAGE_NAME }}"
+    
+
+      # --- Build and Push Steps (use the same buildx steps, they now target GAR) ---
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and Push Backend Image to GAR
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ env.BACKEND_DOCKERFILE }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.BACKEND_IMAGE_NAME }} # Pushes to the GAR path
+
+      - name: Build and Push Frontend Image to GAR
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ env.FRONTEND_DOCKERFILE }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+        tags: ${{ env.FRONTEND_IMAGE_NAME }} # Pushes to the GAR path
+
       # --- Get GKE Credentials ---
       - name: Get GKE Cluster Credentials
         run: gcloud container clusters get-credentials ${{ env.CLUSTER_NAME }} --zone ${{ env.ZONE }} --project ${{ env.PROJECT_ID }}
 
-      # --- Prepare & Deploy Kubernetes Manifests ---
-      # --- Inject API Key Secret into K8s Manifest ---
-      - name: Prepare Backend Manifest (Inject API Key for K8s)
+      # --- Inject API Key Secret from github secrets ---
+      - name: Create temporary .env file
         run: |
-          # Define the target file path
-          BACKEND_DEPLOYMENT_FILE="deployment_scripts/model_deployment/backend/k8s-deployment.yaml"
+          echo "Creating temporary .env file..."
+          # Write the secret value into the .env file in KEY=VALUE format
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" > .env
+          echo ".env file created."
+          # Optional: cat .env # Use for debugging only, hides secrets in logs by default
 
-          if grep -q "${{ env.API_KEY_PLACEHOLDER }}" ${BACKEND_DEPLOYMENT_FILE}; then
-            echo "Replacing API key placeholder in ${BACKEND_DEPLOYMENT_FILE}..."
-            # Use the API key secret directly here for substitution
-            sed -i "s|${{ env.API_KEY_PLACEHOLDER }}|${{ secrets.OPENAI_API_KEY }}|g" ${BACKEND_DEPLOYMENT_FILE}
-          else
-            echo "Placeholder '${{ env.API_KEY_PLACEHOLDER }}' not found in ${BACKEND_DEPLOYMENT_FILE}. Check the file."
-            exit 1
-          fi
+      - name: Create/Update Kubernetes OpenAI Secret
+        run: |
+          echo "Creating/Updating Kubernetes secret 'openai-secret' from .env file..."
+          kubectl create secret generic openai-secret \
+            --from-env-file=.env \
+            --namespace=${{ env.NAMESPACE }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+          echo "Kubernetes secret 'openai-secret' processed."
+
 
       # --- Apply K8s Manifests ---
-      # Uses the NEW paths for backend and frontend manifests
       - name: Deploy to GKE
         run: |
           echo "Applying Kubernetes manifests to namespace: ${{ env.NAMESPACE }}"
 
-          echo "Applying Namespace..."
-          kubectl apply -f ${BACKEND_DEPLOYMENT_FILE}/k8s-namespace.yaml
+          echo "Applying Namespace: ${{ env.NAMESPACE_FILE }}"
+          kubectl apply -f ${{ env.NAMESPACE_FILE }}
 
-          # Apply Backend (using new paths)
-          echo "Applying Backend Deployment..."
-          kubectl apply -f deployment_scripts/model_deployment/backend/k8s-deployment.yaml -n ${{ env.NAMESPACE }}
-          echo "Applying Backend Service..."
-          kubectl apply -f deployment_scripts/model_deployment/backend/k8s-service.yaml -n ${{ env.NAMESPACE }}
+          echo "Applying Backend Deployment: ${{ env.BACKEND_DEPLOYMENT_FILE }}"
+          kubectl apply -f  ${{ env.BACKEND_DEPLOYMENT_FILE }} -n ${{ env.NAMESPACE }}
+          echo "Applying Backend Service: ${{ env.BACKEND_SERVICE_FILE }}"
+          kubectl apply -f ${{ env.BACKEND_SERVICE_FILE }} -n ${{ env.NAMESPACE }}
 
-          # Apply Frontend (using new paths)
-          echo "Applying Frontend Deployment..."
-          kubectl apply -f deployment_scripts/model_deployment/frontend/k8s-deployment.yaml -n ${{ env.NAMESPACE }}
-          echo "Applying Frontend Service..."
-          kubectl apply -f deployment_scripts/model_deployment/frontend/k8s-service.yaml -n ${{ env.NAMESPACE }}
+          echo "Applying Frontend Deployment: ${{ env.FRONTEND_DEPLOYMENT_FILE }}"
+          kubectl apply -f ${{ env.FRONTEND_DEPLOYMENT_FILE }} -n ${{ env.NAMESPACE }}
+          echo "Applying Frontend Service: ${{ env.FRONTEND_SERVICE_FILE }}"
+          kubectl apply -f ${{ env.FRONTEND_SERVICE_FILE }} -n ${{ env.NAMESPACE }}
 
-
-      - name: Verify Deployment
+      # --- Verify Deployment Rollout ---
+      - name: Verify Deployment Rollout
         run: |
-          echo "Waiting for deployments to rollout..."
-          kubectl rollout status deployment/ai-govbot-backend-deployment -n ${{ env.NAMESPACE }} --timeout=120s
-          kubectl rollout status deployment/ai-govbot-frontend-deployment -n ${{ env.NAMESPACE }} --timeout=120s
-          # ... other verification steps ...
+          echo "Waiting for deployments to complete..."
+          kubectl rollout status deployment/ai-govbot-backend-deployment -n ${{ env.NAMESPACE }} --timeout=5m
+          kubectl rollout status deployment/ai-govbot-frontend-deployment -n ${{ env.NAMESPACE }} --timeout=5m
+          echo "Deployment successful!"
+          echo "Verifying services..."
+          kubectl get services -n ${{ env.NAMESPACE }}

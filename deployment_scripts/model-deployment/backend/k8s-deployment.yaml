@@ -16,13 +16,9 @@ spec:
       labels:
         app: ai-govbot-backend
     spec:
-      # --- Add this section if your Docker Hub repo is PRIVATE ---
-      # imagePullSecrets:
-      # - name: dockerhub-secret # You'll create this secret later if needed
       containers:
       - name: backend
-        # --- CHANGE THIS LINE ---
-        image: rixirx/harvey-backend:v1 # Use Docker Hub path ${{ secrets.DOCKERHUB_USERNAME }}
+        image: us-east1-docker.pkg.dev/data-pipeline-deployment-trial/ai-govbot-repo/ai-govbot-backend:v1 #rixirx/harvey-backend:v1 
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
@@ -32,5 +28,3 @@ spec:
             secretKeyRef:
               name: openai-secret
               key: OPENAI_API_KEY
-        # Add other env vars, resources, volumes as before
-      # Add volumes, serviceAccountName as before
