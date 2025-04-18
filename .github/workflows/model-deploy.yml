@@ -59,33 +59,33 @@ jobs:
         run: gcloud auth configure-docker us-east1-docker.pkg.dev --project=data-pipeline-deployment-trial
 
       # --- Set Full Image Name Environment Variables (uses updated names from env block) ---
-      - name: Set Full Image Names
-        run: |
-          echo "Using Backend Image: ${{ env.BACKEND_IMAGE_NAME }}"
-          echo "Using Frontend Image: ${{ env.FRONTEND_IMAGE_NAME }}"
+      # - name: Set Full Image Names
+      #   run: |
+      #     echo "Using Backend Image: ${{ env.BACKEND_IMAGE_NAME }}"
+      #     echo "Using Frontend Image: ${{ env.FRONTEND_IMAGE_NAME }}"
     
 
-      # --- Build and Push Steps (use the same buildx steps, they now target GAR) ---
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      # # --- Build and Push Steps (use the same buildx steps, they now target GAR) ---
+      # - name: Set up Docker Buildx
+      #   uses: docker/setup-buildx-action@v3
 
-      - name: Build and Push Backend Image to GAR
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ${{ env.BACKEND_DOCKERFILE }}
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ env.BACKEND_IMAGE_NAME }} # Pushes to the GAR path
+      # - name: Build and Push Backend Image to GAR
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     file: ${{ env.BACKEND_DOCKERFILE }}
+      #     platforms: linux/amd64,linux/arm64
+      #     push: true
+      #     tags: ${{ env.BACKEND_IMAGE_NAME }} # Pushes to the GAR path
 
-      - name: Build and Push Frontend Image to GAR
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ${{ env.FRONTEND_DOCKERFILE }}
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ env.FRONTEND_IMAGE_NAME }} # Pushes to the GAR path
+      # - name: Build and Push Frontend Image to GAR
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     file: ${{ env.FRONTEND_DOCKERFILE }}
+      #     platforms: linux/amd64,linux/arm64
+      #     push: true
+      #     tags: ${{ env.FRONTEND_IMAGE_NAME }} # Pushes to the GAR path
 
       # --- Get GKE Credentials ---
       - name: Get GKE Cluster Credentials
@@ -105,8 +105,7 @@ jobs:
           echo "Creating/Updating Kubernetes secret 'openai-secret' from .env file..."
           kubectl create secret generic openai-secret \
             --from-env-file=.env \
-            --namespace=${{ env.NAMESPACE }} \
-            --dry-run=client -o yaml | kubectl apply -f -
+            --namespace=${{ env.NAMESPACE }}
           echo "Kubernetes secret 'openai-secret' processed."
 
 
