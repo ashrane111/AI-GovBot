@@ -23,11 +23,11 @@ env:
   BACKEND_IMAGE_NAME: us-east1-docker.pkg.dev/data-pipeline-deployment-trial/ai-govbot-repo/ai-govbot-backend:v1
   FRONTEND_IMAGE_NAME: us-east1-docker.pkg.dev/data-pipeline-deployment-trial/ai-govbot-repo/ai-govbot-frontend:v1
   # Define K8s manifest paths
-  NAMESPACE_FILE: k8s/namespace.yaml
-  BACKEND_DEPLOYMENT_FILE: deployment_scripts/model_deployment/backend/k8s-deployment.yaml
-  BACKEND_SERVICE_FILE: deployment_scripts/model_deployment/backend/k8s-service.yaml
-  FRONTEND_DEPLOYMENT_FILE: deployment_scripts/model_deployment/frontend/k8s-deployment.yaml
-  FRONTEND_SERVICE_FILE: deployment_scripts/model_deployment/frontend/k8s-service.yaml
+  NAMESPACE_FILE: deployment_scripts/model-deployment/k8s-namespace.yaml
+  BACKEND_DEPLOYMENT_FILE: deployment_scripts/model-deployment/backend/k8s-deployment.yaml
+  BACKEND_SERVICE_FILE: deployment_scripts/model-deployment/backend/k8s-service.yaml
+  FRONTEND_DEPLOYMENT_FILE: deployment_scripts/model-deployment/frontend/k8s-deployment.yaml
+  FRONTEND_SERVICE_FILE: deployment_scripts/model-deployment/frontend/k8s-service.yaml
   # Define Dockerfile paths
   BACKEND_DOCKERFILE: deployment_scripts/model-deployment/backend/Dockerfile
   FRONTEND_DOCKERFILE: deployment_scripts/model-deployment/frontend/Dockerfile
