@@ -8,6 +8,9 @@ from datetime import datetime
 import time
 import re
 from langfuse.decorators import observe
+from main.gcs_download import download_latest_file, is_blob_updated
+
+
 
 class RAGPipeline:
     def __init__(self):
@@ -17,6 +20,21 @@ class RAGPipeline:
         self.SCORE_THRESHOLD = config_loader.get("retriever_args.score_threshold", 1.2)
         self.prompter = PromptGen()
         self.moderator = Moderator()
+
+        self.check_and_download_gcs_files()
+
+    
+    def check_and_download_gcs_files(self):
+        bucket_name = config_loader.get("gcs_storage.bucket_name")
+        pkl_blob_prefix = config_loader.get("gcs_storage.pkl_blob_prefix")
+        faiss_blob_prefix = config_loader.get("gcs_storage.faiss_blob_prefix")
+        pkl_local_destination = config_loader.get("gcs_storage.pkl_local_destination")
+        faiss_local_destination = config_loader.get("gcs_storage.faiss_local_destination")
+
+        if is_blob_updated(bucket_name, pkl_blob_prefix, pkl_local_destination):
+            download_latest_file(bucket_name, pkl_blob_prefix, pkl_local_destination)
+            download_latest_file(bucket_name, faiss_blob_prefix, faiss_local_destination)
+
 
     @observe()
     async def run(self, query_message):
