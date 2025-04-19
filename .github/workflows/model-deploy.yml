@@ -1,15 +1,16 @@
 name: Build and Deploy AI-GovBot to GKE (Dev Branch)
 
 on:
-  push:
-    branches:
-      - sanjana-dev # Trigger on pushes to the 'dev' branch
-    paths:
-      # Trigger only if relevant source or config files change
-      - 'src/**'
-      - 'deployment_scripts/**'
-      - '.github/workflows/model-deploy.yml'
+  # Keep manual trigger
   workflow_dispatch:
+  # Trigger after the 'Run Unit Tests' workflow completes
+  workflow_run:
+    workflows: ["Run Unit Tests"]
+    types:
+      - completed
+    # Only trigger if the completed test run was on the 'sanjana-dev' branch
+    branches:
+      - sanjana-dev
 
 env:
   PROJECT_ID: data-pipeline-deployment-trial
@@ -42,10 +43,15 @@ jobs:
     permissions:
       contents: 'read'
       id-token: 'write' 
+    
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # Fetch the SHA from the workflow_run event if available
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       # --- Authenticate to Google Cloud ---
       - name: Authenticate to Google Cloud
@@ -56,6 +62,10 @@ jobs:
 
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v2'
+
+      # --- Install jq ---
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
 
       # --- ADD Step to Configure Docker for GAR ---
       - name: Configure Docker for Artifact Registry
@@ -158,33 +168,7 @@ jobs:
           push: true
           tags: ${{ env.FRONTEND_IMAGE_NAME_LATEST }} # Pushes the new :latest tag
 
-
-      # # --- Build and Push Steps (use the same buildx steps, they now target GAR) ---
-      # - name: Set up Docker Buildx
-      #   uses: docker/setup-buildx-action@v3
-
-      # - name: Build and Push Backend Image to GAR
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     file: ${{ env.BACKEND_DOCKERFILE }}
-      #     platforms: linux/amd64,linux/arm64
-      #     push: true
-      #     tags: ${{ env.BACKEND_IMAGE_NAME }} # Pushes to the GAR path
-
-      # - name: Build and Push Frontend Image to GAR
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     file: ${{ env.FRONTEND_DOCKERFILE }}
-      #     platforms: linux/amd64,linux/arm64
-      #     push: true
-      #     tags: ${{ env.FRONTEND_IMAGE_NAME }} # Pushes to the GAR path
-
-      # # --- Get GKE Credentials ---
-      # - name: Get GKE Cluster Credentials
-      #   run: gcloud container clusters get-credentials ${{ env.CLUSTER_NAME }} --zone ${{ env.ZONE }} --project data-pipeline-deployment-trial
-
+      # --- Authenticate to GKE ---
       - name: Get GKE Credentials
         uses: google-github-actions/get-gke-credentials@v2
         with:
