@@ -32,7 +32,7 @@
     },
     "claude": {
         "client": "claude",
-        "model_name": "claude-3-5-sonnet-latest",
+        "model_name": "claude-3-7-sonnet-latest",
         "api_key": "sk-ant-yourkey"
     },
     "openai" : {
