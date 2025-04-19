@@ -17,4 +17,4 @@ app.add_middleware(
 app.include_router(answer_query_router, prefix="/answer_query", tags=["answer_query"])
 
 if __name__ == "__main__":
-    uvicorn.run("backend:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("backend:app", host="0.0.0.0", port=8000)
