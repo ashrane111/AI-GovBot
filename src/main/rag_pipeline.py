@@ -25,6 +25,9 @@ def check_and_download_gcs_files():
 
 class RAGPipeline:
     def __init__(self):
+
+        check_and_download_gcs_files()
+
         self.retriever = Retriever()
         self.generator = Generator()
         self.tracker = MLFlowTracker()
@@ -32,12 +35,7 @@ class RAGPipeline:
         self.prompter = PromptGen()
         self.moderator = Moderator()
 
-        check_and_download_gcs_files()
-
-    
-    
-
-
+        
     @observe()
     async def run(self, query_message):
         required_query = query_message[-1]
