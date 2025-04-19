@@ -6,11 +6,9 @@ on:
   # Trigger after the 'Run Unit Tests' workflow completes
   workflow_run:
     workflows: ["Run Unit Tests"]
-    types:
-      - completed
-    # Only trigger if the completed test run was on the 'sanjana-dev' branch
+    types: [completed]
     branches:
-      - sanjana-dev
+      - dev
 
 env:
   PROJECT_ID: data-pipeline-deployment-trial
