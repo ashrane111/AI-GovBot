@@ -96,7 +96,7 @@ def task_failure_alert(context):
 # Define default arguments for your DAG
 default_args = {
     'owner': get_config_value('airflow_owner', 'airflow'),
-    'start_date': datetime.today().date(),
+    'start_date': datetime(2025, 2, 13), # Start date for the DAG
     'retries': 0, # Number of retries in case of task failure
     'retry_delay': timedelta(minutes=5), # Delay before retries
     'email': [ to_email ],
