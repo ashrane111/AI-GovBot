@@ -13,8 +13,8 @@ from datasets import Dataset
 from dotenv import load_dotenv
 
 # --- Evaluation Thresholds (Read from Environment Variables) ---
-DEFAULT_FAITHFULNESS_THRESHOLD = 1.1
-DEFAULT_ANSWER_RELEVANCY_THRESHOLD = 1.1
+DEFAULT_FAITHFULNESS_THRESHOLD = 0.4
+DEFAULT_ANSWER_RELEVANCY_THRESHOLD = 0.4
 
 # --- Fallback Answer Detection ---
 # Add specific strings/prefixes that indicate a non-answer/fallback
