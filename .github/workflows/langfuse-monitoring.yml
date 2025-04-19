@@ -1,0 +1,68 @@
+
+name: Langfuse Error Monitoring
+
+on:
+  schedule:
+    - cron: '0 */12 * * *'
+  workflow_dispatch:  # Allow manual triggering for testing
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install langfuse
+          # Add any other dependencies your script requires
+          
+      - name: Run monitoring script
+        id: monitoring
+        env:
+          LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}
+          LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
+          LANGFUSE_HOST: ${{ secrets.LANGFUSE_HOST }}
+          TRACE_COUNT_THRESHOLD: ${{ vars.TRACE_COUNT_THRESHOLD || '2' }}
+          TIME_WINDOW_HOURS: ${{ vars.TIME_WINDOW_HOURS || '12' }}
+        run: |
+          # Run the monitoring script and capture its output
+          OUTPUT=$(python src/main/langfuse_monitoring.py)
+          
+          # Check if trace count exceeded threshold
+          if echo "$OUTPUT" | grep -q "Trace count exceeded threshold"; then
+            echo "SEND_ALERT=true" >> $GITHUB_ENV
+            echo "ERROR_COUNT=$(echo "$OUTPUT" | grep "Current trace count:" | cut -d':' -f2 | cut -d',' -f1 | xargs)" >> $GITHUB_ENV
+            echo "ALERT_MESSAGE=Langfuse Error Alert: $ERROR_COUNT errors detected in the last ${{ vars.TIME_WINDOW_HOURS }} hours." >> $GITHUB_ENV
+          else
+            echo "SEND_ALERT=false" >> $GITHUB_ENV
+          fi
+          
+      - name: Send email alert
+        if: env.SEND_ALERT == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "Errors in HARVEY exceeded Threshold - Langfuse"
+          body: |
+            Langfuse Error Monitoring Alert
+            
+            ${{ env.ERROR_COUNT }} errors were detected in the Langfuse observations over the past ${{ env.TIME_WINDOW_HOURS }} hours.
+            
+            This exceeds the configured threshold of ${{ env.TRACE_COUNT_THRESHOLD }}.
+            
+            Please check your Langfuse dashboard for more details.
+          from: sanjanajd115@gmail.com
+          to: vedantrishidas@gmail.com
+          secure: true  # Use TLS
