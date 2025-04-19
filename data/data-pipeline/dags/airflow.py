@@ -96,7 +96,7 @@ def task_failure_alert(context):
 # Define default arguments for your DAG
 default_args = {
     'owner': get_config_value('airflow_owner', 'airflow'),
-    'start_date': datetime(2025, 2, 19),
+    'start_date': datetime(2025, 2, 13), # Start date for the DAG
     'retries': 0, # Number of retries in case of task failure
     'retry_delay': timedelta(minutes=5), # Delay before retries
     'email': [ to_email ],
@@ -109,8 +109,9 @@ dag = DAG(
     'Data_pipeline_HARVEY',
     default_args=default_args,
     description='Dag for the data pipeline',
-    schedule_interval=None,  # Set the schedule interval or use None for manual triggering
+    schedule_interval='0 0 */14 * *',  # Set the schedule interval or use None for manual triggering
     catchup=False,
+    tags=['biweekly'],
     on_failure_callback=task_failure_alert,
 )
 

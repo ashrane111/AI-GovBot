@@ -5,6 +5,7 @@ from main.config_loader import config_loader
 from dotenv import load_dotenv
 import os
 import pathlib
+from langfuse.decorators import observe
 
 
 class OllamaLocalClient(LLMClient):
@@ -15,6 +16,7 @@ class OllamaLocalClient(LLMClient):
         # self.client = InferenceClient(provider=provider, token=token)
         self.model = config_loader.get("ollama_local.model_name", "llama3.1:8b")
         
+    @observe()
     async def generate_completion(self, user_messages, max_tokens=500, temperature=0.7, top_p=0.9):
         try:
             completion: ChatResponse = await self.client.chat(
