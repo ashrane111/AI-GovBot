@@ -22,15 +22,17 @@ from utils.create_lang_vector_index import create_lang_index
 from airflow import configuration as conf
 from utils.data_validation import validate_downloaded_data_files, check_validation_status
 from utils.bias_detection import detect_and_simulate_bias
+from utils.download_agora import update_config_with_download_url
 # from utils.sentence_transformer_encoder import SentenceTransformerEmbeddings
 # Enable pickle support for XCom, allowing data to be passed between tasks
 conf.set('core', 'enable_xcom_pickling', 'True')
 
+CONFIG_PATH = os.path.join(os.environ.get('AIRFLOW_HOME', '/opt/airflow'), 'config', 'config.json')
+
 def get_config_value(key, default=None):
     """Get a value from the config.json file"""
     try:
-        config_path = os.path.join(os.environ.get('AIRFLOW_HOME', '/opt/airflow'), 'config', 'config.json')
-        with open(config_path, 'r') as config_file:
+        with open(CONFIG_PATH, 'r') as config_file:
             config = json.load(config_file)
         return config.get(key, default)
     except Exception as e:
@@ -90,6 +92,15 @@ dag = DAG(
     description='Dag for the data pipeline',
     schedule_interval=None,  # Set the schedule interval or use None for manual triggering
     catchup=False,
+)
+
+download_agora_task = PythonOperator(
+    task_id='download_agora_task',
+    python_callable=update_config_with_download_url,
+    op_kwargs={
+        'config_path': CONFIG_PATH,
+    },
+    dag=dag,
 )
 
 # Task to download data in zip, calls the 'download_zip_file' Python function
@@ -214,7 +225,7 @@ send_email = EmailOperator(
 )
 
 # Set task dependencies
-download_unzip_task >> validate_schema_task >> check_validation_task
+download_agora_task >> download_unzip_task >> validate_schema_task >> check_validation_task
 check_validation_task >> data_combine_task  # If validation passes, continue
 check_validation_task >> trigger_validation_failure_email  # If validation fails, send an alert
 

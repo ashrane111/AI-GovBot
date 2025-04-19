@@ -1,10 +1,10 @@
 datasets {
-  num_examples: 11
+  num_examples: 10
   features {
     type: STRING
     string_stats {
       common_stats {
-        num_non_missing: 11
+        num_non_missing: 10
         min_num_values: 1
         max_num_values: 1
         avg_num_values: 1.0
@@ -12,60 +12,60 @@ datasets {
           buckets {
             low_value: 1.0
             high_value: 1.0
-            sample_count: 1.1
+            sample_count: 1.0
           }
           buckets {
             low_value: 1.0
             high_value: 1.0
-            sample_count: 1.1
+            sample_count: 1.0
           }
           buckets {
             low_value: 1.0
             high_value: 1.0
-            sample_count: 1.1
+            sample_count: 1.0
           }
           buckets {
             low_value: 1.0
             high_value: 1.0
-            sample_count: 1.1
+            sample_count: 1.0
           }
           buckets {
             low_value: 1.0
             high_value: 1.0
-            sample_count: 1.1
+            sample_count: 1.0
           }
           buckets {
             low_value: 1.0
             high_value: 1.0
-            sample_count: 1.1
+            sample_count: 1.0
           }
           buckets {
             low_value: 1.0
             high_value: 1.0
-            sample_count: 1.1
+            sample_count: 1.0
           }
           buckets {
             low_value: 1.0
             high_value: 1.0
-            sample_count: 1.1
+            sample_count: 1.0
           }
           buckets {
             low_value: 1.0
             high_value: 1.0
-            sample_count: 1.1
+            sample_count: 1.0
           }
           buckets {
             low_value: 1.0
             high_value: 1.0
-            sample_count: 1.1
+            sample_count: 1.0
           }
           type: QUANTILES
         }
-        tot_num_values: 11
+        tot_num_values: 10
       }
-      unique: 11
+      unique: 10
       top_values {
-        value: "U.S. state and local laws"
+        value: "U.S. state and local documents"
         frequency: 1.0
       }
       top_values {
@@ -93,10 +93,6 @@ datasets {
         frequency: 1.0
       }
       top_values {
-        value: "Enacted laws and policies"
-        frequency: 1.0
-      }
-      top_values {
         value: "Editors\' Picks"
         frequency: 1.0
       }
@@ -108,10 +104,10 @@ datasets {
         value: "Chinese law and policy"
         frequency: 1.0
       }
-      avg_length: 23.09091
+      avg_length: 23.4
       rank_histogram {
         buckets {
-          label: "U.S. state and local laws"
+          label: "U.S. state and local documents"
           sample_count: 1.0
         }
         buckets {
@@ -153,24 +149,18 @@ datasets {
         buckets {
           low_rank: 7
           high_rank: 7
-          label: "Enacted laws and policies"
+          label: "Editors\' Picks"
           sample_count: 1.0
         }
         buckets {
           low_rank: 8
           high_rank: 8
-          label: "Editors\' Picks"
+          label: "Corporate policies and commitments"
           sample_count: 1.0
         }
         buckets {
           low_rank: 9
           high_rank: 9
-          label: "Corporate policies and commitments"
-          sample_count: 1.0
-        }
-        buckets {
-          low_rank: 10
-          high_rank: 10
           label: "Chinese law and policy"
           sample_count: 1.0
         }
@@ -184,7 +174,7 @@ datasets {
     type: STRING
     string_stats {
       common_stats {
-        num_non_missing: 11
+        num_non_missing: 10
         min_num_values: 1
         max_num_values: 1
         avg_num_values: 1.0
@@ -192,58 +182,58 @@ datasets {
           buckets {
             low_value: 1.0
             high_value: 1.0
-            sample_count: 1.1
+            sample_count: 1.0
           }
           buckets {
             low_value: 1.0
             high_value: 1.0
-            sample_count: 1.1
+            sample_count: 1.0
           }
           buckets {
             low_value: 1.0
             high_value: 1.0
-            sample_count: 1.1
+            sample_count: 1.0
           }
           buckets {
             low_value: 1.0
             high_value: 1.0
-            sample_count: 1.1
+            sample_count: 1.0
           }
           buckets {
             low_value: 1.0
             high_value: 1.0
-            sample_count: 1.1
+            sample_count: 1.0
           }
           buckets {
             low_value: 1.0
             high_value: 1.0
-            sample_count: 1.1
+            sample_count: 1.0
           }
           buckets {
             low_value: 1.0
             high_value: 1.0
-            sample_count: 1.1
+            sample_count: 1.0
           }
           buckets {
             low_value: 1.0
             high_value: 1.0
-            sample_count: 1.1
+            sample_count: 1.0
           }
           buckets {
             low_value: 1.0
             high_value: 1.0
-            sample_count: 1.1
+            sample_count: 1.0
           }
           buckets {
             low_value: 1.0
             high_value: 1.0
-            sample_count: 1.1
+            sample_count: 1.0
           }
           type: QUANTILES
         }
-        tot_num_values: 11
+        tot_num_values: 10
       }
-      unique: 11
+      unique: 10
       top_values {
         value: "U.S. federal regulations and other AI-related documents from the executive branch."
         frequency: 1.0
@@ -258,10 +248,6 @@ datasets {
       }
       top_values {
         value: "Documents not covered in other collections."
-        frequency: 1.0
-      }
-      top_values {
-        value: "All AGORA governmental documents that have been officially enacted."
         frequency: 1.0
       }
       top_values {
@@ -288,7 +274,7 @@ datasets {
         value: "AI governance pledges and policy documents from leading companies."
         frequency: 1.0
       }
-      avg_length: 69.36364
+      avg_length: 69.6
       rank_histogram {
         buckets {
           label: "U.S. federal regulations and other AI-related documents from the executive branch."
@@ -315,42 +301,36 @@ datasets {
         buckets {
           low_rank: 4
           high_rank: 4
-          label: "All AGORA governmental documents that have been officially enacted."
+          label: "AI-related provisions from the National Defense Authorization Act for fiscal year 2025."
           sample_count: 1.0
         }
         buckets {
           low_rank: 5
           high_rank: 5
-          label: "AI-related provisions from the National Defense Authorization Act for fiscal year 2025."
+          label: "AI-related provisions from recent National Defense Authorization Acts."
           sample_count: 1.0
         }
         buckets {
           low_rank: 6
           high_rank: 6
-          label: "AI-related provisions from recent National Defense Authorization Acts."
+          label: "AI-related laws, policies, and plans from China."
           sample_count: 1.0
         }
         buckets {
           low_rank: 7
           high_rank: 7
-          label: "AI-related laws, policies, and plans from China."
+          label: "AI-related laws from U.S. states and localities (not comprehensive)."
           sample_count: 1.0
         }
         buckets {
           low_rank: 8
           high_rank: 8
-          label: "AI-related laws from U.S. states and localities (not comprehensive)."
+          label: "AI-related federal laws, both proposed and enacted."
           sample_count: 1.0
         }
         buckets {
           low_rank: 9
           high_rank: 9
-          label: "AI-related federal laws, both proposed and enacted."
-          sample_count: 1.0
-        }
-        buckets {
-          low_rank: 10
-          high_rank: 10
           label: "AI governance pledges and policy documents from leading companies."
           sample_count: 1.0
         }

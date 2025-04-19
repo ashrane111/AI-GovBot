@@ -12,3 +12,4 @@ mlruns/
 *key.json
 *-trials/
 *-trial/
+dock-airflow/
