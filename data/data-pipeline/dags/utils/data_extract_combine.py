@@ -47,6 +47,12 @@ def extract_and_merge_documents(temp_dir=""):
         authorities_extract = authorities[['Name', 'Jurisdiction']]
         logger.info("Extracted Name and Jurisdiction from authorities")
 
+        # Fill empty Jurisdiction values in authorities with "Other"
+        authorities_extract = authorities[['Name', 'Jurisdiction']]
+        authorities_extract.loc[:, 'Jurisdiction'] = authorities_extract['Jurisdiction'].fillna('Other')
+        authorities_extract.loc[authorities_extract['Jurisdiction'] == '', 'Jurisdiction'] = 'Other'
+
+
         segments_result = segments.groupby('Document ID').agg(lambda x: ', '.join(x.astype(str))).reset_index()
         segments_required = segments_result[['Document ID', 'Text', 'Summary']]
         segments_required = segments_required.rename(columns={'Text': 'Full Text', 'Summary': 'Full Text Summary'})
