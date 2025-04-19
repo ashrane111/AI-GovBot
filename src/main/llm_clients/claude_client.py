@@ -3,6 +3,7 @@ from anthropic import AsyncAnthropic
 from main.config_loader import config_loader
 from dotenv import load_dotenv
 import os
+from langfuse.decorators import observe
 
 load_dotenv()
 
@@ -18,6 +19,7 @@ class ClaudeClient(LLMClient):
             "claude.model_name", "claude-3-5-sonnet-latest"
         )
 
+    @observe
     async def generate_completion(
         self, user_messages, max_tokens=500, temperature=0.7, top_p=0.9
     ):
