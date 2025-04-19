@@ -4,10 +4,11 @@ on:
   pull_request:
     types: [closed]
     paths:
-        - 'data/data-pipeline/**'
-        - 'deployment_scripts/data-pipeline-deployment/create-data-vm-on-pr.yml'
-        - 'deployment_scripts/data-pipeline-deployment/pr_setup_airflow_vm.sh'
-        - 'deployment_scripts/data-pipeline-deployment/pr_vm_startup_script.sh'
+      - 'data/data-pipeline/**'
+      - 'deployment_scripts/data-pipeline-deployment/create-data-vm-on-pr.yml'
+      - 'deployment_scripts/data-pipeline-deployment/pr_setup_airflow_vm.sh'
+      - 'deployment_scripts/data-pipeline-deployment/pr_vm_startup_script.sh'
+
   workflow_dispatch:
 
 jobs:
@@ -23,13 +24,15 @@ jobs:
         run: echo "VM_NAME=vm-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
 
       - name: Authenticate to Google Cloud
-        id: 'auth'
-        uses: 'google-github-actions/auth@v2'
+        id: auth
+        uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.GCP_SA_KEY }}'
-          
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
 
       - name: Delete VM
         id: delete-vm
@@ -43,7 +46,7 @@ jobs:
             echo "FINAL_MESSAGE=VM $VM_NAME does not exist or was already deleted." >> $GITHUB_ENV
 
   notify:
-    needs: [delete-vm]
+    needs: delete-vm
     runs-on: ubuntu-latest
     if: always()
 
