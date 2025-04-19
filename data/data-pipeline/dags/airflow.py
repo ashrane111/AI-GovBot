@@ -23,6 +23,7 @@ from airflow import configuration as conf
 from utils.data_validation import validate_downloaded_data_files, check_validation_status
 from utils.bias_detection import detect_and_simulate_bias
 from utils.download_agora import update_config_with_download_url
+from utils.download_agora import update_config_with_download_url
 # from utils.sentence_transformer_encoder import SentenceTransformerEmbeddings
 # Enable pickle support for XCom, allowing data to be passed between tasks
 conf.set('core', 'enable_xcom_pickling', 'True')
@@ -77,12 +78,30 @@ def send_validation_failure_email(**kwargs):
     )
     email_task.execute(context=kwargs)
 
+def task_failure_alert(context):
+    """Custom failure callback."""
+    alert = EmailOperator(
+        task_id='task_failure_alert',
+        to=to_email,
+        subject=f"Airflow task failed: {context['task_instance'].task_id}",
+        html_content=(
+            f"<h3>Task {context['task_instance'].task_id} "
+            f"in DAG {context['task_instance'].dag_id} failed.</h3>"
+            f"<p>Execution Time: {context['execution_date']}</p>"
+            f"<p>Log URL: {context['task_instance'].log_url}</p>"
+        )
+    )
+    alert.execute(context=context)
+
 # Define default arguments for your DAG
 default_args = {
     'owner': get_config_value('airflow_owner', 'airflow'),
     'start_date': datetime.today().date(),
     'retries': 0, # Number of retries in case of task failure
     'retry_delay': timedelta(minutes=5), # Delay before retries
+    'email': [ to_email ],
+    'email_on_failure': True,
+    'email_on_retry': False,
 }
 
 # Create a DAG instance named 'Airflow_Lab1' with the defined default arguments
@@ -93,6 +112,7 @@ dag = DAG(
     schedule_interval='0 0 */14 * *',  # Set the schedule interval or use None for manual triggering
     catchup=False,
     tags=['biweekly'],
+    on_failure_callback=task_failure_alert,
 )
 
 download_agora_task = PythonOperator(
