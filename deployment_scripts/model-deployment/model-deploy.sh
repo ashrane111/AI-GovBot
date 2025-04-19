@@ -96,7 +96,8 @@ rotate_tags() {
 
   # 2. Retag existing v1 to v2
   echo "Attempting to retag v1 to v2..."
-  V1_DIGEST=$(gcloud artifacts docker images list "${IMAGE_BASE}" --filter="tags=v1" --format="value(version)" --limit=1 || echo "")
+  V1_DIGEST=$(gcloud artifacts docker images list "${IMAGE_BASE}" --include-tags --format=json | jq -r '.[] | select(.tags[]? == "v1") | .version' || echo "")
+  #V1_DIGEST=$(gcloud artifacts docker images list "${IMAGE_BASE}" --filter="tags=v1" --format="value(version)" --limit=1 || echo "")
   if [[ -n "$V1_DIGEST" ]]; then
     echo "Found v1 digest: ${V1_DIGEST}. Tagging as v2..."
     gcloud artifacts docker tags add "${IMAGE_BASE}@${V1_DIGEST}" "${IMAGE_BASE}:v2" --quiet
@@ -108,7 +109,8 @@ rotate_tags() {
 
   # 3. Retag existing latest to v1
   echo "Attempting to retag latest to v1..."
-  LATEST_DIGEST=$(gcloud artifacts docker images list "${IMAGE_BASE}" --filter="tags=latest" --format="value(version)" --limit=1 || echo "")
+  LATEST_DIGEST=$(gcloud artifacts docker images list "${IMAGE_BASE}" --include-tags --format=json | jq -r '.[] | select(.tags[]? == "latest") | .version' || echo "")
+  #LATEST_DIGEST=$(gcloud artifacts docker images list "${IMAGE_BASE}" --filter="tags=latest" --format="value(version)" --limit=1 || echo "")
   if [[ -n "$LATEST_DIGEST" ]]; then
      echo "Found latest digest: ${LATEST_DIGEST}. Tagging as v1..."
      gcloud artifacts docker tags add "${IMAGE_BASE}@${LATEST_DIGEST}" "${IMAGE_BASE}:v1" --quiet

@@ -112,7 +112,7 @@ jobs:
 
           # 2. Retag existing v1 to v2
           echo "Attempting to retag v1 to v2..."
-          V1_DIGEST=$(gcloud artifacts docker images list "${IMAGE_BASE}" --filter="tags=v1" --format="value(version)" --limit=1)
+          V1_DIGEST=$(gcloud artifacts docker images list "${IMAGE_BASE}" --include-tags --format=json | jq -r '.[] | select(.tags[]? == "v1") | .version' || echo "")
           if [[ -n "$V1_DIGEST" ]]; then
             echo "Found v1 digest: ${V1_DIGEST}. Tagging as v2..."
             gcloud artifacts docker tags add "${IMAGE_BASE}@${V1_DIGEST}" "${IMAGE_BASE}:v2" --quiet
@@ -124,7 +124,7 @@ jobs:
 
           # 3. Retag existing latest to v1
           echo "Attempting to retag latest to v1..."
-          LATEST_DIGEST=$(gcloud artifacts docker images list "${IMAGE_BASE}" --filter="tags=latest" --format="value(version)" --limit=1)
+          LATEST_DIGEST=$(gcloud artifacts docker images list "${IMAGE_BASE}" --include-tags --format=json | jq -r '.[] | select(.tags[]? == "latest") | .version' || echo "")
           if [[ -n "$LATEST_DIGEST" ]]; then
              echo "Found latest digest: ${LATEST_DIGEST}. Tagging as v1..."
              gcloud artifacts docker tags add "${IMAGE_BASE}@${LATEST_DIGEST}" "${IMAGE_BASE}:v1" --quiet
@@ -263,26 +263,26 @@ jobs:
           server_port: 465
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: "CI Pipeline Passed - Ready to Merge to Staging"
+          subject: "CD Pipeline Passed - Ready to Merge to Production"
           to: vedantrishidas@gmail.com
           from: sanjanajd115@gmail.com
           body: |
-            All tests have passed. The PR can be merged to staging.
+            Model deployment is done. The PR can be merged to production.
             
             Pull Request: ${{ github.event.pull_request.html_url }}
             
       - name: Notify Failure
-        if: needs.test.result == 'failure'
+        if: needs.build-and-deploy.result == 'failure'
         uses: dawidd6/action-send-mail@v4
         with:
           server_address: smtp.gmail.com
           server_port: 465
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: "CI Pipeline Failed"
+          subject: "CD Pipeline Failed"
           to: vedantrishidas@gmail.com
           from: sanjanajd115@gmail.com
           body: |
-            Some tests have failed. Please check the logs.
+            Model deployment has failed. Please check the logs.
             
             Pull Request: ${{ github.event.pull_request.html_url }}
