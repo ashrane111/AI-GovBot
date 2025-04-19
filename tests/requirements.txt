@@ -20,3 +20,4 @@ openai
 mlflow
 pytest-asyncio
 langfuse
+anthropic
