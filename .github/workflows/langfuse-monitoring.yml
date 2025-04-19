@@ -3,14 +3,14 @@ name: Langfuse Error Monitoring
 
 on:
   schedule:
-    # Run every hour
     - cron: '*/10 * * * *'
   workflow_dispatch:  # Allow manual triggering for testing
 
 jobs:
   monitor:
     runs-on: ubuntu-latest
-    
+    if: github.ref == 'refs/heads/langfuse_changes'
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
