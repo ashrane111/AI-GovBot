@@ -39,8 +39,9 @@ This document provides a detailed overview of the data pipeline workflow impleme
 ├── merged_input/                  # Storage for downloaded and processed data (during run)
 │   └── agora/                     # Directory containing source files 
 │
-├── FAISS_Index/                   # Output directory for vector indices
-│   └── legal_embeddings.index     # Generated vector index file (during run)
+├── faiss_index/                   # Output directory for vector indices
+│   └── index.faiss                # Generated vector index file (during run)
+│   └── index.pkl                  # Generated vector pickle file (during run)
 │
 ├── bias_analysis/                    # Directory containing bias analysis report
 │   └── bias_detection_summary.txt    # Generated bias analysis report during run
