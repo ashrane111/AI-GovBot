@@ -46,6 +46,11 @@
         "input_check": true,
         "output_check": true,
         "log_flagged": true
+    },
+    "langfuse": {
+        "secret_key": "sk-xxx",
+        "public_key": "pk-xxx",
+        "host": "https://us.cloud.langfuse.com"
     }
     
 }

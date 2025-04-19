@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-govbot-backend-deployment
+  namespace: mlscopers
+  labels:
+    app: ai-govbot-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-govbot-backend
+  template:
+    metadata:
+      namespace: mlscopers
+      labels:
+        app: ai-govbot-backend
+    spec:
+      containers:
+      - name: backend
+        image: us-east1-docker.pkg.dev/data-pipeline-deployment-trial/ai-govbot-repo/ai-govbot-backend:latest 
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        env:
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: openai-secret
+              key: OPENAI_API_KEY

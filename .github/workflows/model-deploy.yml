@@ -1,0 +1,270 @@
+name: Build and Deploy AI-GovBot to GKE (sanjana-dev Branch)
+
+on:
+  # Keep manual trigger
+  workflow_dispatch:
+  # Trigger after the 'Run Unit Tests' workflow completes
+  workflow_run:
+    workflows: ["Run Unit Tests"]
+    types: [completed]
+    branches:
+      - sanjana-dev
+
+env:
+  PROJECT_ID: data-pipeline-deployment-trial
+  ZONE: us-east1-d 
+  CLUSTER_NAME: ai-govbot-cluster
+  NAMESPACE: mlscopers
+  # --- Define GAR image names ---
+  GAR_LOCATION: us-east1 
+  GAR_REPOSITORY_NAME: ai-govbot-repo 
+  # --- Define image names WITHOUT tags for gcloud commands ---
+  BACKEND_IMAGE_NAME_NO_TAG: us-east1-docker.pkg.dev/data-pipeline-deployment-trial/ai-govbot-repo/ai-govbot-backend
+  FRONTEND_IMAGE_NAME_NO_TAG: us-east1-docker.pkg.dev/data-pipeline-deployment-trial/ai-govbot-repo/ai-govbot-frontend
+  # --- Define image names WITH :latest tag for build/push/deploy ---
+  BACKEND_IMAGE_NAME_LATEST: us-east1-docker.pkg.dev/data-pipeline-deployment-trial/ai-govbot-repo/ai-govbot-backend:latest
+  FRONTEND_IMAGE_NAME_LATEST: us-east1-docker.pkg.dev/data-pipeline-deployment-trial/ai-govbot-repo/ai-govbot-frontend:latest
+  # Define K8s manifest paths
+  NAMESPACE_FILE: deployment_scripts/model-deployment/k8s-namespace.yaml
+  BACKEND_DEPLOYMENT_FILE: deployment_scripts/model-deployment/backend/k8s-deployment.yaml
+  BACKEND_SERVICE_FILE: deployment_scripts/model-deployment/backend/k8s-service.yaml
+  FRONTEND_DEPLOYMENT_FILE: deployment_scripts/model-deployment/frontend/k8s-deployment.yaml
+  FRONTEND_SERVICE_FILE: deployment_scripts/model-deployment/frontend/k8s-service.yaml
+  # Define Dockerfile paths
+  BACKEND_DOCKERFILE: deployment_scripts/model-deployment/backend/Dockerfile
+  FRONTEND_DOCKERFILE: deployment_scripts/model-deployment/frontend/Dockerfile
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write' 
+    
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Fetch the SHA from the workflow_run event if available
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      # --- Authenticate to Google Cloud ---
+      - name: Authenticate to Google Cloud
+        id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      # --- Install jq ---
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      # --- ADD Step to Configure Docker for GAR ---
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker us-east1-docker.pkg.dev --project=data-pipeline-deployment-trial
+
+      # --- Implement latest -> v1 -> v2 Tag Rotation ---
+      - name: Rotate Backend Image Tags (latest->v1, v1->v2)
+        # Continue even if some tags don't exist (e.g., first/second runs)
+        continue-on-error: true
+        run: |
+          IMAGE_BASE="${{ env.BACKEND_IMAGE_NAME_NO_TAG }}"
+          echo "Rotating tags for ${IMAGE_BASE}"
+
+          # 1. Delete existing v2 tag (ignore errors if it doesn't exist)
+          echo "Attempting to delete existing v2 tag..."
+          gcloud artifacts docker tags delete "${IMAGE_BASE}:v2" --quiet || echo "No existing v2 tag to delete."
+
+          # 2. Retag existing v1 to v2
+          echo "Attempting to retag v1 to v2..."
+          V1_DIGEST=$(gcloud artifacts docker images list "${IMAGE_BASE}" --include-tags --format=json | jq -r '.[] | select(.tags[]? == "v1") | .version' || echo "")
+          if [[ -n "$V1_DIGEST" ]]; then
+            echo "Found v1 digest: ${V1_DIGEST}. Tagging as v2..."
+            gcloud artifacts docker tags add "${IMAGE_BASE}@${V1_DIGEST}" "${IMAGE_BASE}:v2" --quiet
+            echo "Deleting old v1 tag..."
+            gcloud artifacts docker tags delete "${IMAGE_BASE}:v1" --quiet
+          else
+            echo "No existing v1 tag found."
+          fi
+
+          # 3. Retag existing latest to v1
+          echo "Attempting to retag latest to v1..."
+          LATEST_DIGEST=$(gcloud artifacts docker images list "${IMAGE_BASE}" --include-tags --format=json | jq -r '.[] | select(.tags[]? == "latest") | .version' || echo "")
+          if [[ -n "$LATEST_DIGEST" ]]; then
+             echo "Found latest digest: ${LATEST_DIGEST}. Tagging as v1..."
+             gcloud artifacts docker tags add "${IMAGE_BASE}@${LATEST_DIGEST}" "${IMAGE_BASE}:v1" --quiet
+             echo "Deleting old latest tag..."
+             gcloud artifacts docker tags delete "${IMAGE_BASE}:latest" --quiet
+          else
+             echo "No existing latest tag found."
+          fi
+          echo "Backend tag rotation complete."
+
+
+      - name: Rotate Frontend Image Tags (latest->v1, v1->v2)
+        # Repeat the same logic for the frontend image
+        continue-on-error: true
+        run: |
+          IMAGE_BASE="${{ env.FRONTEND_IMAGE_NAME_NO_TAG }}"
+          echo "Rotating tags for ${IMAGE_BASE}"
+
+          # 1. Delete existing v2 tag (ignore errors if it doesn't exist)
+          echo "Attempting to delete existing v2 tag..."
+          gcloud artifacts docker tags delete "${IMAGE_BASE}:v2" --quiet || echo "No existing v2 tag to delete."
+
+          # 2. Retag existing v1 to v2
+          echo "Attempting to retag v1 to v2..."
+          V1_DIGEST=$(gcloud artifacts docker images list "${IMAGE_BASE}" --include-tags --format=json | jq -r '.[] | select(.tags[]? == "v1") | .version' || echo "")
+          if [[ -n "$V1_DIGEST" ]]; then
+            echo "Found v1 digest: ${V1_DIGEST}. Tagging as v2..."
+            gcloud artifacts docker tags add "${IMAGE_BASE}@${V1_DIGEST}" "${IMAGE_BASE}:v2" --quiet
+            echo "Deleting old v1 tag..."
+            gcloud artifacts docker tags delete "${IMAGE_BASE}:v1" --quiet
+          else
+            echo "No existing v1 tag found."
+          fi
+
+          # 3. Retag existing latest to v1
+          echo "Attempting to retag latest to v1..."
+          LATEST_DIGEST=$(gcloud artifacts docker images list "${IMAGE_BASE}" --include-tags --format=json | jq -r '.[] | select(.tags[]? == "latest") | .version' || echo "")
+          if [[ -n "$LATEST_DIGEST" ]]; then
+             echo "Found latest digest: ${LATEST_DIGEST}. Tagging as v1..."
+             gcloud artifacts docker tags add "${IMAGE_BASE}@${LATEST_DIGEST}" "${IMAGE_BASE}:v1" --quiet
+             echo "Deleting old latest tag..."
+             gcloud artifacts docker tags delete "${IMAGE_BASE}:latest" --quiet
+          else
+             echo "No existing latest tag found."
+          fi
+          echo "Frontend tag rotation complete."
+
+
+      # --- Build and Push New ':latest' Images ---
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and Push Backend Image to GAR (as :latest)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ env.BACKEND_DOCKERFILE }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.BACKEND_IMAGE_NAME_LATEST }} # Pushes the new :latest tag
+
+      - name: Build and Push Frontend Image to GAR (as :latest)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ env.FRONTEND_DOCKERFILE }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.FRONTEND_IMAGE_NAME_LATEST }} # Pushes the new :latest tag
+
+      # --- Authenticate to GKE ---
+      - name: Get GKE Credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.CLUSTER_NAME }}
+          location: ${{ env.ZONE }} 
+          project_id: data-pipeline-deployment-trial
+
+
+      # --- Inject API Key Secret from github secrets ---
+      - name: Create temporary .env file
+        run: |
+          echo "Creating temporary .env file..."
+          # Write the secret value into the .env file in KEY=VALUE format
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" > .env
+          echo ".env file created."
+          # Optional: cat .env # Use for debugging only, hides secrets in logs by default
+
+      - name: Create/Update Kubernetes OpenAI Secret
+        run: |
+          echo "Creating/Updating Kubernetes secret 'openai-secret' from .env file..."
+          kubectl create secret generic openai-secret \
+            --from-env-file=.env \
+            --namespace=${{ env.NAMESPACE }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+          echo "Kubernetes secret 'openai-secret' processed."
+
+
+      # --- Apply K8s Manifests ---
+      - name: Deploy to GKE
+        run: |
+          echo "Applying Kubernetes manifests to namespace: ${{ env.NAMESPACE }}"
+
+          echo "Applying Namespace: ${{ env.NAMESPACE_FILE }}"
+          kubectl apply -f ${{ env.NAMESPACE_FILE }}
+
+          echo "Applying Backend Deployment: ${{ env.BACKEND_DEPLOYMENT_FILE }}"
+          kubectl apply -f  ${{ env.BACKEND_DEPLOYMENT_FILE }} -n ${{ env.NAMESPACE }}
+          echo "Applying Backend Service: ${{ env.BACKEND_SERVICE_FILE }}"
+          kubectl apply -f ${{ env.BACKEND_SERVICE_FILE }} -n ${{ env.NAMESPACE }}
+
+          echo "Applying Frontend Deployment: ${{ env.FRONTEND_DEPLOYMENT_FILE }}"
+          kubectl apply -f ${{ env.FRONTEND_DEPLOYMENT_FILE }} -n ${{ env.NAMESPACE }}
+          echo "Applying Frontend Service: ${{ env.FRONTEND_SERVICE_FILE }}"
+          kubectl apply -f ${{ env.FRONTEND_SERVICE_FILE }} -n ${{ env.NAMESPACE }}
+
+      # --- Verify Deployment Rollout ---
+      - name: Verify Deployment Rollout
+        run: |
+          echo "Waiting for deployments to complete..."
+          kubectl rollout status deployment/ai-govbot-backend-deployment -n ${{ env.NAMESPACE }} --timeout=5m
+          kubectl rollout status deployment/ai-govbot-frontend-deployment -n ${{ env.NAMESPACE }} --timeout=5m
+          echo "Deployment successful!"
+          echo "Verifying services..."
+          kubectl get services -n ${{ env.NAMESPACE }}
+      
+      # --- Clean up temporary .env file ---
+
+      - name: Clean up temporary .env file
+        run: |
+          echo "Cleaning up temporary .env file..."
+          rm -f .env
+          echo ".env file removed."
+
+      # --- Notify Success ---
+  notify:
+    needs: [build-and-deploy]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Notify Success
+        if: needs.build-and-deploy.result == 'success'
+        uses: dawidd6/action-send-mail@v4
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "CD Pipeline Passed - Ready to Merge to Production"
+          to: vedantrishidas@gmail.com
+          from: sanjanajd115@gmail.com
+          body: |
+            Model deployment is done. The PR can be merged to production.
+            
+            Pull Request: ${{ github.event.pull_request.html_url }}
+            
+      - name: Notify Failure
+        if: needs.build-and-deploy.result == 'failure'
+        uses: dawidd6/action-send-mail@v4
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "CD Pipeline Failed"
+          to: vedantrishidas@gmail.com
+          from: sanjanajd115@gmail.com
+          body: |
+            Model deployment has failed. Please check the logs.
+            
+            Pull Request: ${{ github.event.pull_request.html_url }}
