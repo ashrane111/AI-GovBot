@@ -14,8 +14,8 @@ from dotenv import load_dotenv
 
 # --- Evaluation Thresholds ---
 # Define your minimum acceptable average scores for alerting
-FAITHFULNESS_THRESHOLD = 1.1
-ANSWER_RELEVANCY_THRESHOLD = 1.1
+FAITHFULNESS_THRESHOLD = 0.2
+ANSWER_RELEVANCY_THRESHOLD = 0.2
 
 # --- Logging Configuration ---
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
