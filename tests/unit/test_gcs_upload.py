@@ -21,7 +21,7 @@ class TestGCSUpload(unittest.TestCase):
     def test_upload_to_gcs_success(self, mock_logger, mock_storage_client):
         mock_bucket = MagicMock()
         mock_blob = MagicMock()
-        mock_storage_client.return_value.bucket.return_value = mock_bucket
+        mock_storage_client.return_value.get_bucket.return_value = mock_bucket
         mock_bucket.blob.return_value = mock_blob
         
         upload_to_gcs(self.bucket_name, self.source_file_name, self.destination_blob_name)
@@ -36,7 +36,7 @@ class TestGCSUpload(unittest.TestCase):
     def test_upload_to_gcs_failure(self, mock_logger, mock_storage_client):
         mock_bucket = MagicMock()
         mock_blob = MagicMock()
-        mock_storage_client.return_value.bucket.return_value = mock_bucket
+        mock_storage_client.return_value.get_bucket.return_value = mock_bucket
         mock_bucket.blob.return_value = mock_blob
         mock_blob.upload_from_filename.side_effect = Exception("GCS error")
         
@@ -58,7 +58,7 @@ class TestGCSUpload(unittest.TestCase):
         parent_dir = os.path.dirname(module_dir)
         expected_source = os.path.join(parent_dir, "merged_input/Documents_segments_merged.csv")
         
-        upload_merged_data_to_gcs(data)
+        upload_merged_data_to_gcs()
         
         # Check calls count
         self.assertEqual(mock_upload_to_gcs.call_count, 2)
@@ -75,7 +75,7 @@ class TestGCSUpload(unittest.TestCase):
         data = "dummy_data"
         
         with self.assertRaises(FileNotFoundError):
-            upload_merged_data_to_gcs(data)
+            upload_merged_data_to_gcs()
         
         mock_logger.error.assert_called_once_with("Error uploading merged data to GCS: File not found")
 
@@ -84,7 +84,7 @@ class TestGCSUpload(unittest.TestCase):
     def test_upload_to_gcs_called_twice(self, mock_logger, mock_storage_client):
         mock_bucket = MagicMock()
         mock_blob = MagicMock()
-        mock_storage_client.return_value.bucket.return_value = mock_bucket
+        mock_storage_client.return_value.get_bucket.return_value = mock_bucket
         mock_bucket.blob.return_value = mock_blob
         
         # Call the function twice
