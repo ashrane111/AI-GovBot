@@ -6,9 +6,10 @@ on:
     types: [opened, reopened, synchronize]
     paths:
         - 'data/data-pipeline/**'
-        - 'deployment_scripts/data-pipeline-deployment/create-data-vm-on-pr.yml'
+        - '.github/workflows/create-data-vm-on-pr.yml'
         - 'deployment_scripts/data-pipeline-deployment/pr_setup_airflow_vm.sh'
         - 'deployment_scripts/data-pipeline-deployment/pr_vm_startup_script.sh'
+        - '.github/workflows/delete-data-vm-close-pr.yml'
   workflow_dispatch:
 
 jobs:

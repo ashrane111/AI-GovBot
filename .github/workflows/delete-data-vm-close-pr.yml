@@ -5,7 +5,7 @@ on:
     types: [closed]
     paths:
       - 'data/data-pipeline/**'
-      - 'deployment_scripts/data-pipeline-deployment/create-data-vm-on-pr.yml'
+      - '.github/workflows/create-data-vm-on-pr.yml'
       - 'deployment_scripts/data-pipeline-deployment/pr_setup_airflow_vm.sh'
       - 'deployment_scripts/data-pipeline-deployment/pr_vm_startup_script.sh'
 
@@ -44,6 +44,7 @@ jobs:
           else
             echo "VM $VM_NAME does not exist or already deleted."
             echo "FINAL_MESSAGE=VM $VM_NAME does not exist or was already deleted." >> $GITHUB_ENV
+          fi
 
   notify:
     needs: delete-vm
