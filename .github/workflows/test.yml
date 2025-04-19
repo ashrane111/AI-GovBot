@@ -69,8 +69,8 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "CI Pipeline Failed"
-          to: vedantrishidas@gmail.com
-          from: sanjanajd115@gmail.com
+          to: harveymailer13@gmail.com
+          from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Some tests have failed. Please check the logs.
             
