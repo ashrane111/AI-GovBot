@@ -233,7 +233,6 @@ create_lang_index_task = PythonOperator(
 upload_to_gcs_task = PythonOperator(
     task_id='upload_to_gcs_task',
     python_callable=upload_merged_data_to_gcs,
-    op_args=[create_lang_index_task.output],
     dag=dag,
 )
 
