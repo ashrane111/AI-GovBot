@@ -1,3 +1,4 @@
+from langfuse.decorators import observe
 class PromptGen:
     def __init__(self):
         self.system_prompt = {
@@ -19,6 +20,7 @@ class PromptGen:
                     #    "and generate a response accordingly. Respond in a brief way. "
         }
 
+    @observe()
     def generate_user_prompt(self, messages, context):
         # Prepend the system prompt to the list of messages
         messages.insert(0, self.system_prompt)

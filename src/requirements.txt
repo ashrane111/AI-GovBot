@@ -18,3 +18,4 @@ anthropic
 seaborn
 google-cloud-storage
 aiohttp
+langfuse

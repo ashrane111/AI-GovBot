@@ -14,3 +14,5 @@ mlruns/
 *-trial/
 src.zip
 CLAUDE.md
+dock-airflow/
+

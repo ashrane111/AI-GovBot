@@ -7,6 +7,7 @@ from main.moderator import Moderator
 from datetime import datetime 
 import time
 import re
+from langfuse.decorators import observe
 
 class RAGPipeline:
     def __init__(self):
@@ -17,6 +18,7 @@ class RAGPipeline:
         self.prompter = PromptGen()
         self.moderator = Moderator()
 
+    @observe()
     async def run(self, query_message):
         required_query = query_message[-1]
         query = required_query['content']

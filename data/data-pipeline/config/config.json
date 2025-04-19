@@ -19,7 +19,7 @@
             "schema": "schema/segments_data_schema.pbtxt"
         }
     ],
-    "download_url": "https://zenodo.org/records/14877811/files/agora.zip",
+    "download_url": "https://zenodo.org/api/records/15227954/files/agora.zip/content",
     "output_dir_name": "merged_input",
     "airflow_owner": "RiXiRx",
     "data_dir": {
