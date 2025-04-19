@@ -12,3 +12,7 @@ mlruns/
 *key.json
 *-trials/
 *-trial/
+src.zip
+CLAUDE.md
+dock-airflow/
+

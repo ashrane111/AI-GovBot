@@ -14,5 +14,8 @@ ollama
 streamlit
 ragas
 openai
+anthropic
 seaborn
 google-cloud-storage
+aiohttp
+langfuse

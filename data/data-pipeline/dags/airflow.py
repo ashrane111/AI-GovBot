@@ -22,15 +22,18 @@ from utils.create_lang_vector_index import create_lang_index
 from airflow import configuration as conf
 from utils.data_validation import validate_downloaded_data_files, check_validation_status
 from utils.bias_detection import detect_and_simulate_bias
+from utils.download_agora import update_config_with_download_url
+from utils.download_agora import update_config_with_download_url
 # from utils.sentence_transformer_encoder import SentenceTransformerEmbeddings
 # Enable pickle support for XCom, allowing data to be passed between tasks
 conf.set('core', 'enable_xcom_pickling', 'True')
 
+CONFIG_PATH = os.path.join(os.environ.get('AIRFLOW_HOME', '/opt/airflow'), 'config', 'config.json')
+
 def get_config_value(key, default=None):
     """Get a value from the config.json file"""
     try:
-        config_path = os.path.join(os.environ.get('AIRFLOW_HOME', '/opt/airflow'), 'config', 'config.json')
-        with open(config_path, 'r') as config_file:
+        with open(CONFIG_PATH, 'r') as config_file:
             config = json.load(config_file)
         return config.get(key, default)
     except Exception as e:
@@ -75,12 +78,30 @@ def send_validation_failure_email(**kwargs):
     )
     email_task.execute(context=kwargs)
 
+def task_failure_alert(context):
+    """Custom failure callback."""
+    alert = EmailOperator(
+        task_id='task_failure_alert',
+        to=to_email,
+        subject=f"Airflow task failed: {context['task_instance'].task_id}",
+        html_content=(
+            f"<h3>Task {context['task_instance'].task_id} "
+            f"in DAG {context['task_instance'].dag_id} failed.</h3>"
+            f"<p>Execution Time: {context['execution_date']}</p>"
+            f"<p>Log URL: {context['task_instance'].log_url}</p>"
+        )
+    )
+    alert.execute(context=context)
+
 # Define default arguments for your DAG
 default_args = {
     'owner': get_config_value('airflow_owner', 'airflow'),
-    'start_date': datetime(2025, 2, 19),
+    'start_date': datetime(2025, 2, 13), # Start date for the DAG
     'retries': 0, # Number of retries in case of task failure
     'retry_delay': timedelta(minutes=5), # Delay before retries
+    'email': [ to_email ],
+    'email_on_failure': True,
+    'email_on_retry': False,
 }
 
 # Create a DAG instance named 'Airflow_Lab1' with the defined default arguments
@@ -88,8 +109,19 @@ dag = DAG(
     'Data_pipeline_HARVEY',
     default_args=default_args,
     description='Dag for the data pipeline',
-    schedule_interval=None,  # Set the schedule interval or use None for manual triggering
+    schedule_interval='0 0 */14 * *',  # Set the schedule interval or use None for manual triggering
     catchup=False,
+    tags=['biweekly'],
+    on_failure_callback=task_failure_alert,
+)
+
+download_agora_task = PythonOperator(
+    task_id='download_agora_task',
+    python_callable=update_config_with_download_url,
+    op_kwargs={
+        'config_path': CONFIG_PATH,
+    },
+    dag=dag,
 )
 
 # Task to download data in zip, calls the 'download_zip_file' Python function
@@ -214,7 +246,7 @@ send_email = EmailOperator(
 )
 
 # Set task dependencies
-download_unzip_task >> validate_schema_task >> check_validation_task
+download_agora_task >> download_unzip_task >> validate_schema_task >> check_validation_task
 check_validation_task >> data_combine_task  # If validation passes, continue
 check_validation_task >> trigger_validation_failure_email  # If validation fails, send an alert
 
