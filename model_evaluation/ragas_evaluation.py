@@ -12,14 +12,41 @@ from ragas.metrics import (
 from datasets import Dataset
 from dotenv import load_dotenv
 
-# --- Evaluation Thresholds ---
-# Define your minimum acceptable average scores for alerting
-FAITHFULNESS_THRESHOLD = 0.2
-ANSWER_RELEVANCY_THRESHOLD = 0.2
+# --- Evaluation Thresholds (Read from Environment Variables) ---
+DEFAULT_FAITHFULNESS_THRESHOLD = 0.4
+DEFAULT_ANSWER_RELEVANCY_THRESHOLD = 0.4
+
+# --- Fallback Answer Detection ---
+# Add specific strings/prefixes that indicate a non-answer/fallback
+FALLBACK_ANSWER_PREFIXES = [
+    "Fallback: Unable to generate response.",
+    "Fallback:", # More general catch-all if needed
+    "Sorry, I cannot provide an answer",
+    "Unable to generate response", # Add other variations you encounter
+    "I cannot answer this question based on the provided context",
+    "I cannot process this request as it appears to violate content policies."
+]
 
 # --- Logging Configuration ---
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+# --- Read Thresholds from Environment Variables ---
+try:
+    faith_thresh_str = os.getenv('RAGAS_FAITHFULNESS_THRESHOLD', str(DEFAULT_FAITHFULNESS_THRESHOLD))
+    FAITHFULNESS_THRESHOLD = float(faith_thresh_str)
+    logger.info(f"Using Faithfulness Threshold: {FAITHFULNESS_THRESHOLD}")
+except ValueError:
+    logger.warning(f"Invalid value '{faith_thresh_str}' for RAGAS_FAITHFULNESS_THRESHOLD env var. Using default: {DEFAULT_FAITHFULNESS_THRESHOLD}")
+    FAITHFULNESS_THRESHOLD = DEFAULT_FAITHFULNESS_THRESHOLD
+
+try:
+    ans_rel_thresh_str = os.getenv('RAGAS_ANSWER_RELEVANCY_THRESHOLD', str(DEFAULT_ANSWER_RELEVANCY_THRESHOLD))
+    ANSWER_RELEVANCY_THRESHOLD = float(ans_rel_thresh_str)
+    logger.info(f"Using Answer Relevancy Threshold: {ANSWER_RELEVANCY_THRESHOLD}")
+except ValueError:
+    logger.warning(f"Invalid value '{ans_rel_thresh_str}' for RAGAS_ANSWER_RELEVANCY_THRESHOLD env var. Using default: {DEFAULT_ANSWER_RELEVANCY_THRESHOLD}")
+    ANSWER_RELEVANCY_THRESHOLD = DEFAULT_ANSWER_RELEVANCY_THRESHOLD
 
 # --- Configuration & Initialization ---
 logger.info("Loading configuration and initializing clients...")
@@ -47,7 +74,6 @@ except Exception as e:
 # --- Data Fetching & Extraction ---
 logger.info("Fetching traces from Langfuse...")
 data_for_ragas = []
-# How many recent traces (conversations) to evaluate
 TRACE_LIMIT = 50 # Adjust as needed
 
 try:
@@ -58,10 +84,11 @@ try:
     logger.info(f"Fetched trace data object. Attempting to process up to {TRACE_LIMIT} traces (received {len(traces_generator.data)})...")
 
     traces_processed_count = 0
+    traces_skipped_fallback = 0 # Counter for skipped fallbacks
     for i, trace in enumerate(traces_generator.data):
         last_query = None
         final_answer = None
-        retrieved_contexts = [] # Reset for each trace
+        retrieved_contexts = []
 
         try:
             # Extract Last User Query
@@ -78,7 +105,7 @@ try:
             if (isinstance(trace.output, dict) and
                 (answer_dict := trace.output.get('answer')) and isinstance(answer_dict, dict) and
                 'content' in answer_dict):
-                final_answer = str(answer_dict['content']).strip()
+                final_answer = str(answer_dict['content']).strip() # Use strip here
 
             # Extract Contexts
             if (isinstance(trace.output, dict) and
@@ -96,8 +123,19 @@ try:
                                 logger.debug(f"Trace {trace.id}: Extracted context block (length: {len(context_block)}).")
                         break
 
-            # Populate data ONLY if query, answer, AND context are present
-            if last_query and final_answer and retrieved_contexts:
+            # <<< --- ADDED: Check for Fallback Response --- >>>
+            is_fallback = False
+            if final_answer:
+                # Check if the extracted answer starts with any known fallback strings (case-insensitive check might be safer)
+                if any(final_answer.lower().startswith(prefix.lower()) for prefix in FALLBACK_ANSWER_PREFIXES):
+                    is_fallback = True
+                    traces_skipped_fallback += 1
+                    # Log this important filtering action at INFO level
+                    logger.info(f"Trace {trace.id}: Skipping - Identified fallback answer.")
+
+            # <<< --- MODIFIED: Condition for Appending Data --- >>>
+            # Populate data ONLY if query, answer, AND context are present AND it's NOT a fallback response
+            if last_query and final_answer and retrieved_contexts and not is_fallback:
                 ragas_entry = {
                     "question": last_query,
                     "answer": final_answer,
@@ -106,16 +144,22 @@ try:
                 data_for_ragas.append(ragas_entry)
                 traces_processed_count += 1
             else:
-                missing_parts = []
-                if not last_query: missing_parts.append("last_query")
-                if not final_answer: missing_parts.append("final_answer")
-                if not retrieved_contexts: missing_parts.append("retrieved_contexts")
-                logger.debug(f"Skipping trace {trace.id}: Missing required parts: {', '.join(missing_parts)}.")
+                # Log detailed reasons for skipping at DEBUG level only if it wasn't a fallback case
+                if not is_fallback:
+                    missing_parts = []
+                    if not last_query: missing_parts.append("last_query")
+                    # Check final_answer existence again in case it was None
+                    if not final_answer: missing_parts.append("final_answer")
+                    if not retrieved_contexts: missing_parts.append("retrieved_contexts")
+                    if missing_parts: # Only log if something other than fallback was the reason
+                        logger.debug(f"Skipping trace {trace.id}: Missing required parts: {', '.join(missing_parts)}.")
 
         except Exception as e:
             logger.error(f"Error processing trace {getattr(trace, 'id', 'UNKNOWN')} (Index {i}): {e}", exc_info=False)
 
     logger.info(f"Finished processing traces. Extracted data for {traces_processed_count} interactions with context.")
+    if traces_skipped_fallback > 0:
+        logger.info(f"Skipped {traces_skipped_fallback} traces due to fallback answers.")
 
 except Exception as e:
     logger.error(f"Fatal error fetching or processing Langfuse traces: {e}", exc_info=True)
@@ -124,11 +168,10 @@ except Exception as e:
 # --- Dataset Preparation ---
 ragas_dataset = None
 if not data_for_ragas:
-    logger.warning("No data with context available after extraction. Cannot run Ragas evaluation.")
+    logger.warning("No valid data (with context, non-fallback) available after extraction. Cannot run Ragas evaluation.")
     logger.info("Exiting: No data extracted for evaluation.")
-    # Set outputs indicating no alert needed before exiting
     print(f"::set-output name=alert_needed::false")
-    print(f"::set-output name=alert_details::No data with context available for evaluation.")
+    print(f"::set-output name=alert_details::No valid data available for evaluation after filtering.")
     sys.exit(0)
 else:
     logger.info(f"Preparing dataset for Ragas with {len(data_for_ragas)} entries...")
@@ -149,9 +192,9 @@ else:
         ragas_dataset = None
 
 # --- RAGAS Evaluation ---
-evaluation_results = {} # Stores average scores {metric_name: score}
+evaluation_results = {}
 alert_needed = False
-alert_details = [] # Stores reasons for alerting
+alert_details = []
 
 if ragas_dataset:
     logger.info("Starting Ragas evaluation...")
@@ -170,31 +213,27 @@ if ragas_dataset:
 
         # --- Process Results & Check Thresholds ---
         logger.info("Ragas evaluation completed.")
+        logger.info(f"Type of Ragas evaluate result: {type(results)}")
+        logger.info(f"Does results have '.to_pandas()' method? {hasattr(results, 'to_pandas')}")
+
         try:
             results_df = None
-            # Try to convert results to DataFrame for easier average calculation
             if hasattr(results, 'to_pandas'):
                  results_df = results.to_pandas()
-                 logger.info("Results converted to DataFrame.")
+                 logger.info("Results successfully converted to DataFrame.")
             elif isinstance(results, dict):
-                 # If results is already a dict of averages, use it directly
                  evaluation_results = {k: v for k, v in results.items() if isinstance(v, (int, float))}
-                 logger.info(f"Direct evaluation results (averages): {evaluation_results}")
+                 logger.info(f"Using direct evaluation results (averages): {evaluation_results}")
             else:
-                 logger.warning(f"Unexpected Ragas results format: {type(results)}. Cannot automatically extract averages.")
+                 logger.warning(f"Ragas results object is type {type(results)} and cannot be processed directly for averages.")
+                 # Set alert needed because we can't determine scores
+                 alert_needed = True
+                 alert_details.append(f"Cannot process Ragas results type: {type(results)}")
 
-            # --- REMOVED CSV Saving Block ---
-            # The following lines were removed:
-            # results_csv_filename = "ragas_evaluation_results.csv"
-            # logger.info(f"Saving Ragas results to: {results_csv_filename}")
-            # results_df.to_csv(results_csv_filename, index=False, encoding='utf-8')
-            # --- End of Removed Block ---
-
-
-            # Calculate averages from DataFrame if needed
-            if results_df is not None and not evaluation_results:
+            # Calculate Averages (from DataFrame if available, otherwise use direct results)
+            if results_df is not None and not evaluation_results: # Check if averages not already extracted
                 logger.info("Calculating average scores from DataFrame...")
-                print("\n--- Average Scores (for logs) ---") # Print header for logs
+                print("\n--- Average Scores (for logs) ---")
                 for metric in metrics_to_run:
                     metric_col_name = metric.name
                     if metric_col_name in results_df.columns:
@@ -213,12 +252,10 @@ if ragas_dataset:
                         logger.warning(f"Metric column '{metric_col_name}' not found in results.")
                         evaluation_results[metric_col_name] = None
 
-            # Check Thresholds
-            if not evaluation_results:
-                logger.error("Could not determine average scores to check thresholds.")
-                alert_needed = True
-                alert_details.append("Failed to extract average scores from Ragas results.")
-            else:
+
+            # Check Thresholds (using the calculated/extracted evaluation_results dict)
+            # Only proceed if we have some averages to check and haven't already failed processing results
+            if evaluation_results:
                 logger.info("Checking thresholds against calculated average scores...")
                 # Faithfulness Check
                 if 'faithfulness' in evaluation_results and evaluation_results['faithfulness'] is not None:
@@ -239,6 +276,12 @@ if ragas_dataset:
                         logger.warning(f"ALERT: {msg}")
                 elif 'answer_relevancy' not in evaluation_results or evaluation_results['answer_relevancy'] is None:
                     logger.warning("Answer Relevancy score not available for threshold check.")
+            # If evaluation_results is empty after processing, consider it an issue
+            elif not alert_needed: # Avoid overwriting previous alert reason
+                 logger.error("Could not determine average scores to check thresholds.")
+                 alert_needed = True
+                 alert_details.append("Failed to extract average scores from Ragas results.")
+
 
         except Exception as e:
              logger.error(f"Error processing evaluation results: {e}", exc_info=True)
@@ -251,7 +294,7 @@ if ragas_dataset:
         alert_details.append("Error occurred during Ragas evaluate() call.")
 else:
      logger.warning("Skipping Ragas evaluation because dataset preparation failed.")
-     alert_needed = True # Assume failure if dataset prep failed
+     alert_needed = True
      alert_details.append("Ragas evaluation skipped because dataset preparation failed.")
 
 # --- Set GitHub Actions Outputs ---
