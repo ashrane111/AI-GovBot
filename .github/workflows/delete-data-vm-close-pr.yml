@@ -44,6 +44,7 @@ jobs:
           else
             echo "VM $VM_NAME does not exist or already deleted."
             echo "FINAL_MESSAGE=VM $VM_NAME does not exist or was already deleted." >> $GITHUB_ENV
+          fi
 
   notify:
     needs: delete-vm
