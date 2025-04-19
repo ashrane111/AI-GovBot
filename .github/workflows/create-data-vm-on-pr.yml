@@ -1,0 +1,59 @@
+name: Deploy GCP VM for PR
+
+on:
+
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths:
+        - 'data/data-pipeline/**'
+        - 'deployment_scripts/data-pipeline-deployment/create-data-vm-on-pr.yml'
+        - 'deployment_scripts/data-pipeline-deployment/pr_setup_airflow_vm.sh'
+        - 'deployment_scripts/data-pipeline-deployment/pr_vm_startup_script.sh'
+  workflow_dispatch:
+
+jobs:
+  deploy-vm:
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_ID: data-pipeline-deployment-trial
+      ZONE: us-east1-d
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: cd into deployment directory
+        run: |
+            cd deployment_scripts/data-pipeline-deployment/
+
+      - name: Setup google_cloud_key.json
+        run: |
+          echo "${{ secrets.GCP_SA_KEY }}" > google_cloud_key.json
+
+      - name: Create .env file
+        run: |
+          echo "AIRFLOW_UID=1000" > .env
+          echo "GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/secrets/google_cloud_key.json" >> .env
+          echo "SMTP_EMAIL=${{ secrets.EMAIL_USERNAME }}" >> .env
+          echo "SMTP_PASSWORD=${{ secrets.EMAIL_PASSWORD }}" >> .env
+
+      - name: Set variables
+        id: vars
+        run: |
+          echo "VM_NAME=vm-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          echo "BRANCH_NAME=${GITHUB_HEAD_REF}" >> $GITHUB_ENV
+
+      - name: Authenticate to Google Cloud
+        id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+            credentials_json: '${{ secrets.GCP_SA_KEY }}'
+            
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: Make setup script executable
+        run: chmod +x ./pr_setup_airflow_vm.sh
+
+      - name: Run setup script
+        run: ./pr_setup_airflow_vm.sh $VM_NAME $BRANCH_NAME $PROJECT_ID

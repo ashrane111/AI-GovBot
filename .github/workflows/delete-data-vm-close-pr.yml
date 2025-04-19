@@ -1,0 +1,41 @@
+name: Delete GCP VM on PR Close
+
+on:
+  pull_request:
+    types: [closed]
+    paths:
+        - 'data/data-pipeline/**'
+        - 'deployment_scripts/data-pipeline-deployment/create-data-vm-on-pr.yml'
+        - 'deployment_scripts/data-pipeline-deployment/pr_setup_airflow_vm.sh'
+        - 'deployment_scripts/data-pipeline-deployment/pr_vm_startup_script.sh'
+  workflow_dispatch:
+
+jobs:
+  delete-vm:
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_ID: data-pipeline-deployment-trial
+      ZONE: us-east1-d
+
+    steps:
+      - name: Set variables
+        id: vars
+        run: echo "VM_NAME=vm-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+
+      - name: Authenticate to Google Cloud
+        id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+          
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: Delete VM
+        run: |
+          if gcloud compute instances describe "$VM_NAME" --zone="$ZONE" &>/dev/null; then
+            echo "Deleting VM $VM_NAME..."
+            gcloud compute instances delete "$VM_NAME" --zone="$ZONE" --quiet
+          else
+            echo "VM $VM_NAME does not exist or already deleted."
+          fi
