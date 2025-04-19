@@ -1,0 +1,84 @@
+name: Delete GCP VM on PR Close
+
+on:
+  pull_request:
+    types: [closed]
+    paths:
+        - 'data/data-pipeline/**'
+        - 'deployment_scripts/data-pipeline-deployment/create-data-vm-on-pr.yml'
+        - 'deployment_scripts/data-pipeline-deployment/pr_setup_airflow_vm.sh'
+        - 'deployment_scripts/data-pipeline-deployment/pr_vm_startup_script.sh'
+  workflow_dispatch:
+
+jobs:
+  delete-vm:
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_ID: data-pipeline-deployment-trial
+      ZONE: us-east1-d
+
+    steps:
+      - name: Set variables
+        id: vars
+        run: echo "VM_NAME=vm-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+
+      - name: Authenticate to Google Cloud
+        id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+          
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: Delete VM
+        id: delete-vm
+        run: |
+          if gcloud compute instances describe "$VM_NAME" --zone="$ZONE" &>/dev/null; then
+            echo "Deleting VM $VM_NAME..."
+            gcloud compute instances delete "$VM_NAME" --zone="$ZONE" --quiet
+            echo "FINAL_MESSAGE=VM $VM_NAME has been successfully deleted." >> $GITHUB_ENV
+          else
+            echo "VM $VM_NAME does not exist or already deleted."
+            echo "FINAL_MESSAGE=VM $VM_NAME does not exist or was already deleted." >> $GITHUB_ENV
+
+  notify:
+    needs: [delete-vm]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Notify Success
+        if: needs.delete-vm.result == 'success'
+        uses: dawidd6/action-send-mail@v4
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "GCP VM Deletion Successful"
+          to: vedantrishidas@gmail.com
+          from: sanjanajd115@gmail.com
+          body: |
+            The GCP VM associated with the closed PR has been successfully deleted.
+
+            Pull Request: ${{ github.event.pull_request.html_url }}
+
+            Final Message:
+            ${{ env.FINAL_MESSAGE }}
+
+      - name: Notify Failure
+        if: needs.delete-vm.result == 'failure'
+        uses: dawidd6/action-send-mail@v4
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "GCP VM Deletion Failed"
+          to: vedantrishidas@gmail.com
+          from: sanjanajd115@gmail.com
+          body: |
+            The GCP VM deletion process failed. Please check the logs for more details.
+
+            Pull Request: ${{ github.event.pull_request.html_url }}

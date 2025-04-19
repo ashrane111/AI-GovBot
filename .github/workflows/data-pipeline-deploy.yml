@@ -2,8 +2,11 @@ name: Deploy Data Pipeline to GCP VM
 
 on:
   push:
+    branches:
+      - main
     paths:
       - 'data/data-pipeline/**'
+      - 'deployment_scripts/data-pipeline-deployment/data-pipeline-deploy.yml'
   workflow_dispatch:  # Allow manual triggering
 
 jobs:

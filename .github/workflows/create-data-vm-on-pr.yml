@@ -1,0 +1,98 @@
+name: Deploy GCP VM for PR
+
+on:
+
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths:
+        - 'data/data-pipeline/**'
+        - 'deployment_scripts/data-pipeline-deployment/create-data-vm-on-pr.yml'
+        - 'deployment_scripts/data-pipeline-deployment/pr_setup_airflow_vm.sh'
+        - 'deployment_scripts/data-pipeline-deployment/pr_vm_startup_script.sh'
+  workflow_dispatch:
+
+jobs:
+  deploy-vm:
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_ID: data-pipeline-deployment-trial
+      ZONE: us-east1-d
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Authenticate to Google Cloud
+        id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+            credentials_json: '${{ secrets.GCP_SA_KEY }}'
+            
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: Set variables
+        id: vars
+        run: |
+          echo "VM_NAME=vm-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          echo "BRANCH_NAME=${GITHUB_HEAD_REF}" >> $GITHUB_ENV
+
+      - name: cd into deployment directory
+        run: |
+            cd deployment_scripts/data-pipeline-deployment/
+            echo "Setup google_cloud_key.json"
+            echo "${{ secrets.GCP_SA_KEY }}" > google_cloud_key.json
+            echo "Setup .env file"
+            echo "AIRFLOW_UID=1000" > .env
+            echo "GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/secrets/google_cloud_key.json" >> .env
+            echo "SMTP_EMAIL=${{ secrets.EMAIL_USERNAME }}" >> .env
+            echo "SMTP_PASSWORD=${{ secrets.EMAIL_PASSWORD }}" >> .env
+            ls -la
+            echo "making pr_setup_airflow_vm.sh executable"
+            chmod +x ./pr_setup_airflow_vm.sh
+            echo "running pr_setup_airflow_vm.sh"
+            OUTPUT=$(./pr_setup_airflow_vm.sh $VM_NAME $BRANCH_NAME $PROJECT_ID)
+            echo "$OUTPUT" > script_output.log
+            FINAL_MESSAGE=$(echo "$OUTPUT" | grep "Access Airflow UI at:")
+            echo "FINAL_MESSAGE=$FINAL_MESSAGE" >> $GITHUB_ENV
+
+  notify:
+    needs: [deploy-vm]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Notify Success
+        if: needs.deploy-vm.result == 'success'
+        uses: dawidd6/action-send-mail@v4
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "CI Pipeline Passed - Ready to Merge to Staging"
+          to: vedantrishidas@gmail.com
+          from: sanjanajd115@gmail.com
+          body: |
+            All tests have passed. The PR can be merged to staging.
+            
+            Pull Request: ${{ github.event.pull_request.html_url }}
+            
+            Final Message:
+            ${{ env.FINAL_MESSAGE }}
+            
+      - name: Notify Failure
+        if: needs.deploy-vm.result == 'failure'
+        uses: dawidd6/action-send-mail@v4
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "CI Pipeline Failed"
+          to: harveymailer13@gmail.com
+          from: ${{ secrets.EMAIL_USERNAME }}
+          body: |
+            Some tests have failed. Please check the logs.
+            
+            Pull Request: ${{ github.event.pull_request.html_url }}
