@@ -1,4 +1,4 @@
-name: Build and Deploy AI-GovBot to GKE (Dev Branch)
+name: Build and Deploy AI-GovBot to GKE (sanjana-dev Branch)
 
 on:
   # Keep manual trigger
@@ -8,7 +8,7 @@ on:
     workflows: ["Run Unit Tests"]
     types: [completed]
     branches:
-      - dev
+      - sanjana-dev
 
 env:
   PROJECT_ID: data-pipeline-deployment-trial
