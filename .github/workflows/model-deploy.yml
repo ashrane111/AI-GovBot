@@ -239,3 +239,50 @@ jobs:
           echo "Deployment successful!"
           echo "Verifying services..."
           kubectl get services -n ${{ env.NAMESPACE }}
+      
+      # --- Clean up temporary .env file ---
+
+      - name: Clean up temporary .env file
+        run: |
+          echo "Cleaning up temporary .env file..."
+          rm -f .env
+          echo ".env file removed."
+
+      # --- Notify Success ---
+  notify:
+    needs: [build-and-deploy]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Notify Success
+        if: needs.build-and-deploy.result == 'success'
+        uses: dawidd6/action-send-mail@v4
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "CI Pipeline Passed - Ready to Merge to Staging"
+          to: vedantrishidas@gmail.com
+          from: sanjanajd115@gmail.com
+          body: |
+            All tests have passed. The PR can be merged to staging.
+            
+            Pull Request: ${{ github.event.pull_request.html_url }}
+            
+      - name: Notify Failure
+        if: needs.test.result == 'failure'
+        uses: dawidd6/action-send-mail@v4
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "CI Pipeline Failed"
+          to: vedantrishidas@gmail.com
+          from: sanjanajd115@gmail.com
+          body: |
+            Some tests have failed. Please check the logs.
+            
+            Pull Request: ${{ github.event.pull_request.html_url }}
