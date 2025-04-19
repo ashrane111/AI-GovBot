@@ -22,6 +22,7 @@ class Moderator:
         # Second level: OpenAI API (more thorough)
         return await self._openai_check(content, sensitivity_level)
 
+    @observe()
     def _basic_check(self, content, sensitivity_level):
         """Simple keyword/pattern filtering"""
         sensitivity_patterns = {

@@ -8,7 +8,7 @@ class Generator:
         self.client = create_llm_client(config_loader.get("llm.client", "openai"))
         # self.messages = []
         
-    @observe()
+    @observe(as_type="generation")
     async def generate(self, query_message):        
         try:
             content = await self.client.generate_completion(query_message)
