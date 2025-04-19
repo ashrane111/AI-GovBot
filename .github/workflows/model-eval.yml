@@ -1,0 +1,67 @@
+# .github/workflows/daily_eval.yml
+
+# Name updated to reflect frequency
+name: Hourly RAGAS Evaluation & Alert
+
+on:
+  schedule:
+    # Runs every hour at minute 0 (e.g., 1:00, 2:00, 3:00 UTC)
+    # Remember this is UTC time. 1:00 PM EDT is 17:00 UTC.
+    - cron: '* */6 * * *' # Changed schedule to hourly
+
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  evaluate_and_alert:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30 # Adjust if needed, hourly runs should be quicker if TRACE_LIMIT is lower
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' # Or your preferred version
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f model_evaluation/requirements.txt ]; then pip install -r model_evaluation/requirements.txt; else echo "model_evaluation/requirements.txt not found"; exit 1; fi
+
+      - name: Run RAGAS Evaluation Script
+        id: evaluate # Keep step ID
+        # *** Path to Python script UPDATED ***
+        run: python model_evaluation/ragas_evaluation.py
+        env:
+          # Environment variables for secrets remain the same
+          LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
+          LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}
+          LANGFUSE_HOST: ${{ secrets.LANGFUSE_HOST }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
+          PYTHONUNBUFFERED: 1 # Keep for real-time logging
+
+      - name: Send alert email if needed
+        # Conditional execution based on script output remains the same
+        if: steps.evaluate.outputs.alert_needed == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          # Email server details remain the same
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+
+          # Email content details remain the same, subject clarifies hourly
+          subject: "ALERT: AI-GovBot HOURLY RAGAS Metrics Below Threshold (${{ github.run_id }})"
+          to: ${{ secrets.ALERT_RECIPIENT_EMAIL }}
+          from: AI-GovBot Alerter <${{ secrets.EMAIL_USERNAME }}>
+          body: |
+            Alert triggered for AI-GovBot hourly RAGAS evaluation.
+
+            Reason(s): ${{ steps.evaluate.outputs.alert_details }}
+
+            Workflow Run ID: ${{ github.run_id }}
+            Check the workflow run details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
