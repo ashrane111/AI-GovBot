@@ -23,6 +23,7 @@ from airflow import configuration as conf
 from utils.data_validation import validate_downloaded_data_files, check_validation_status
 from utils.bias_detection import detect_and_simulate_bias
 from utils.download_agora import update_config_with_download_url
+from utils.download_agora import update_config_with_download_url
 # from utils.sentence_transformer_encoder import SentenceTransformerEmbeddings
 # Enable pickle support for XCom, allowing data to be passed between tasks
 conf.set('core', 'enable_xcom_pickling', 'True')

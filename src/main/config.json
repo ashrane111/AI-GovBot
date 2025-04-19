@@ -30,6 +30,11 @@
         "client": "ollama_local",
         "model_name": "gemma3:4b"
     },
+    "claude": {
+        "client": "claude",
+        "model_name": "claude-3-7-sonnet-latest",
+        "api_key": "sk-ant-yourkey"
+    },
     "openai" : {
         "client": "openai",
         "model_name": "gpt-4o-mini",
