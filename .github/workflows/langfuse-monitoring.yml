@@ -35,7 +35,7 @@ jobs:
           TIME_WINDOW_HOURS: ${{ vars.TIME_WINDOW_HOURS || '12' }}
         run: |
           # Run the monitoring script and capture its output
-          OUTPUT=$(python langfuse_monitoring.py)
+          OUTPUT=$(python src/main/langfuse_monitoring.py)
           
           # Check if trace count exceeded threshold
           if echo "$OUTPUT" | grep -q "Trace count exceeded threshold"; then
