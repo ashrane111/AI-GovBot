@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-govbot-frontend-deployment
+  namespace: mlscopers
+  labels:
+    app: ai-govbot-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-govbot-frontend
+  template:
+    metadata:
+      namespace: mlscopers
+      labels:
+        app: ai-govbot-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: us-east1-docker.pkg.dev/data-pipeline-deployment-trial/ai-govbot-repo/ai-govbot-frontend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8501
