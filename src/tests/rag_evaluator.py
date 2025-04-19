@@ -98,12 +98,6 @@ class RAGEvaluator:
             }
             results.append(result)
 
-            
-            # Log metrics to MLflow with sanitized names
-            # mlflow.log_metric(f"faithfulness", ragas_faithful)
-            # mlflow.log_metric(f"relevance", ragas_answer_relevancy)
-            # mlflow.log_metric(f"generation_time", generation_time)
-
             time.sleep(2)  # Add delay to avoid rate limits
 
         return results

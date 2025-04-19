@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ai-govbot-frontend-service # Service name (can be different from backend)
+  name: ai-govbot-frontend-service 
 spec:
   selector:
     app: ai-govbot-frontend         # Selects pods managed by the frontend Deployment

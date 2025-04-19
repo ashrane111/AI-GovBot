@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# filepath: /home/rixirx/Trials and Experiments/MLOps Trials/AI-GovBot/src/tests/run_rag_evaluation.py
 import os
 import sys
 import json
