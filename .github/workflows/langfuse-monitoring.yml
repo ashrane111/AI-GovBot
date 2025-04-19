@@ -9,11 +9,12 @@ on:
 jobs:
   monitor:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/langfuse_changes'
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          ref: 'langfuse_changes'
         
       - name: Set up Python
         uses: actions/setup-python@v4
