@@ -41,6 +41,12 @@ def extract_and_merge_documents(temp_dir=""):
         segments = pd.read_csv(f"{documents_dir}/segments.csv")
         logger.info("Accessed segments.csv")
 
+        authorities = pd.read_csv(f"{documents_dir}/authorities.csv")
+        logger.info("Accessed authorities.csv")
+
+        authorities_extract = authorities[['Name', 'Jurisdiction']]
+        logger.info("Extracted Name and Jurisdiction from authorities")
+
         segments_result = segments.groupby('Document ID').agg(lambda x: ', '.join(x.astype(str))).reset_index()
         segments_required = segments_result[['Document ID', 'Text', 'Summary']]
         segments_required = segments_required.rename(columns={'Text': 'Full Text', 'Summary': 'Full Text Summary'})
@@ -53,8 +59,22 @@ def extract_and_merge_documents(temp_dir=""):
                                          'Long summary']]
         logger.info("Extracted necessary columns from documents")
 
-        merged_document_segments = pd.merge(
+        documents_with_jurisdiction = pd.merge(
             documents_extracted,
+            authorities_extract,
+            left_on='Authority',
+            right_on='Name',
+            how='left'
+        )
+        logger.info("Merged documents with authorities to get Jurisdiction")
+
+        # Drop the duplicate Name column (from authorities) if you don't need it
+        if 'Name' in documents_with_jurisdiction.columns:
+            documents_with_jurisdiction = documents_with_jurisdiction.drop('Name', axis=1)
+
+
+        merged_document_segments = pd.merge(
+            documents_with_jurisdiction,
             segments_required,
             left_on='AGORA ID',
             right_on='Document ID',
