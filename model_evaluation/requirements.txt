@@ -1,0 +1,6 @@
+pandas
+langfuse-python
+ragas
+datasets
+python-dotenv
+openai
