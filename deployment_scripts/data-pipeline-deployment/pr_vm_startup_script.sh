@@ -62,8 +62,8 @@ done
 log "Unpausing DAG: Data_pipeline_HARVEY"
 docker compose exec airflow-webserver airflow dags unpause Data_pipeline_HARVEY
 
-log "Triggering DAG: Data_pipeline_HARVEY"
-docker compose exec airflow-webserver airflow dags trigger Data_pipeline_HARVEY
+# log "Triggering DAG: Data_pipeline_HARVEY"
+# docker compose exec airflow-webserver airflow dags trigger Data_pipeline_HARVEY
 
 
 log "✅ DONE"
