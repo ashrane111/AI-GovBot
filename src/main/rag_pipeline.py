@@ -65,6 +65,7 @@ class RAGPipeline:
 
         return answer, document_id
     
+    @observe()
     def __generate_context(self, retrieved_docs, retrieval_scores):
         filtered_docs = []
         for i, (doc, score) in enumerate(zip(retrieved_docs, retrieval_scores)):
