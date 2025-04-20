@@ -4,6 +4,13 @@
         "n_docs": 3
         
     },
+    "gcs_storage": {
+        "bucket_name": "datasets-mlops-25",
+        "pkl_blob_prefix": "faiss_index/index.pkl",
+        "faiss_blob_prefix": "faiss_index/index.faiss",
+        "pkl_local_destination": "src/index/index.pkl",
+        "faiss_local_destination": "src/index/index.faiss"
+    },
     "novita": {
         "provider": "novita",
         "token": "Hf_xxx"
@@ -30,10 +37,27 @@
         "client": "ollama_local",
         "model_name": "gemma3:4b"
     },
+    "claude": {
+        "client": "claude",
+        "model_name": "claude-3-7-sonnet-latest",
+        "api_key": "sk-ant-yourkey"
+    },
     "openai" : {
         "client": "openai",
         "model_name": "gpt-4o-mini",
         "api_key": "sk-xxx"
+    },
+    "moderation": {
+        "enabled": true,
+        "sensitivity_level": "medium",
+        "input_check": true,
+        "output_check": true,
+        "log_flagged": true
+    },
+    "langfuse": {
+        "secret_key": "sk-xxx",
+        "public_key": "pk-xxx",
+        "host": "https://us.cloud.langfuse.com"
     }
     
 }

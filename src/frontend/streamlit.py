@@ -3,42 +3,43 @@ import aiohttp
 import asyncio
 import os
 import sys
-import json
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from main.config_loader import ConfigLoader
 
 # Define config file path
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), 'frontend_config.json')
 
 # Load configuration
-def load_config():
-    try:
-        with open(CONFIG_PATH, 'r') as f:
-            config = json.load(f)
-            chat_api = config.get("CHAT_API", {})
-            endpoint = chat_api.get("endpoint", "http://localhost:8000")
-            chat_response_route = chat_api.get("chat_response_route", "/answer_query/")
-            return {
-                "chat_endpoint": endpoint + chat_response_route,
-            }
-    except FileNotFoundError:
-        # Create a default config if it doesn't exist
-        default_config = {
-            "CHAT_API": {
-                "endpoint": "http://localhost:8000",
-                "chat_response_route": "/answer_query/"
-            }
-        }
-        with open(CONFIG_PATH, 'w') as f:
-            json.dump(default_config, f, indent=4)
-        return {
-            "chat_endpoint": default_config["CHAT_API"]["endpoint"] + default_config["CHAT_API"]["chat_response_route"],
-        }
-    except Exception as e:
-        print(f"Error reading config file: {e}")
-        return {
-            "chat_endpoint": "http://localhost:8000/answer_query/",
-        }
+# def load_config():
+#     try:
+#         with open(CONFIG_PATH, 'r') as f:
+#             config = json.load(f)
+#             chat_api = config.get("CHAT_API", {})
+#             endpoint = chat_api.get("endpoint", "http://localhost:8000")
+#             chat_response_route = chat_api.get("chat_response_route", "/answer_query/")
+#             return {
+#                 "chat_endpoint": endpoint + chat_response_route,
+#             }
+#     except FileNotFoundError:
+#         # Create a default config if it doesn't exist
+#         default_config = {
+#             "CHAT_API": {
+#                 "endpoint": "http://localhost:8000",
+#                 "chat_response_route": "/answer_query/"
+#             }
+#         }
+#         with open(CONFIG_PATH, 'w') as f:
+#             json.dump(default_config, f, indent=4)
+#         return {
+#             "chat_endpoint": default_config["CHAT_API"]["endpoint"] + default_config["CHAT_API"]["chat_response_route"],
+#         }
+#     except Exception as e:
+#         print(f"Error reading config file: {e}")
+#         return {
+#             "chat_endpoint": "http://localhost:8000/answer_query/",
+#         }
+BACKEND_BASE_URL = os.environ.get("BACKEND_API_URL", "http://localhost:8000")
+CHAT_ENDPOINT = f"{BACKEND_BASE_URL}/answer_query"
 
 # Function to call the API
 async def query_api(messages, api_url):
@@ -56,8 +57,6 @@ async def query_api(messages, api_url):
             return None
 
 def main():
-    # Get configuration
-    config = load_config()
 
     # Set page configuration
     st.set_page_config(
@@ -75,7 +74,8 @@ def main():
     st.subheader("Ask questions about AI Government Laws and Policies")
 
     # API endpoint from config
-    API_URL = config["chat_endpoint"]
+    API_URL = CHAT_ENDPOINT
+    #st.sidebar.caption(f"Backend API: {BACKEND_BASE_URL}")
 
     # Display chat history
     for message in st.session_state.messages:

@@ -1,6 +1,6 @@
 {
     "CHAT_API": {
-        "endpoint": "http://localhost:8000",
+        "endpoint": "http://35.229.115.215:8000",
         "chat_response_route": "/answer_query"
     }
 }

@@ -4,6 +4,8 @@ from main.config_loader import config_loader
 from dotenv import load_dotenv
 import os
 import pathlib
+from langfuse.decorators import observe
+from langfuse.openai import openai
 
 # current_file = pathlib.Path(__file__)
 # project_root = current_file.parent.parent.parent
@@ -18,7 +20,8 @@ class OpenAIClient(LLMClient):
         api_key = os.getenv("OPENAI_API_KEY") or config_loader.get("openai.api_key")
         self.client = AsyncOpenAI(api_key=api_key)
         self.model = config_loader.get("openai.model_name", "gpt-4o-mini")
-        
+
+    @observe()   
     async def generate_completion(self, user_messages, max_tokens=500, temperature=0.7, top_p=0.9):
         try:
             completion = await self.client.chat.completions.create(

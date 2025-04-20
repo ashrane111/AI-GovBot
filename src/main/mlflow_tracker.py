@@ -1,11 +1,13 @@
 import mlflow
 from main.config_loader import config_loader
+from langfuse.decorators import observe
 
 class MLFlowTracker:
     def __init__(self):
         mlflow.set_tracking_uri(config_loader.get("mlflow.tracking_uri"))
         mlflow.set_experiment(config_loader.get("mlflow.experiment_name"))
 
+    @observe()
     def log_metrics(self, query, response, retrieved_docs, scores, retrieval_time, generation_time):
         with mlflow.start_run():
             mlflow.log_param("query", query)
