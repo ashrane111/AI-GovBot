@@ -8,41 +8,56 @@ The `config.json` file in the main directory controls the behavior of the RAG pi
 - Embedding model configuration
 - File paths for indexes and data
 - MLflow tracking settings
+- GCS storage settings
+- Moderation controls
+- Langfuse observability settings
 
 ## Required Configuration Sections
 
 ### Paths
 
-Configure where your vector index and document data are stored:
+Configure where your index directory and document data are stored:
 
 ```json
 "paths": {
-  "index_file": "path/to/your/faiss/index.faiss",
-  "metadata_file": "path/to/your/metadata.pkl",
-  "data_file": "path/to/your/data.json"
+  "index_dir": "src/index",
+  "data_path": "src/index/Documents_segments_merged.csv"
 }
 ```
-
-Note: Relative paths are automatically resolved relative to the project root.
 
 ### LLM Configuration
 
-Select and configure the Large Language Model:
+The config supports multiple LLM providers with their own configuration blocks:
 
 ```json
 "llm": {
-  "client": "openai",  
-  "model": "gpt-3.5-turbo", 
-  "temperature": 0.3,
-  "max_tokens": 500
+  "client": "openai"
+},
+"openai": {
+  "client": "openai",
+  "model_name": "gpt-4o-mini",
+  "api_key": "sk-xxx"
+},
+"claude": {
+  "client": "claude",
+  "model_name": "claude-3-7-sonnet-latest", 
+  "api_key": "sk-ant-yourkey"
+},
+"huggingface": {
+  "client": "huggingface",
+  "model_name": "deepseek-ai/DeepSeek-R1"
+},
+"ollama_local": {
+  "client": "ollama_local",
+  "model_name": "gemma3:4b"
+},
+"novita": {
+  "provider": "novita",
+  "token": "Hf_xxx"
 }
 ```
 
-Available `client` options:
-- `openai` - Requires OpenAI API key in environment variables
-- `anthropic` - For Claude models, requires Anthropic API key
-- `huggingface` - For Hugging Face models
-- `ollama` - For local models via Ollama
+The main `llm` block determines which provider configuration is active.
 
 ### Embedding Model
 
@@ -50,14 +65,9 @@ Configure the embedding model to create vector representations:
 
 ```json
 "embedding": {
-  "model": "sentence-transformers/all-MiniLM-L6-v2"
+  "model": "sentence-transformers/all-mpnet-base-v2"
 }
 ```
-
-Common choices include:
-- `sentence-transformers/all-MiniLM-L6-v2` (default)
-- `sentence-transformers/all-mpnet-base-v2` (higher quality)
-- `openai` embedding models (requires separate configuration)
 
 ### Retriever Settings
 
@@ -65,14 +75,28 @@ Control how documents are retrieved:
 
 ```json
 "retriever_args": {
-  "top_k": 5,
-  "similarity_threshold": 0.7
+  "score_threshold": 1.2,
+  "n_docs": 3
 }
 ```
 
 Parameters:
-- `top_k`: Number of documents to retrieve per query
-- `similarity_threshold`: Minimum similarity score (0-1) for inclusion
+- `score_threshold`: Maximum distance/score threshold for document selection
+- `n_docs`: Number of documents to retrieve per query
+
+### GCS Storage Configuration
+
+Configure Google Cloud Storage for index storage:
+
+```json
+"gcs_storage": {
+  "bucket_name": "datasets-mlops-25",
+  "pkl_blob_prefix": "faiss_index/index.pkl",
+  "faiss_blob_prefix": "faiss_index/index.faiss",
+  "pkl_local_destination": "src/index/index.pkl",
+  "faiss_local_destination": "src/index/index.faiss"
+}
+```
 
 ### MLflow Settings
 
@@ -81,8 +105,33 @@ Configure experiment tracking:
 ```json
 "mlflow": {
   "tracking_uri": "http://localhost:8001",
-  "experiment_name": "rag_pipeline",
-  "run_name": "default_run"
+  "experiment_name": "RAG_Pipeline_Experiment"
+}
+```
+
+### Moderation Settings
+
+Configure content moderation:
+
+```json
+"moderation": {
+  "enabled": true,
+  "sensitivity_level": "medium",
+  "input_check": true,
+  "output_check": true,
+  "log_flagged": true
+}
+```
+
+### Langfuse Observability
+
+Configure Langfuse for LLM observability:
+
+```json
+"langfuse": {
+  "secret_key": "sk-xxx",
+  "public_key": "pk-xxx",
+  "host": "https://us.cloud.langfuse.com"
 }
 ```
 
@@ -92,29 +141,52 @@ Here's a complete example of the config.json file:
 
 ```json
 {
-  "paths": {
-    "index_file": "data/vector_store/index.faiss",
-    "metadata_file": "data/vector_store/metadata.pkl",
-    "data_file": "data/processed/combined_data.json"
-  },
-  "llm": {
-    "client": "openai",
-    "model": "gpt-3.5-turbo",
-    "temperature": 0.3,
-    "max_tokens": 500
-  },
-  "embedding": {
-    "model": "sentence-transformers/all-MiniLM-L6-v2"
-  },
-  "retriever_args": {
-    "top_k": 5,
-    "similarity_threshold": 0.7
-  },
-  "mlflow": {
-    "tracking_uri": "http://localhost:8001",
-    "experiment_name": "rag_pipeline",
-    "run_name": "default_run"
-  }
+    "retriever_args": {
+        "score_threshold": 1.2,
+        "n_docs": 3  
+    },
+    "gcs_storage": {
+        "bucket_name": "datasets-mlops-25",
+        "pkl_blob_prefix": "faiss_index/index.pkl",
+        "faiss_blob_prefix": "faiss_index/index.faiss",
+        "pkl_local_destination": "src/index/index.pkl",
+        "faiss_local_destination": "src/index/index.faiss"
+    },
+    "novita": {
+        "provider": "novita",
+        "token": "Hf_xxx"
+    },
+    "embedding": {
+        "model": "sentence-transformers/all-mpnet-base-v2"
+    },
+    "paths": {
+        "index_dir": "src/index",
+        "data_path": "src/index/Documents_segments_merged.csv"
+    },
+    "mlflow": {
+        "tracking_uri": "http://localhost:8001",
+        "experiment_name": "RAG_Pipeline_Experiment"
+    },
+    "llm": {
+        "client": "openai"
+    },
+    "openai": {
+        "client": "openai",
+        "model_name": "gpt-4o-mini",
+        "api_key": "sk-xxx"
+    },
+    "moderation": {
+        "enabled": true,
+        "sensitivity_level": "medium",
+        "input_check": true,
+        "output_check": true,
+        "log_flagged": true
+    },
+    "langfuse": {
+        "secret_key": "sk-xxx",
+        "public_key": "pk-xxx",
+        "host": "https://us.cloud.langfuse.com"
+    }
 }
 ```
 
@@ -123,6 +195,4 @@ Here's a complete example of the config.json file:
 After modifying the `config.json` file:
 1. Save the file
 2. Restart the RAG service if it's running
-3. Changes will be automatically loaded by the `ConfigLoader` class when the application starts
-
-No further steps are required as the configuration is loaded at runtime.
+3. Changes will be automatically loaded by the configuration system when the application starts
