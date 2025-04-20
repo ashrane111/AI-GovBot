@@ -22,3 +22,7 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 8501
+        env:
+        - name: BACKEND_API_URL # Name the variable
+          value: "http://ai-govbot-backend-service.mlscopers.svc.cluster.local:8000" # Internal DNS name and port
+        # --- End ADD ---

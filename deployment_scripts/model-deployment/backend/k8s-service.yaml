@@ -16,4 +16,4 @@ spec:
     protocol: TCP
     port: 8001                     # Port the service listens on internally
     targetPort: 8001               # Port on the pods to forward traffic to
-  type: LoadBalancer                  # Only expose internally within the cluster
+  type: ClusterIP                  # Only expose internally within the cluster
