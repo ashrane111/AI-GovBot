@@ -42,7 +42,7 @@ jobs:
         run: |
             cd deployment_scripts/data-pipeline-deployment/
             echo "Setup google_cloud_key.json"
-            echo "${{ secrets.GCP_SA_KEY }}" > google_cloud_key.json
+            echo '${{ secrets.GCP_SA_KEY }}' > google_cloud_key.json
             cat google_cloud_key.json
             echo "Setup .env file"
             echo "AIRFLOW_UID=1000" > .env
