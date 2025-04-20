@@ -233,6 +233,7 @@ create_lang_index_task = PythonOperator(
 upload_to_gcs_task = PythonOperator(
     task_id='upload_to_gcs_task',
     python_callable=upload_merged_data_to_gcs,
+    op_args=[get_config_value('bucket_name', "datasets-mlops-25")],
     dag=dag,
 )
 

@@ -16,7 +16,7 @@
   streamlit
   aiohttp
   ```
-- **Network**: Localhost ports 8000 (API), 8501 (UI), 5000 (MLflow)
+- **Network**: Localhost ports 8000 (API), 8501 (UI), 8001 (MLflow)
 
 ## 🚀 Web App Setup Guide
 
@@ -37,7 +37,7 @@ MLFLOW Link - http://0.0.0.0:8001
 
 ### 3. Frontend Activation
 ```bash
-streamlit run streamlit.py --server.port 8501
+streamlit run src/frontend/streamlit.py --server.port 8501
 ```
 
 #### View Frontend

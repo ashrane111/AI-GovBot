@@ -70,12 +70,10 @@ def upload_to_gcs(bucket_name, source_file_name, destination_blob_name, create_i
         logger.error(f"Error uploading {source_file_name} to GCS: {e}")
         raise
 
-def upload_merged_data_to_gcs():
+def upload_merged_data_to_gcs(data):
     """Uploads the merged data to GCS."""
     try:
-        bucket_name = "datasets-mlops-25" 
-
-
+        bucket_name = data
 
         source_file_name = os.path.join(os.path.dirname(os.path.dirname(__file__)),  "faiss_index/index.faiss")
         destination_blob_name = "faiss_index/index.faiss"
@@ -95,6 +93,6 @@ def upload_merged_data_to_gcs():
         raise
 
 if __name__ == "__main__":
-    upload_merged_data_to_gcs()
+    upload_merged_data_to_gcs("datasets-mlops-25")
 
 

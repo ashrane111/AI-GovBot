@@ -63,7 +63,7 @@ class TestGCSUpload(unittest.TestCase):
         # Make mock_join return a consistent value
         mock_join.return_value = "/mocked/path/to/file"
         
-        upload_merged_data_to_gcs()
+        upload_merged_data_to_gcs("datasets-mlops-25")
         
         # Check calls count
         self.assertEqual(mock_upload_to_gcs.call_count, 2)
@@ -92,7 +92,7 @@ class TestGCSUpload(unittest.TestCase):
         mock_upload_to_gcs.side_effect = FileNotFoundError("File not found")
         
         with self.assertRaises(FileNotFoundError):
-            upload_merged_data_to_gcs()
+            upload_merged_data_to_gcs("datasets-mlops-25")
         
         mock_logger.error.assert_called_once_with("Error uploading merged data to GCS: File not found")
     
