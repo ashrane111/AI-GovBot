@@ -6,7 +6,7 @@
 - Ensure your VM Compute instances API is enabled.
 
 ### Script Setup - Linux Terminal
-1. In the configuration part of `setup_airflow_vm.sh`, configure the `PROJECT_ID` with the project ID chosen and set the zone `ZONE` as per requirement.
+1. In the configuration part of `pr_setup_airflow_vm.sh`, set the zone `ZONE` as per requirement.
 2. Create a google service account key 
     - Create a service account in your Google Cloud project and download the JSON key file.
     - Rename the key file to `google_cloud_key.json`.
@@ -18,12 +18,12 @@ GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/secrets/google_cloud_key.json
 SMTP_EMAIL=<your_email_account_to_send_email_from>
 SMTP_PASSWORD=<your_app_code_for_email>
 ```
-4. Enable `setup_airflow_vm.sh` as an executable:
+4. Enable `pr_setup_airflow_vm.sh` as an executable:
 ```bash
-chmod +x setup_airflow_vm.sh`
+chmod +x pr_setup_airflow_vm.sh`
 ```
 5. Run the setup file present in `deployment_scripts/data-pipeline-deployment`:
 ```bash
-./setup_airflow_vm.sh`
+./pr_setup_airflow_vm.sh "vm-airflow" "main" "<your-project-id>"
 ```
 6. After it is complete, you should be able to view the Airflow UI at the printed host address at port 8080. If unable to see the printed statement, go to google console and in VM Instances find airflow-vm. Use the External IP address from that and use the port 8080 to access the Airflow UI.

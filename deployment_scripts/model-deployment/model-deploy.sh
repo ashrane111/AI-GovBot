@@ -1,18 +1,16 @@
 #!/bin/bash
-
-# Exit on error, undefined variable, or pipe failure
 set -euo pipefail
-# Print commands as they execute (optional, comment out '#' to disable)
 set -x
 
 # --- Configuration (Review and adjust if necessary) ---
-PROJECT_ID="data-pipeline-deployment-trial"
+PROJECT_ID="ai-govbot-project"
 ZONE="us-east1-d"                            # Zone for GKE Cluster
 REGION="us-east1"                            # Region for GAR Repository (must contain ZONE)
 CLUSTER_NAME="ai-govbot-cluster"       # Name for your GKE cluster
 GAR_REPOSITORY_NAME="ai-govbot-repo"         # Name for your GAR repository
 NAMESPACE="mlscopers"                        # Kubernetes namespace
 K8S_SECRET_NAME="openai-secret"              # Name for the K8s secret holding the API key
+K8S_SECRET_FILE="gcp-secret"
 
 # Define Dockerfile Paths
 BACKEND_DOCKERFILE="deployment_scripts/model-deployment/backend/Dockerfile"
@@ -63,9 +61,27 @@ else
     echo "Cluster ${CLUSTER_NAME} already exists in zone ${ZONE}."
 fi
 
+# Add this after the existing cluster check
+echo "Updating cluster ${CLUSTER_NAME} with new configuration..."
+gcloud container clusters update ${CLUSTER_NAME} \
+    --zone=${ZONE} \
+    --project=${PROJECT_ID} \
+    --enable-autoscaling \
+    --min-nodes=1 \
+    --max-nodes=3
+
 # --- Configure kubectl ---
 echo "Configuring kubectl for cluster ${CLUSTER_NAME}..."
 gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${ZONE} --project ${PROJECT_ID}
+
+# --- Create Kubernetes Namespace ---
+echo "Checking/Creating namespace ${NAMESPACE}..."
+if ! kubectl get namespace ${NAMESPACE} &> /dev/null; then
+    echo "Creating namespace ${NAMESPACE}..."
+    kubectl apply -f "${NAMESPACE_FILE}"
+else
+    echo "Namespace ${NAMESPACE} already exists."
+fi
 
 # --- Create Regional GAR Repository ---
 echo "Checking/Creating Artifact Registry repository ${GAR_REPOSITORY_NAME} in region ${REGION}..."
@@ -135,7 +151,6 @@ docker buildx build \
 
 echo "Building and pushing multi-arch frontend image to ${FRONTEND_IMAGE_NAME_LATEST}..."
 docker buildx build \
-  --no-cache \
   --platform linux/amd64,linux/arm64 \
   -t ${FRONTEND_IMAGE_NAME_LATEST} \
   -f ${FRONTEND_DOCKERFILE} \
@@ -153,7 +168,7 @@ ENV_FILE=".env"
 # 1. Check if .env file exists
 if [[ ! -f "${ENV_FILE}" ]]; then
     echo "ERROR: ${ENV_FILE} file not found in the current directory."
-    echo "Please create it with your OPENAI_API_KEY."
+    echo "Please create it with your with all the required secrets as per README."
     exit 1
 fi
 
@@ -162,6 +177,34 @@ if ! grep -q -E '^OPENAI_API_KEY=' "${ENV_FILE}"; then
     echo "ERROR: OPENAI_API_KEY not found in ${ENV_FILE}."
     echo "Please ensure the file contains a line like 'OPENAI_API_KEY=sk-...'"
     exit 1
+fi
+
+if ! grep -q -E '^LANGFUSE_SECRET_KEY=' "${ENV_FILE}"; then
+    echo "Error: LANGFUSE_SECRET_KEY not found in ${ENV_FILE}."
+    echo "Langfuse integration may not work correctly."
+    exit 1
+fi
+
+if ! grep -q -E '^LANGFUSE_PUBLIC_KEY=' "${ENV_FILE}"; then
+    echo "Error: LANGFUSE_PUBLIC_KEY not found in ${ENV_FILE}."
+    echo "Langfuse integration may not work correctly."
+    exit 1
+fi
+
+if ! grep -q -E '^LANGFUSE_HOST=' "${ENV_FILE}"; then
+    echo "Error: LANGFUSE_HOST not found in ${ENV_FILE}."
+    echo "Langfuse integration may not work correctly."
+    exit 1
+fi
+
+if ! grep -q -E '^HUGGINGFACE_KEY=' "${ENV_FILE}"; then
+    echo "Warning: HUGGINGFACE_KEY not found in ${ENV_FILE}."
+    echo "Huggingface integration may not work correctly."
+fi
+
+if ! grep -q -E '^ANTHROPIC_API_KEY=' "${ENV_FILE}"; then
+    echo "Warning: ANTHROPIC_API_KEY not found in ${ENV_FILE}."
+    echo "Claude integration may not work correctly."
 fi
 
 # 3. Apply the secret directly using the .env file
@@ -174,12 +217,33 @@ kubectl create secret generic ${K8S_SECRET_NAME} \
 
 echo "Kubernetes secret '${K8S_SECRET_NAME}' processed using ${ENV_FILE}."
 
+# --- Create/Update Kubernetes Secret from google_cloud_key.json ---
+echo "Preparing Kubernetes secret '${K8S_SECRET_FILE}' from google_cloud_key.json file..."
+
+# Define expected google_cloud_key.json file path
+GCP_KEY_FILE="google_cloud_key.json"
+
+# 1. Check if google_cloud_key.json file exists
+if [[ ! -f "${GCP_KEY_FILE}" ]]; then
+    echo "ERROR: ${GCP_KEY_FILE} file not found in the current directory."
+    echo "Please ensure the Google Cloud service account key file is present."
+    exit 1
+fi
+
+# 2. Apply the secret directly using the google_cloud_key.json file
+echo "Applying Kubernetes secret '${K8S_SECRET_FILE}' from ${GCP_KEY_FILE}..."
+kubectl create secret generic ${K8S_SECRET_FILE} \
+  --from-file=key.json="${GCP_KEY_FILE}" \
+  --namespace=${NAMESPACE} \
+  --dry-run=client -o yaml | kubectl apply -f -
+
+echo "Kubernetes secret '${K8S_SECRET_FILE}' created from ${GCP_KEY_FILE}."
 
 # --- Kubernetes Deployment Steps ---
-echo "Starting Kubernetes deployment to namespace: ${NAMESPACE}..."
-# Apply Namespace
-echo "Applying Namespace: ${NAMESPACE_FILE}..."
-kubectl apply -f "${NAMESPACE_FILE}"
+# echo "Starting Kubernetes deployment to namespace: ${NAMESPACE}..."
+# # Apply Namespace
+# echo "Applying Namespace: ${NAMESPACE_FILE}..."
+# kubectl apply -f "${NAMESPACE_FILE}"
 
 # Apply Backend resources (Ensure YAML uses secretKeyRef: openai-secret)
 echo "Applying Backend Deployment: ${BACKEND_DEPLOYMENT_FILE}..."

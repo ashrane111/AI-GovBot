@@ -16,7 +16,7 @@ jobs:
   deploy-vm:
     runs-on: ubuntu-latest
     env:
-      PROJECT_ID: data-pipeline-deployment-trial
+      PROJECT_ID: ${{ vars.PROJECT_ID}}
       ZONE: us-east1-d
     outputs:
       final_message: ${{ steps.deploy_vm.outputs.final_message }}
@@ -76,8 +76,8 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "CI Pipeline Passed - Ready to Merge to Staging"
-          to: vedantrishidas@gmail.com
-          from: sanjanajd115@gmail.com
+          to: ${{ secrets.EMAIL_USERNAME }}
+          from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             All tests have passed. The PR can be merged to staging.
             
@@ -95,7 +95,7 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "CI Pipeline Failed"
-          to: harveymailer13@gmail.com
+          to: ${{ secrets.EMAIL_USERNAME }}
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Some tests have failed. Please check the logs.

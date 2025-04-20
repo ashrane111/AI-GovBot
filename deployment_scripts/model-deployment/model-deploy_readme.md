@@ -5,13 +5,26 @@
 1.  **Google Cloud SDK (`gcloud`)**: Provides command-line tools for interacting with Google Cloud.
     * Installation Guide: [https://cloud.google.com/sdk/docs/install](https://cloud.google.com/sdk/docs/install)
     * Verify installation: `gcloud --version`
-2.  **`kubectl`**: The Kubernetes command-line tool.
+2.  **Ensure Docker Engine is running**: If your OS uses a docker engine based runtime, ensure its running before running the script.
+3.  **`kubectl`**: The Kubernetes command-line tool.
     * Installation Guide (often included with `gcloud`): [https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) (adjust OS as needed)
     * Install via gcloud: `gcloud components install kubectl`
     * Verify installation: `kubectl version --client`
-3.  **Docker & `buildx`**: Docker Desktop/Engine installed, running, and `buildx` available.
-4.  **GCP Account & Permissions**: Access to a GCP project with Billing enabled and necessary permissions (Kubernetes Engine Admin, Artifact Registry Admin, etc.).
-5.  **OpenAI API Key**: Create a `.env` file in the root directory and save your key as `OPENAI_API_KEY`
+4.  **Install gke-gcloud-auth-plugin**: run `gcloud components install gke-gcloud-auth-plugin`
+5.  **Docker & `buildx`**: Docker Desktop/Engine installed, running, and `buildx` available.
+6.  **GCP Account & Permissions**: Access to a GCP project with Billing enabled and necessary permissions (Kubernetes Engine Admin, Artifact Registry Admin, etc.).
+7.  **API Key**: Create a `.env` file in the root directory and save the following in it -
+```
+HUGGINGFACE_KEY=<if hugging face tokens are available>
+OPENAI_API_KEY=<your Open AI Key>
+ANTHROPIC_API_KEY=<your Anthropic Key>
+GOOGLE_APPLICATION_CREDENTIALS=google_cloud_key.json
+LANGFUSE_SECRET_KEY=<Langfuse Secret Key>
+LANGFUSE_PUBLIC_KEY=<Langfuse Public Key>
+LANGFUSE_HOST=<Langfuse host>
+```
+8.  **GCP Credentials**: Save your service account credentials in `google_cloud_key.json` and save it in the root directory.
+
 
 ## Configuration
 
@@ -25,12 +38,30 @@ The script uses environment variables defined at the top for configuration (Proj
 
 ## Running the Deployment Script
 
-1.  **Navigate to Project Root:** Open your terminal in the root directory of the `AI-GovBot` project.
-2.  **Make Script Executable:** Run `chmod +x deployment_scripts/model-deployment/model-deploy.sh`  (only needed once).
+1.  **Navigate to Model Deployment Directory:** Open your terminal in the model deployment directory:
+```bash
+cd AI-GovBot/deployment_scripts/model-deployment/
+```
+2.  **Make Script Executable:** Run (only needed once).
+```bash
+chmod +x model-deploy.sh
+```  
 3.  **Execute Script:** Run the script:
-    ```bash
-    .deployment_scripts/model-deployment/model-deploy.sh
-    ```
+```bash
+./model-deploy.sh
+```
+(if asked to type Y for anything, please do so)
+
+4.  **To access the link to the app**: The script will inform about a command that can be used to get the IP address which can be opened. Type the following and wait till external ip pops up:
+```bash
+kubectl get service ai-govbot-frontend-service -n mlscopers --watch
+```
+
+It will look something like this -
+```
+NAME                         TYPE           CLUSTER-IP       EXTERNAL-IP     PORT(S)        AGE
+ai-govbot-frontend-service   LoadBalancer   34.118.230.195   35.229.66.170   80:32639/TCP   69m
+```
 
 **What the Scripts Do:**
 

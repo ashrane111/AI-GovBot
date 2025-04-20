@@ -1,19 +1,29 @@
 name: Deploy GCP VM for Push to Main
 
 on:
+  # Keep manual trigger
+  workflow_dispatch:
+  
+  # Run on changes to specific paths in main branch
   push:
     branches:
-        - main
+      - main
     paths:
-        - 'data/data-pipeline/**'
-        - '.github/workflows/main-create-data-vm-on-pr.yml'
-  workflow_dispatch:
+      - 'data/data-pipeline/**'
+      - '.github/workflows/main-create-data-vm-on-pr.yml'
+  
+  # Trigger after the 'Run Unit Tests' workflow completes
+  workflow_run:
+    workflows: ["Run Unit Tests"]
+    types: [completed]
+    branches:
+      - main
 
 jobs:
   deploy-vm:
     runs-on: ubuntu-latest
     env:
-      PROJECT_ID: data-pipeline-deployment-trial
+      PROJECT_ID: ${{ vars.PROJECT_ID}}
       ZONE: us-east1-d
     outputs:
       final_message: ${{ steps.deploy_vm.outputs.final_message }}
@@ -73,8 +83,8 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "CI Pipeline Passed - Ready to Merge to Staging"
-          to: vedantrishidas@gmail.com
-          from: sanjanajd115@gmail.com
+          to: ${{ secrets.EMAIL_USERNAME }}
+          from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Main branch has been updated and deployment is successful.
             
@@ -90,7 +100,7 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "CI Pipeline Failed"
-          to: harveymailer13@gmail.com
+          to: ${{ secrets.EMAIL_USERNAME }}
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Failure in deployment to VM.
