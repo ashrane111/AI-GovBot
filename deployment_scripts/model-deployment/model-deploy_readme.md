@@ -24,6 +24,10 @@ LANGFUSE_PUBLIC_KEY=<Langfuse Public Key>
 LANGFUSE_HOST=<Langfuse host>
 ```
 8.  **GCP Credentials**: Save your service account credentials in `google_cloud_key.json` and save it in the root directory.
+9.  **Install jq for bash requirement**: Install jq to process json in bash:
+```bash
+sudo apt install jq
+```
 
 
 ## Configuration
