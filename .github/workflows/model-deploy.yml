@@ -99,6 +99,10 @@ jobs:
         # Continue even if some tags don't exist (e.g., first/second runs)
         continue-on-error: true
         run: |
+          
+          echo "!!! INTENTIONALLY FAILING DEPLOYMENT FOR ROLLBACK TEST !!!"
+          exit 1
+
           IMAGE_BASE="${{ env.BACKEND_IMAGE_NAME_NO_TAG }}"
           echo "Rotating tags for ${IMAGE_BASE}"
 
@@ -240,9 +244,6 @@ jobs:
       - name: Deploy to GKE
         run: |
           echo "Applying Kubernetes manifests to namespace: ${{ env.NAMESPACE }}"
-          
-          echo "!!! INTENTIONALLY FAILING DEPLOYMENT FOR ROLLBACK TEST !!!"
-          exit 1
 
           echo "Applying Namespace: ${{ env.NAMESPACE_FILE }}"
           kubectl apply -f ${{ env.NAMESPACE_FILE }}
