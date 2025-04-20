@@ -17,7 +17,7 @@
 
 The script uses environment variables defined at the top for configuration (Project ID, Zone, Cluster Name, etc.).
 
-* **Review Defaults:** Open the `model-deploy.sh` script in the deployment_scripts/model-deployment folder and review the variables in the "Configuration" section. Adjust them if your desired setup differs from the defaults (e.g., different `ZONE`, `CLUSTER_NAME`).
+* **Review Defaults:** Open the `model-deploy.sh` script in the deployment_scripts/model-deployment folder  and review the variables in the "Configuration" section. Adjust them if your desired setup differs from the defaults (e.g., different `ZONE`, `CLUSTER_NAME`).
 * **Kubernetes Manifest Paths:** Ensure the paths to your `.yaml` files (`NAMESPACE_FILE`, `*_DEPLOYMENT_FILE`, `*_SERVICE_FILE`) within the script match their actual locations in your project.
 * **Dockerfile Paths:** Ensure the `BACKEND_DOCKERFILE` and `FRONTEND_DOCKERFILE` variables point to the correct files.
 * **K8s Deployment Image Tag:** The script builds/pushes `:latest`. Ensure your Kubernetes Deployment YAMLs (`deployment_scripts/model-deployment/.../k8s-deployment.yaml`) reference the image with the `:latest` tag.
@@ -26,14 +26,13 @@ The script uses environment variables defined at the top for configuration (Proj
 ## Running the Deployment Script
 
 1.  **Navigate to Project Root:** Open your terminal in the root directory of the `AI-GovBot` project.
-2.  **Make Script Executable:** Run `chmod +x deployment_scripts/model-deployment/model-deploy.sh` (only needed once).
+2.  **Make Script Executable:** Run `chmod +x deployment_scripts/model-deployment/model-deploy.sh`  (only needed once).
 3.  **Execute Script:** Run the script:
     ```bash
     .deployment_scripts/model-deployment/model-deploy.sh
     ```
 
-
-**What the Script Does:**
+**What the Scripts Do:**
 
 The script performs the following actions sequentially:
 

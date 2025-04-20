@@ -126,6 +126,7 @@ rotate_tags "${FRONTEND_IMAGE_NAME_NO_TAG}"
 # --- Build and Push New ':latest' Images using docker buildx ---
 echo "Building and pushing multi-arch backend image to ${BACKEND_IMAGE_NAME_LATEST}..."
 docker buildx build \
+  --no-cache \
   --platform linux/amd64,linux/arm64 \
   -t ${BACKEND_IMAGE_NAME_LATEST} \
   -f ${BACKEND_DOCKERFILE} \
@@ -134,6 +135,7 @@ docker buildx build \
 
 echo "Building and pushing multi-arch frontend image to ${FRONTEND_IMAGE_NAME_LATEST}..."
 docker buildx build \
+  --no-cache \
   --platform linux/amd64,linux/arm64 \
   -t ${FRONTEND_IMAGE_NAME_LATEST} \
   -f ${FRONTEND_DOCKERFILE} \
