@@ -1,15 +1,12 @@
-name: Deploy GCP VM for PR
+name: Deploy GCP VM for Push to Main
 
 on:
-  pull_request:
-    types: [opened, reopened, synchronize]
+  push:
+    branches:
+        - main
     paths:
         - 'data/data-pipeline/**'
-        - '.github/workflows/create-data-vm-on-pr.yml'
-        - 'deployment_scripts/data-pipeline-deployment/pr_setup_airflow_vm.sh'
-        - 'deployment_scripts/data-pipeline-deployment/pr_vm_startup_script.sh'
-        - '.github/workflows/delete-data-vm-close-pr.yml'
-        
+        - '.github/workflows/main-create-data-vm-on-pr.yml'
   workflow_dispatch:
 
 jobs:
@@ -37,12 +34,8 @@ jobs:
       - name: Set variables
         id: vars
         run: |
-          if [ -z "${{ github.event.pull_request.number }}" ]; then
-            echo "VM_NAME=vm-airflow" >> $GITHUB_ENV
-          else
-            echo "VM_NAME=vm-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-          fi
-          echo "BRANCH_NAME=${GITHUB_HEAD_REF}" >> $GITHUB_ENV
+          echo "VM_NAME=vm-airflow" >> $GITHUB_ENV
+          echo "BRANCH_NAME=main" >> $GITHUB_ENV
 
       - name: Deploy to VM
         id: deploy_vm
@@ -83,9 +76,7 @@ jobs:
           to: vedantrishidas@gmail.com
           from: sanjanajd115@gmail.com
           body: |
-            All tests have passed. The PR can be merged to staging.
-            
-            Pull Request: ${{ github.event.pull_request.html_url }}
+            Main branch has been updated and deployment is successful.
             
             Final Message:
             ${{ needs.deploy-vm.outputs.final_message }}
@@ -102,6 +93,5 @@ jobs:
           to: harveymailer13@gmail.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
-            Some tests have failed. Please check the logs.
-            
-            Pull Request: ${{ github.event.pull_request.html_url }}
+            Failure in deployment to VM.
+            Please check the logs for more details.
