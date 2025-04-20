@@ -75,7 +75,7 @@ def main():
 
     # API endpoint from config
     API_URL = CHAT_ENDPOINT
-    st.sidebar.caption(f"Backend API: {BACKEND_BASE_URL}")
+    #st.sidebar.caption(f"Backend API: {BACKEND_BASE_URL}")
 
     # Display chat history
     for message in st.session_state.messages:
