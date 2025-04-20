@@ -1,7 +1,6 @@
 name: Deploy GCP VM for PR
 
 on:
-
   pull_request:
     types: [opened, reopened, synchronize]
     paths:
@@ -10,6 +9,12 @@ on:
         - 'deployment_scripts/data-pipeline-deployment/pr_setup_airflow_vm.sh'
         - 'deployment_scripts/data-pipeline-deployment/pr_vm_startup_script.sh'
         - '.github/workflows/delete-data-vm-close-pr.yml'
+  push:
+    branches:
+        - main
+    paths:
+        - 'data/data-pipeline/**'
+        - '.github/workflows/create-data-vm-on-pr.yml'
   workflow_dispatch:
 
 jobs:
@@ -18,6 +23,8 @@ jobs:
     env:
       PROJECT_ID: data-pipeline-deployment-trial
       ZONE: us-east1-d
+    outputs:
+      final_message: ${{ steps.deploy_vm.outputs.final_message }}
 
     steps:
       - name: Checkout repository
@@ -35,10 +42,15 @@ jobs:
       - name: Set variables
         id: vars
         run: |
-          echo "VM_NAME=vm-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          if [ -z "${{ github.event.pull_request.number }}" ]; then
+            echo "VM_NAME=vm-airflow" >> $GITHUB_ENV
+          else
+            echo "VM_NAME=vm-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          fi
           echo "BRANCH_NAME=${GITHUB_HEAD_REF}" >> $GITHUB_ENV
 
-      - name: cd into deployment directory
+      - name: Deploy to VM
+        id: deploy_vm
         run: |
             cd deployment_scripts/data-pipeline-deployment/
             echo "Setup google_cloud_key.json"
@@ -56,7 +68,7 @@ jobs:
             OUTPUT=$(./pr_setup_airflow_vm.sh $VM_NAME $BRANCH_NAME $PROJECT_ID)
             echo "$OUTPUT" > script_output.log
             FINAL_MESSAGE=$(echo "$OUTPUT" | grep "Access Airflow UI at:")
-            echo "FINAL_MESSAGE=$FINAL_MESSAGE" >> $GITHUB_ENV
+            echo "final_message=$FINAL_MESSAGE" >> $GITHUB_OUTPUT
 
   notify:
     needs: [deploy-vm]
@@ -81,7 +93,7 @@ jobs:
             Pull Request: ${{ github.event.pull_request.html_url }}
             
             Final Message:
-            ${{ env.FINAL_MESSAGE }}
+            ${{ needs.deploy-vm.outputs.final_message }}
             
       - name: Notify Failure
         if: needs.deploy-vm.result == 'failure'
