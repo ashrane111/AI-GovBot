@@ -4,14 +4,6 @@ on:
   # Keep manual trigger
   workflow_dispatch:
   
-  # Run on changes to specific paths in main branch
-  push:
-    branches:
-      - main
-    paths:
-      - 'src/**'
-      - '.github/workflows/model-deploy.yml'
-  
   # Trigger after the 'Run Unit Tests' workflow completes
   workflow_run:
     workflows: ["Run Unit Tests"]

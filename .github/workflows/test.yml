@@ -8,10 +8,28 @@ on:
       - rishi-dev
       - sanjana-dev
       - vedant-dev
+      - dev
+      - main
+    paths:
+      - 'data/**'
+      - 'deployment_scripts/**'
+      - 'src/**'
+      - 'test/**'
+      - '.github/workflows/test.yml'
+      - '.github/workflows/model-deploy.yml'
+      - '.github/workflows/main-create-data-vm-on-pr.yml'
   pull_request:
     branches:
       - dev
       - main
+    paths:
+      - 'data/**'
+      - 'deployment_scripts/**'
+      - 'src/**'
+      - 'test/**'
+      - '.github/workflows/test.yml'
+      - '.github/workflows/model-deploy.yml'
+      - '.github/workflows/main-create-data-vm-on-pr.yml'
 
 jobs:
   test:
