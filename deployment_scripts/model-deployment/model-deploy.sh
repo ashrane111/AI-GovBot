@@ -2,7 +2,7 @@
 set -euo pipefail
 set -x
 
-# --- Configuration (Review and adjust if necessary) ---
+# --- Configuration ---
 PROJECT_ID="ai-govbot-project"
 ZONE="us-east1-d"                            # Zone for GKE Cluster
 REGION="us-east1"                            # Region for GAR Repository (must contain ZONE)
