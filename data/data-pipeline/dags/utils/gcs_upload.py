@@ -73,7 +73,7 @@ def upload_to_gcs(bucket_name, source_file_name, destination_blob_name, create_i
 def upload_merged_data_to_gcs():
     """Uploads the merged data to GCS."""
     try:
-        bucket_name = "datasets-mlops-25" 
+        bucket_name = "datasets2-mlops-25" 
 
 
 
