@@ -18,6 +18,8 @@ on:
       - '.github/workflows/test.yml'
       - '.github/workflows/model-deploy.yml'
       - '.github/workflows/main-create-data-vm-on-pr.yml'
+    paths-ignore:
+      - '**/*.md'
   pull_request:
     branches:
       - dev
@@ -30,6 +32,8 @@ on:
       - '.github/workflows/test.yml'
       - '.github/workflows/model-deploy.yml'
       - '.github/workflows/main-create-data-vm-on-pr.yml'
+    paths-ignore:
+      - '**/*.md'
 
 jobs:
   test:
