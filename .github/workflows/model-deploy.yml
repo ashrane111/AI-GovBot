@@ -3,6 +3,15 @@ name: Build and Deploy AI-GovBot to GKE (main Branch)
 on:
   # Keep manual trigger
   workflow_dispatch:
+  
+  # Run on changes to specific paths in main branch
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - '.github/workflows/model-deploy.yml'
+  
   # Trigger after the 'Run Unit Tests' workflow completes
   workflow_run:
     workflows: ["Run Unit Tests"]
@@ -11,7 +20,7 @@ on:
       - main
 
 env:
-  PROJECT_ID: data-pipeline-deployment-trial
+  PROJECT_ID: ${{ vars.PROJECT_ID}}
   ZONE: us-east1-d 
   CLUSTER_NAME: ai-govbot-cluster
   NAMESPACE: mlscopers
@@ -19,11 +28,11 @@ env:
   GAR_LOCATION: us-east1 
   GAR_REPOSITORY_NAME: ai-govbot-repo 
   # --- Define image names WITHOUT tags for gcloud commands ---
-  BACKEND_IMAGE_NAME_NO_TAG: us-east1-docker.pkg.dev/data-pipeline-deployment-trial/ai-govbot-repo/ai-govbot-backend
-  FRONTEND_IMAGE_NAME_NO_TAG: us-east1-docker.pkg.dev/data-pipeline-deployment-trial/ai-govbot-repo/ai-govbot-frontend
+  BACKEND_IMAGE_NAME_NO_TAG: us-east1-docker.pkg.dev/${{ vars.PROJECT_ID}}ai-govbot-repo/ai-govbot-backend
+  FRONTEND_IMAGE_NAME_NO_TAG: us-east1-docker.pkg.dev/${{ vars.PROJECT_ID}}/ai-govbot-repo/ai-govbot-frontend
   # --- Define image names WITH :latest tag for build/push/deploy ---
-  BACKEND_IMAGE_NAME_LATEST: us-east1-docker.pkg.dev/data-pipeline-deployment-trial/ai-govbot-repo/ai-govbot-backend:latest
-  FRONTEND_IMAGE_NAME_LATEST: us-east1-docker.pkg.dev/data-pipeline-deployment-trial/ai-govbot-repo/ai-govbot-frontend:latest
+  BACKEND_IMAGE_NAME_LATEST: us-east1-docker.pkg.dev/${{ vars.PROJECT_ID}}/ai-govbot-repo/ai-govbot-backend:latest
+  FRONTEND_IMAGE_NAME_LATEST: us-east1-docker.pkg.dev/${{ vars.PROJECT_ID}}/ai-govbot-repo/ai-govbot-frontend:latest
   # Define K8s manifest paths
   NAMESPACE_FILE: deployment_scripts/model-deployment/k8s-namespace.yaml
   BACKEND_DEPLOYMENT_FILE: deployment_scripts/model-deployment/backend/k8s-deployment.yaml
@@ -67,7 +76,7 @@ jobs:
 
       # --- ADD Step to Configure Docker for GAR ---
       - name: Configure Docker for Artifact Registry
-        run: gcloud auth configure-docker us-east1-docker.pkg.dev --project=data-pipeline-deployment-trial
+        run: gcloud auth configure-docker us-east1-docker.pkg.dev --project=${{ vars.PROJECT_ID}}
 
       # --- Implement latest -> v1 -> v2 Tag Rotation ---
       - name: Rotate Backend Image Tags (latest->v1, v1->v2)
@@ -172,7 +181,7 @@ jobs:
         with:
           cluster_name: ${{ env.CLUSTER_NAME }}
           location: ${{ env.ZONE }} 
-          project_id: data-pipeline-deployment-trial
+          project_id: ${{ vars.PROJECT_ID}}
 
 
       # --- Inject API Key Secret from github secrets ---
@@ -180,9 +189,12 @@ jobs:
         run: |
           echo "Creating temporary .env file..."
           # Write the secret value into the .env file in KEY=VALUE format
-          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" > .env
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_KEY }}" > .env
+          echo "LANGFUSE_SECRET_KEY=${{ secrets.LANGFUSE_SECRET_KEY }}" >> .env
+          echo "LANGFUSE_PUBLIC_KEY=${{ secrets.LANGFUSE_PUBLIC_KEY }}" >> .env
+          echo "LANGFUSE_HOST=${{ secrets.LANGFUSE_HOST }}" >> .env
+          echo "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}" >> .env
           echo ".env file created."
-          # Optional: cat .env # Use for debugging only, hides secrets in logs by default
 
       - name: Create/Update Kubernetes OpenAI Secret
         run: |
@@ -193,6 +205,20 @@ jobs:
             --dry-run=client -o yaml | kubectl apply -f -
           echo "Kubernetes secret 'openai-secret' processed."
 
+      - name: Create google_cloud_key.json secret
+        run: |
+          echo "Creating google_cloud_key.json secret..."
+          echo '${{ secrets.GCP_SA_KEY }}'' > google_cloud_key.json
+          echo "google_cloud_key.json secret created."
+
+      - name: Create/Update Kubernetes Google Cloud Secret
+        run: |
+          echo "Creating/Updating Kubernetes secret 'gcp-secret' from google_cloud_key.json file..."
+          kubectl create secret generic gcp-secret \
+            --from-file=key.json=google_cloud_key.json \
+            --namespace=${{ env.NAMESPACE }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+          echo "Kubernetes secret 'gcp-secret' processed."
 
       # --- Apply K8s Manifests ---
       - name: Deploy to GKE
@@ -246,12 +272,10 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "CD Pipeline Passed - Ready to Merge to Production"
-          to: vedantrishidas@gmail.com
+          to: ${{ secrets.EMAIL_USERNAME }}
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Model deployment is done. The PR is merged to production.
-            
-            Pull Request: ${{ github.event.pull_request.html_url }}
             
       - name: Notify Failure
         if: needs.build-and-deploy.result == 'failure'
@@ -262,9 +286,7 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "CD Pipeline Failed"
-          to: vedantrishidas@gmail.com
+          to: ${{ secrets.EMAIL_USERNAME }}
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Model deployment has failed. Please check the logs.
-            
-            Pull Request: ${{ github.event.pull_request.html_url }}

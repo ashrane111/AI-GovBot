@@ -15,7 +15,7 @@ jobs:
   delete-vm:
     runs-on: ubuntu-latest
     env:
-      PROJECT_ID: data-pipeline-deployment-trial
+      PROJECT_ID: ${{ vars.PROJECT_ID}}
       ZONE: us-east1-d
 
     steps:
@@ -61,8 +61,8 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "GCP VM Deletion Successful"
-          to: vedantrishidas@gmail.com
-          from: sanjanajd115@gmail.com
+          to: ${{ secrets.EMAIL_USERNAME }}
+          from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             The GCP VM associated with the closed PR has been successfully deleted.
 
@@ -80,8 +80,8 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "GCP VM Deletion Failed"
-          to: vedantrishidas@gmail.com
-          from: sanjanajd115@gmail.com
+          to: ${{ secrets.EMAIL_USERNAME }}
+          from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             The GCP VM deletion process failed. Please check the logs for more details.
 
