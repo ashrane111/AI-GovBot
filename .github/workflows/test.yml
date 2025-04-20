@@ -54,7 +54,7 @@ jobs:
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "CI Pipeline Passed - Ready to Merge to Staging"
           to: vedantrishidas@gmail.com
-          from: sanjanajd115@gmail.com
+          from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             All tests have passed. The PR can be merged to staging.
             
@@ -69,7 +69,7 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "CI Pipeline Failed"
-          to: harveymailer13@gmail.com
+          to: vedantrishidas@gmail.com
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Some tests have failed. Please check the logs.
