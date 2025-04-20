@@ -1,5 +1,5 @@
 name: Build and Deploy AI-GovBot to GKE (main Branch)
-
+  
 on:
   # Keep manual trigger
   workflow_dispatch:
@@ -34,6 +34,8 @@ env:
   # Define Dockerfile paths
   BACKEND_DOCKERFILE: deployment_scripts/model-deployment/backend/Dockerfile
   FRONTEND_DOCKERFILE: deployment_scripts/model-deployment/frontend/Dockerfile
+  # Define rollback script path
+  ROLLBACK_SCRIPT_PATH: deployment_scripts/model-deployment/rollback.sh
 
 jobs:
   build-and-deploy:
@@ -52,6 +54,7 @@ jobs:
           # Fetch the SHA from the workflow_run event if available
           ref: ${{ github.event.workflow_run.head_sha }}
 
+
       # --- Authenticate to Google Cloud ---
       - name: Authenticate to Google Cloud
         id: 'auth'
@@ -64,7 +67,8 @@ jobs:
 
       # --- Install jq ---
       - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
+        run: |
+         sudo apt-get update && sudo apt-get install -y jq
 
       # --- ADD Step to Configure Docker for GAR ---
       - name: Configure Docker for Artifact Registry
@@ -75,6 +79,7 @@ jobs:
         # Continue even if some tags don't exist (e.g., first/second runs)
         continue-on-error: true
         run: |
+
           IMAGE_BASE="${{ env.BACKEND_IMAGE_NAME_NO_TAG }}"
           echo "Rotating tags for ${IMAGE_BASE}"
 
@@ -200,7 +205,7 @@ jobs:
       - name: Create google_cloud_key.json secret
         run: |
           echo "Creating google_cloud_key.json secret..."
-          echo '${{ secrets.GCP_SA_KEY }}'' > google_cloud_key.json
+          echo '${{ secrets.GCP_SA_KEY }}' > google_cloud_key.json
           echo "google_cloud_key.json secret created."
 
       - name: Create/Update Kubernetes Google Cloud Secret
@@ -248,37 +253,77 @@ jobs:
           rm -f .env
           echo ".env file removed."
 
-      # --- Notify Success ---
-  notify:
-    needs: [build-and-deploy]
+     # --- ROLLBACK JOB ---
+  rollback-on-failure:
+    name: Rollback Deployment on Failure
     runs-on: ubuntu-latest
-    if: always()
-    
+    # Run after build-and-deploy
+    needs: [build-and-deploy]
+    # IMPORTANT: Only run if the build-and-deploy job failed
+    if: failure()
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
     steps:
-      - name: Notify Success
-        if: needs.build-and-deploy.result == 'success'
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        # No specific ref needed, uses default branch where rollback script exists
+
+      - name: Authenticate to Google Cloud
+        id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Make rollback script executable
+        run: chmod +x ${{ env.ROLLBACK_SCRIPT_PATH }}
+
+      - name: Execute Rollback Script
+        id: rollback_script # Give step an ID to check outcome
+        # Use || true so the workflow step itself doesn't fail if rollback script exits non-zero
+        run: ${{ env.ROLLBACK_SCRIPT_PATH }} || true
+
+      - name: Check Rollback Script Outcome
+        # Check the exit code of the previous step ($?)
+        # If the script exited non-zero (failure), mark this step as failed
+        run: |
+          if [[ $? -ne 0 ]]; then
+            echo "Rollback script itself reported an error (exit code $?)."
+            # exit 1 # Optionally fail this job if the rollback script had errors
+          else
+            echo "Rollback script executed (may contain internal warnings)."
+          fi
+  # --- Notify Job ---
+  notify:
+    # Run after build-and-deploy and potentially rollback-on-failure
+    needs: [build-and-deploy, rollback-on-failure]
+    runs-on: ubuntu-latest
+    # Always run to report final status
+    if: always()
+
+    steps:
+      - name: Send Deployment Status Email
         uses: dawidd6/action-send-mail@v4
         with:
           server_address: smtp.gmail.com
           server_port: 465
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: "CD Pipeline Passed - Ready to Merge to Production"
+          subject: "Deployment Status for main branch: ${{ needs.build-and-deploy.result }}"
           to: ${{ secrets.EMAIL_USERNAME }}
           from: ${{ secrets.EMAIL_USERNAME }}
+          # Modify body based on outcomes
           body: |
-            Model deployment is done. The PR is merged to production.
-            
-      - name: Notify Failure
-        if: needs.build-and-deploy.result == 'failure'
-        uses: dawidd6/action-send-mail@v4
-        with:
-          server_address: smtp.gmail.com
-          server_port: 465
-          username: ${{ secrets.EMAIL_USERNAME }}
-          password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: "CD Pipeline Failed"
-          to: ${{ secrets.EMAIL_USERNAME }}
-          from: ${{ secrets.EMAIL_USERNAME }}
-          body: |
-            Model deployment has failed. Please check the logs.
+            Deployment Job Status: ${{ needs.build-and-deploy.result }}
+
+            ${{ needs.build-and-deploy.result == 'failure' && format('Rollback Job Status: {0}', needs.rollback-on-failure.result) || '' }}
+            ${{ needs.build-and-deploy.result == 'failure' && format('A rollback to the previous version (v1 tagged as latest) was attempted.') || '' }}
+
+            Check logs for details: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
