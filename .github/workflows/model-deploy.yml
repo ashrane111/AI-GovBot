@@ -1,36 +1,23 @@
 name: Build and Deploy AI-GovBot to GKE (main Branch)
-
+  
 on:
-  push:
-    branches:
-      - sanjana-dev # Trigger on pushes to the 'dev' branch
-    paths:
-      - 'src/**'
-      - 'deployment_scripts/**'
-      - '.github/workflows/model-deploy.yml'
+  # Keep manual trigger
   workflow_dispatch:
   
+  # Run on changes to specific paths in main branch
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - '.github/workflows/model-deploy.yml'
   
-
-
-# on:
-#   # Keep manual trigger
-#   workflow_dispatch:
-  
-#   # Run on changes to specific paths in main branch
-#   push:
-#     branches:
-#       - main
-#     paths:
-#       - 'src/**'
-#       - '.github/workflows/model-deploy.yml'
-  
-#   # Trigger after the 'Run Unit Tests' workflow completes
-#   workflow_run:
-#     workflows: ["Run Unit Tests"]
-#     types: [completed]
-#     branches:
-#       - main
+  # Trigger after the 'Run Unit Tests' workflow completes
+  workflow_run:
+    workflows: ["Run Unit Tests"]
+    types: [completed]
+    branches:
+      - main
 
 env:
   PROJECT_ID: ${{ vars.PROJECT_ID}}
@@ -90,8 +77,6 @@ jobs:
       - name: Install jq
         run: |
          sudo apt-get update && sudo apt-get install -y jq
-         echo "!!! INTENTIONALLY FAILING DEPLOYMENT FOR ROLLBACK TEST !!!"
-         exit 1
 
       # --- ADD Step to Configure Docker for GAR ---
       - name: Configure Docker for Artifact Registry
