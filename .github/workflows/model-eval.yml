@@ -7,7 +7,7 @@ on:
   schedule:
     # Runs every hour at minute 0 (e.g., 1:00, 2:00, 3:00 UTC)
     # Remember this is UTC time. 1:00 PM EDT is 17:00 UTC.
-    - cron: '* */6 * * *' # Changed schedule to hourly
+    - cron: '* */1 * * *' # Changed schedule to hourly
 
   workflow_dispatch: # Allows manual triggering
 
