@@ -247,7 +247,7 @@ jobs:
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "CD Pipeline Passed - Ready to Merge to Production"
           to: vedantrishidas@gmail.com
-          from: sanjanajd115@gmail.com
+          from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Model deployment is done. The PR can be merged to production.
             
@@ -263,7 +263,7 @@ jobs:
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "CD Pipeline Failed"
           to: vedantrishidas@gmail.com
-          from: sanjanajd115@gmail.com
+          from: ${{ secrets.EMAIL_USERNAME }}
           body: |
             Model deployment has failed. Please check the logs.
             
