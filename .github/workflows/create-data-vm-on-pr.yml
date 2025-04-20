@@ -9,8 +9,6 @@ on:
         - 'deployment_scripts/data-pipeline-deployment/pr_setup_airflow_vm.sh'
         - 'deployment_scripts/data-pipeline-deployment/pr_vm_startup_script.sh'
         - '.github/workflows/delete-data-vm-close-pr.yml'
-    paths-ignore:
-        - '**/*.md'
 
   workflow_dispatch:
 
