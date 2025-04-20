@@ -9,7 +9,7 @@ on:
         - 'deployment_scripts/data-pipeline-deployment/pr_setup_airflow_vm.sh'
         - 'deployment_scripts/data-pipeline-deployment/pr_vm_startup_script.sh'
         - '.github/workflows/delete-data-vm-close-pr.yml'
-        
+
   workflow_dispatch:
 
 jobs:
@@ -37,11 +37,7 @@ jobs:
       - name: Set variables
         id: vars
         run: |
-          if [ -z "${{ github.event.pull_request.number }}" ]; then
-            echo "VM_NAME=vm-airflow" >> $GITHUB_ENV
-          else
-            echo "VM_NAME=vm-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-          fi
+          echo "VM_NAME=vm-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
           echo "BRANCH_NAME=${GITHUB_HEAD_REF}" >> $GITHUB_ENV
 
       - name: Deploy to VM
