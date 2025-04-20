@@ -45,14 +45,14 @@ jobs:
       contents: 'read'
       id-token: 'write' 
     
-    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push' || github.event_name == 'workflow_run'
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fetch all history for all branches and tags
-          # This is important for the rollback script to work correctly
+          # Fetch the SHA from the workflow_run event if available
+          ref: ${{ github.event.workflow_run.head_sha }}
 
 
       # --- Authenticate to Google Cloud ---
@@ -253,7 +253,7 @@ jobs:
           rm -f .env
           echo ".env file removed."
 
-     # --- NEW ROLLBACK JOB ---
+     # --- ROLLBACK JOB ---
   rollback-on-failure:
     name: Rollback Deployment on Failure
     runs-on: ubuntu-latest
@@ -300,7 +300,7 @@ jobs:
           else
             echo "Rollback script executed (may contain internal warnings)."
           fi
-  # --- MODIFIED Notify Job ---
+  # --- Notify Job ---
   notify:
     # Run after build-and-deploy and potentially rollback-on-failure
     needs: [build-and-deploy, rollback-on-failure]
