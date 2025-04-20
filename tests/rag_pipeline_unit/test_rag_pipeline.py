@@ -65,8 +65,29 @@ def mock_config():
         mock_config.get.return_value = 1.2  # Default threshold
         yield mock_config
 
+@pytest.fixture
+def mock_check_and_download():
+    with patch('main.rag_pipeline.check_and_download_gcs_files') as mock_check:
+        yield mock_check
+
+@pytest.fixture
+def mock_moderator():
+    with patch('main.rag_pipeline.Moderator') as MockModerator:
+        mock_moderator_instance = MagicMock()
+        # Mock moderate_content to return non-flagged content by default
+        mock_moderator_instance.moderate_content = AsyncMock(return_value=("clean", None))
+        MockModerator.return_value = mock_moderator_instance
+        yield mock_moderator_instance
+
+@pytest.fixture
+def mock_time():
+    with patch('main.rag_pipeline.time') as mock_time:
+        # Configure time.time() to return incremental values
+        mock_time.time.side_effect = [0, 1, 2, 3]  # For start_time and calculations
+        yield mock_time
+
 @pytest.mark.asyncio
-async def test_rag_pipeline_initialization(mock_retriever, mock_generator, mock_mlflow_tracker, mock_prompt_gen, mock_config):
+async def test_rag_pipeline_initialization(mock_check_and_download, mock_retriever, mock_generator, mock_mlflow_tracker, mock_prompt_gen, mock_config):
     """Test that RAGPipeline initializes correctly."""
     pipeline = RAGPipeline()
     
@@ -80,7 +101,7 @@ async def test_rag_pipeline_initialization(mock_retriever, mock_generator, mock_
     assert pipeline.SCORE_THRESHOLD == 1.2
 
 @pytest.mark.asyncio
-async def test_run_successful(mock_retriever, mock_generator, mock_mlflow_tracker, mock_prompt_gen, mock_config):
+async def test_run_successful(mock_check_and_download, mock_retriever, mock_generator, mock_mlflow_tracker, mock_prompt_gen, mock_config):
     """Test the run method with normal operation."""
     pipeline = RAGPipeline()
     
@@ -107,7 +128,7 @@ async def test_run_successful(mock_retriever, mock_generator, mock_mlflow_tracke
     assert len(doc_ids) == 3
     
 @pytest.mark.asyncio
-async def test_run_with_empty_docs(mock_retriever, mock_generator, mock_mlflow_tracker, mock_prompt_gen, mock_config):
+async def test_run_with_empty_docs(mock_check_and_download, mock_retriever, mock_generator, mock_mlflow_tracker, mock_prompt_gen, mock_config):
     """Test the run method with empty retrieved documents."""
     # Override mock retriever to return empty results
     mock_retriever.retrieve.return_value = ([], [])
@@ -126,7 +147,7 @@ async def test_run_with_empty_docs(mock_retriever, mock_generator, mock_mlflow_t
     assert doc_ids == []
 
 @pytest.mark.asyncio
-async def test_run_with_generator_error(mock_retriever, mock_generator, mock_mlflow_tracker, mock_prompt_gen, mock_config):
+async def test_run_with_generator_error(mock_check_and_download, mock_retriever, mock_generator, mock_mlflow_tracker, mock_prompt_gen, mock_config):
     """Test the run method when generator raises an exception."""
     # Make the generator raise an exception
     mock_generator.generate.side_effect = Exception("Test error")
@@ -149,7 +170,7 @@ async def test_run_with_generator_error(mock_retriever, mock_generator, mock_mlf
     # Metrics should still be logged
     mock_mlflow_tracker.log_metrics.assert_called_once()
 
-def test_generate_context(mock_retriever, mock_generator, mock_mlflow_tracker, mock_prompt_gen, mock_config):
+def test_generate_context(mock_check_and_download, mock_retriever, mock_generator, mock_mlflow_tracker, mock_prompt_gen, mock_config):
     """Test the __generate_context private method."""
     pipeline = RAGPipeline()
     
@@ -165,7 +186,7 @@ def test_generate_context(mock_retriever, mock_generator, mock_mlflow_tracker, m
     assert "Rank 3: Document 3" in context
     assert "Document 2" not in context
 
-def test_get_context_doc(mock_retriever, mock_generator, mock_mlflow_tracker, mock_prompt_gen, mock_config):
+def test_get_context_doc(mock_check_and_download, mock_retriever, mock_generator, mock_mlflow_tracker, mock_prompt_gen, mock_config):
     """Test the __get_context_doc private method."""
     pipeline = RAGPipeline()
     
@@ -185,7 +206,7 @@ def test_get_context_doc(mock_retriever, mock_generator, mock_mlflow_tracker, mo
     # Should remove empty lines and extra spaces
     assert cleaned_doc == "This is a document\nwith multiple\nempty lines\nand extra spaces"
 
-def test_get_context_doc_with_already_clean_doc(mock_retriever, mock_generator, mock_mlflow_tracker, mock_prompt_gen, mock_config):
+def test_get_context_doc_with_already_clean_doc(mock_check_and_download, mock_retriever, mock_generator, mock_mlflow_tracker, mock_prompt_gen, mock_config):
     """Test __get_context_doc with an already clean document."""
     pipeline = RAGPipeline()
     
@@ -194,7 +215,7 @@ def test_get_context_doc_with_already_clean_doc(mock_retriever, mock_generator, 
     
     assert cleaned_doc == clean_doc
 
-def test_generate_context_all_docs_filtered(mock_retriever, mock_generator, mock_mlflow_tracker, mock_prompt_gen, mock_config):
+def test_generate_context_all_docs_filtered(mock_check_and_download, mock_retriever, mock_generator, mock_mlflow_tracker, mock_prompt_gen, mock_config):
     """Test __generate_context when all docs are filtered out."""
     pipeline = RAGPipeline()
     
@@ -208,7 +229,7 @@ def test_generate_context_all_docs_filtered(mock_retriever, mock_generator, mock
     assert context == ""
 
 @pytest.mark.asyncio
-async def test_run_with_conversation_history(mock_retriever, mock_generator, mock_mlflow_tracker, mock_prompt_gen, mock_config):
+async def test_run_with_conversation_history(mock_check_and_download, mock_retriever, mock_generator, mock_mlflow_tracker, mock_prompt_gen, mock_config):
     """Test the run method with a conversation history."""
     pipeline = RAGPipeline()
     

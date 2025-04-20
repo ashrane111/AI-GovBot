@@ -2,6 +2,8 @@
 import os
 import logging
 from google.cloud import storage
+import datetime
+import hashlib
 
 # Set up a custom logger for download operations
 logger = logging.getLogger('gcs_download_logger')
@@ -61,17 +63,62 @@ def download_latest_file(bucket_name, blob_prefix, local_destination):
         logger.error(f"Error downloading blob with prefix '{blob_prefix}' from bucket '{bucket_name}': {e}")
         raise
 
+
+def is_blob_updated(bucket_name: str, blob_prefix: str, local_destination: str) -> bool:
+    """
+    Return True if the GCS blob is newer than the local file, or if the SHA256 checksums differ,
+    or if the local file is missing. Otherwise return False.
+    """
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+    blob = bucket.get_blob(blob_prefix)
+    if blob is None:
+        logger.error(f"Blob '{blob_prefix}' not found in bucket '{bucket_name}'")
+        return False
+
+    # Check existence
+    if not os.path.exists(local_destination):
+        return True
+
+    # Timestamp check
+    remote_ts: datetime.datetime = blob.updated  # UTC tz‑aware
+    local_ts = datetime.datetime.fromtimestamp(
+        os.path.getmtime(local_destination),
+        tz=datetime.timezone.utc
+    )
+    if remote_ts > local_ts:
+        return True
+
+    # Checksum check – expects SHA256 stored in blob.metadata['sha256']
+    blob.reload()  # ensure metadata is present
+    remote_sha = None
+    if blob.metadata and 'sha256' in blob.metadata:
+        remote_sha = blob.metadata['sha256']
+        logger.info(f"Remote SHA256: {remote_sha}")
+    else:
+        logger.warning(f"No SHA256 metadata on blob '{blob_prefix}'; skipping checksum check")
+        return False
+
+    # Compute local SHA256
+    hash_obj = hashlib.sha256()
+    with open(local_destination, 'rb') as f:
+        for chunk in iter(lambda: f.read(8192), b''):
+            hash_obj.update(chunk)
+    local_sha = hash_obj.hexdigest()
+    logger.info(f"Local SHA256: {local_sha}")
+
+    return remote_sha.lower() != local_sha.lower()
+
 if __name__ == '__main__':
     BUCKET_NAME = "datasets-mlops-25"
-
-    # Specify the blob name or prefix (for example, a full file name)
-    BLOB_PREFIX = "faiss_index/index.faiss"
-    # Destination path for the downloaded file
-    LOCAL_DESTINATION = os.path.join(parent_dir, "index", "index.faiss")
-    download_latest_file(BUCKET_NAME, BLOB_PREFIX, LOCAL_DESTINATION)
 
     BLOB_PREFIX = "faiss_index/index.pkl"
     # Destination path for the downloaded file
     LOCAL_DESTINATION = os.path.join(parent_dir, "index", "index.pkl")
 
-    download_latest_file(BUCKET_NAME, BLOB_PREFIX, LOCAL_DESTINATION)
+    if is_blob_updated(BUCKET_NAME, BLOB_PREFIX, LOCAL_DESTINATION):
+        logger.info("Remote FAISS index is newer or missing locally.")
+        download_latest_file(BUCKET_NAME, BLOB_PREFIX, LOCAL_DESTINATION)
+    else:
+        logger.info("Local FAISS index is up‑to‑date.")
+    

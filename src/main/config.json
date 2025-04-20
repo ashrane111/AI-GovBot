@@ -4,6 +4,13 @@
         "n_docs": 3
         
     },
+    "gcs_storage": {
+        "bucket_name": "datasets-mlops-25",
+        "pkl_blob_prefix": "faiss_index/index.pkl",
+        "faiss_blob_prefix": "faiss_index/index.faiss",
+        "pkl_local_destination": "src/index/index.pkl",
+        "faiss_local_destination": "src/index/index.faiss"
+    },
     "novita": {
         "provider": "novita",
         "token": "Hf_xxx"
