@@ -7,7 +7,7 @@ set -euo pipefail
 set -x
 
 # --- Configuration (Copy from your deploy scripts, verify paths) ---
-PROJECT_ID="data-pipeline-deployment-trial"
+PROJECT_ID="ai-govbot-project"
 ZONE="us-east1-d"
 REGION="us-east1"
 CLUSTER_NAME="ai-govbot-cluster"

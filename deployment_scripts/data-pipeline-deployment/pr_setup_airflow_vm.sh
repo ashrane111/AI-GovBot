@@ -3,7 +3,7 @@ set -euo pipefail
 set -x
 
 # === CONFIGURATION ===
-PROJECT_ID="${3:-data-pipeline-deployment-trial}"
+PROJECT_ID="${3:-ai-govbot-project}"
 ZONE="us-east1-d"
 REGION="us-east1"
 VM_NAME="${1:-airflow-vm}"

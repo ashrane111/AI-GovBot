@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: us-east1-docker.pkg.dev/data-pipeline-deployment-trial/ai-govbot-repo/ai-govbot-backend:latest 
+        image: us-east1-docker.pkg.dev/ai-govbot-project/ai-govbot-repo/ai-govbot-backend:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
@@ -28,3 +28,28 @@ spec:
             secretKeyRef:
               name: openai-secret
               key: OPENAI_API_KEY
+        - name: LANGFUSE_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: openai-secret
+              key: LANGFUSE_SECRET_KEY
+        - name: LANGFUSE_PUBLIC_KEY
+          valueFrom:
+            secretKeyRef:
+              name: openai-secret
+              key: LANGFUSE_PUBLIC_KEY
+        - name: LANGFUSE_HOST
+          valueFrom:
+            secretKeyRef:
+              name: openai-secret
+              key: LANGFUSE_HOST
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /secrets/gcp/key.json
+        volumeMounts:
+        - name: gcp-sa-volume
+          mountPath: /secrets/gcp
+          readOnly: true
+      volumes:
+      - name: gcp-sa-volume
+        secret:
+          secretName: gcp-secret

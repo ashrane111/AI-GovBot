@@ -1,4 +1,3 @@
-
 name: Langfuse Error Monitoring
 
 on:
@@ -9,6 +8,11 @@ on:
 jobs:
   monitor:
     runs-on: ubuntu-latest
+    outputs:
+      send_alert: ${{ steps.monitoring.outputs.send_alert }}
+      error_count: ${{ steps.monitoring.outputs.error_count }}
+      trace_count_threshold: ${{ steps.monitoring.outputs.trace_count_threshold }}
+      time_window_hours: ${{ steps.monitoring.outputs.time_window_hours }}
 
     steps:
       - name: Checkout repository
@@ -39,15 +43,17 @@ jobs:
           
           # Check if trace count exceeded threshold
           if echo "$OUTPUT" | grep -q "Trace count exceeded threshold"; then
-            echo "SEND_ALERT=true" >> $GITHUB_ENV
-            echo "ERROR_COUNT=$(echo "$OUTPUT" | grep "Current trace count:" | cut -d':' -f2 | cut -d',' -f1 | xargs)" >> $GITHUB_ENV
-            echo "ALERT_MESSAGE=Langfuse Error Alert: $ERROR_COUNT errors detected in the last ${{ vars.TIME_WINDOW_HOURS }} hours." >> $GITHUB_ENV
+            echo "send_alert=true" >> $GITHUB_OUTPUT
+            ERROR_COUNT=$(echo "$OUTPUT" | grep "Current trace count:" | cut -d':' -f2 | cut -d',' -f1 | xargs)
+            echo "error_count=$ERROR_COUNT" >> $GITHUB_OUTPUT
+            echo "trace_count_threshold=${{ vars.TRACE_COUNT_THRESHOLD || '2' }}" >> $GITHUB_OUTPUT
+            echo "time_window_hours=${{ vars.TIME_WINDOW_HOURS || '12' }}" >> $GITHUB_OUTPUT
           else
-            echo "SEND_ALERT=false" >> $GITHUB_ENV
+            echo "send_alert=false" >> $GITHUB_OUTPUT
           fi
           
       - name: Send email alert
-        if: env.SEND_ALERT == 'true'
+        if: steps.monitoring.outputs.send_alert == 'true'
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
@@ -58,11 +64,11 @@ jobs:
           body: |
             Langfuse Error Monitoring Alert
             
-            ${{ env.ERROR_COUNT }} errors were detected in the Langfuse observations over the past ${{ env.TIME_WINDOW_HOURS }} hours.
+            ${{ steps.monitoring.outputs.error_count }} errors were detected in the Langfuse observations over the past ${{ steps.monitoring.outputs.time_window_hours }} hours.
             
-            This exceeds the configured threshold of ${{ env.TRACE_COUNT_THRESHOLD }}.
+            This exceeds the configured threshold of ${{ steps.monitoring.outputs.trace_count_threshold }}.
             
             Please check your Langfuse dashboard for more details.
-          from: sanjanajd115@gmail.com
-          to: vedantrishidas@gmail.com
+          from: ${{ secrets.EMAIL_USERNAME }}
+          to: ${{ secrets.EMAIL_USERNAME }}
           secure: true  # Use TLS
