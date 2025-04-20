@@ -259,8 +259,6 @@ kubectl apply -f "${FRONTEND_DEPLOYMENT_FILE}" -n "${NAMESPACE}"
 echo "Applying Frontend Service: ${FRONTEND_SERVICE_FILE}..."
 kubectl apply -f "${FRONTEND_SERVICE_FILE}" -n "${NAMESPACE}"
 
-
-
 # --- Completion ---
 echo "----------------------------------------"
 echo "GKE Cluster setup, Image Push, and Kubernetes deployment applied successfully!"

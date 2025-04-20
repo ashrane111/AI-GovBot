@@ -145,7 +145,6 @@ else
     FINAL_STATUS="Failed/Skipped"
 fi
 
-
 # --- Completion ---
 echo "----------------------------------------"
 if [ "$ROLLBACK_SUCCESS" = true ] && [ "$FINAL_STATUS" = "Complete" ]; then
