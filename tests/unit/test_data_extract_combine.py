@@ -35,6 +35,11 @@ class TestDataExtractCombine(unittest.TestCase):
             'Text': ['Text1', 'Text2', 'Text3'],
             'Summary': ['Sum1', 'Sum2', 'Sum3']
         })
+
+        self.authorities_data = pd.DataFrame({
+            'Name': ['Auth1', 'Auth2'],
+            'Jurisdiction': ['US', 'Other']
+        })
     
     @patch('os.makedirs')
     def test_make_input_dir(self, mock_makedirs):
@@ -55,12 +60,12 @@ class TestDataExtractCombine(unittest.TestCase):
                                          mock_to_csv, mock_read_csv):
         # Configure the mocks
         mock_join.side_effect = lambda *args: '/'.join(args)
-        mock_read_csv.side_effect = [self.documents_data, self.segments_data]
+        mock_read_csv.side_effect = [self.documents_data, self.segments_data, self.authorities_data]
         
         # Call the function
         extract_and_merge_documents(temp_dir="test_dir")
         
         # Verify correct calls were made
-        self.assertEqual(mock_read_csv.call_count, 2)
+        self.assertEqual(mock_read_csv.call_count, 3)
         mock_to_csv.assert_called_once()
         mock_to_excel.assert_called_once()
