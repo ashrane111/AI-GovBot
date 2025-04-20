@@ -4,14 +4,6 @@ on:
   # Keep manual trigger
   workflow_dispatch:
   
-  # Run on changes to specific paths in main branch
-  push:
-    branches:
-      - main
-    paths:
-      - 'data/data-pipeline/**'
-      - '.github/workflows/main-create-data-vm-on-pr.yml'
-  
   # Trigger after the 'Run Unit Tests' workflow completes
   workflow_run:
     workflows: ["Run Unit Tests"]

@@ -6,3 +6,4 @@
 ```bash
 gcloud config set project PROJECT_ID
 ```
+- Enable `Compute Engine API`
