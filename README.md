@@ -8,7 +8,7 @@ A chatbot powered by Retrieval-Augmented Generation (RAG) that leverages the AI 
 
 ## Overview
 
-HARVEY is an intelligent legal assistant that provides accurate information and insights about AI regulations, policies, and compliance requirements. By combining advanced retrieval mechanisms with generative AI, HARVEY delivers contextually relevant responses to legal queries related to artificial intelligence governance.
+H.A.R.V.E.Y (**H**olistic **A**I for **R**egulatory **V**erification and **E**thical **Y**ield) is an intelligent legal assistant that provides accurate information and insights about AI regulations, policies, and compliance requirements. By combining advanced retrieval mechanisms with generative AI, HARVEY delivers contextually relevant responses to legal queries related to artificial intelligence governance.
 
 ## Accessing Project Components
 
