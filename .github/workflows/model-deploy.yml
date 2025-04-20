@@ -88,7 +88,10 @@ jobs:
 
       # --- Install jq ---
       - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
+        run: |
+         sudo apt-get update && sudo apt-get install -y jq
+         echo "!!! INTENTIONALLY FAILING DEPLOYMENT FOR ROLLBACK TEST !!!"
+         exit 1
 
       # --- ADD Step to Configure Docker for GAR ---
       - name: Configure Docker for Artifact Registry
@@ -99,9 +102,6 @@ jobs:
         # Continue even if some tags don't exist (e.g., first/second runs)
         continue-on-error: true
         run: |
-          
-          echo "!!! INTENTIONALLY FAILING DEPLOYMENT FOR ROLLBACK TEST !!!"
-          exit 1
 
           IMAGE_BASE="${{ env.BACKEND_IMAGE_NAME_NO_TAG }}"
           echo "Rotating tags for ${IMAGE_BASE}"
