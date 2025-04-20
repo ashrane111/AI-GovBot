@@ -1,15 +1,12 @@
 #!/bin/bash
-# --- Rollback GKE Deployment to use v1 image (tagged as latest) ---
-# MODIFIED: Removed 'set -e' to prevent exiting on first error during rollback attempt
-# MODIFIED: Added deletion of original :v1 tag after retagging to :latest
 
 # Exit on undefined variable or pipe failure, but NOT on error
 set -uo pipefail
 # Print commands as they execute (optional, comment out '#' to disable)
 set -x
 
-# --- Configuration (Copy from your deploy scripts, verify paths) ---
-PROJECT_ID="ai-govbot-project" # Make sure this matches your deployment workflow if needed
+# --- Configuration ---
+PROJECT_ID="ai-govbot-project" 
 ZONE="us-east1-d"
 REGION="us-east1"
 CLUSTER_NAME="ai-govbot-cluster"
@@ -28,7 +25,6 @@ ROLLBACK_SUCCESS=true # Flag to track overall success
 
 # --- Prerequisites Check ---
 echo "Checking prerequisites (gcloud, kubectl, jq)..."
-# ... (prerequisite checks remain the same) ...
 if ! command -v gcloud &> /dev/null; then echo "ERROR: gcloud command not found."; exit 1; fi
 if ! command -v kubectl &> /dev/null; then echo "ERROR: kubectl command not found."; exit 1; fi
 if ! command -v jq &> /dev/null; then echo "ERROR: jq command not found."; exit 1; fi
@@ -36,13 +32,11 @@ echo "Prerequisites met."
 
 # --- GCP/GKE Setup ---
 echo "Ensure gcloud is configured..."
-# ... (gcloud config checks remain the same) ...
 gcloud config get-value project | grep -q "^${PROJECT_ID}$" || \
   (echo "ERROR: gcloud project is not set to ${PROJECT_ID}. Please check PROJECT_ID."; ROLLBACK_SUCCESS=false)
 
 if [ "$ROLLBACK_SUCCESS" = true ]; then
   echo "Configuring kubectl for cluster ${CLUSTER_NAME}..."
-  # ... (kubectl config remains the same) ...
   if ! gcloud container clusters describe ${CLUSTER_NAME} --zone ${ZONE} --project=${PROJECT_ID} &> /dev/null; then
     echo "ERROR: GKE Cluster ${CLUSTER_NAME} not found."
     ROLLBACK_SUCCESS=false
@@ -58,7 +52,7 @@ rollback_image_tags() {
   if [ "$ROLLBACK_SUCCESS" = false ]; then return 1; fi
 
   local IMAGE_BASE=$1
-  local IMAGE_TYPE=$2 # "Backend" or "Frontend"
+  local IMAGE_TYPE=$2 
   local CAN_ROLLBACK=true
   echo "--- Starting Rollback Tagging for ${IMAGE_TYPE} (${IMAGE_BASE}) ---"
 
@@ -82,11 +76,9 @@ rollback_image_tags() {
     echo "Found v1 digest: ${V1_DIGEST}. Tagging as the NEW latest..."
     if gcloud artifacts docker tags add "${IMAGE_BASE}@${V1_DIGEST}" "${IMAGE_BASE}:latest" --quiet; then
         echo "'v1' image digest (${V1_DIGEST}) successfully tagged as 'latest'."
-        # --- ADDED: Delete the original v1 tag ---
         echo "Deleting the original 'v1' tag..."
         gcloud artifacts docker tags delete "${IMAGE_BASE}:v1" --quiet || \
             echo "Warning: Failed to delete original 'v1' tag for ${IMAGE_TYPE}."
-        # --- End ADDED ---
     else
        echo "ERROR: Failed to tag v1 as latest for ${IMAGE_TYPE}."
        CAN_ROLLBACK=false
@@ -95,7 +87,7 @@ rollback_image_tags() {
   else
     echo "ERROR: Cannot perform rollback. No image found with tag 'v1' for ${IMAGE_TYPE}."
     CAN_ROLLBACK=false
-    ROLLBACK_SUCCESS=false # Mark overall rollback as failed if v1 missing
+    ROLLBACK_SUCCESS=false 
   fi
   echo "--- Rollback Tagging Complete for ${IMAGE_TYPE} ---"
 
@@ -104,7 +96,6 @@ rollback_image_tags() {
 }
 
 # --- Perform Rollback Tagging ---
-# ... (Calling rollback_image_tags remains the same) ...
 rollback_image_tags "${BACKEND_IMAGE_NAME_NO_TAG}" "Backend"
 BACKEND_ROLLBACK_OK=$?
 rollback_image_tags "${FRONTEND_IMAGE_NAME_NO_TAG}" "Frontend"
@@ -112,7 +103,6 @@ FRONTEND_ROLLBACK_OK=$?
 
 
 # --- Apply Kubernetes Deployments (only if tagging for that component was successful) ---
-# ... (Applying K8s deployments remains the same) ...
 if [ "$ROLLBACK_SUCCESS" = true ]; then
     echo "--- Applying Kubernetes Deployments to Rollback ---"
     if [ $BACKEND_ROLLBACK_OK -eq 0 ]; then
@@ -138,7 +128,6 @@ else
 fi
 
 # --- Monitor Rollback Status (only if successful so far) ---
-# ... (Monitoring remains the same) ...
 if [ "$ROLLBACK_SUCCESS" = true ]; then
     echo "--- Waiting for Rollback Rollout to Complete ---"
     FINAL_STATUS="Complete"
@@ -158,7 +147,6 @@ fi
 
 
 # --- Completion ---
-# ... (Completion message remains the same) ...
 echo "----------------------------------------"
 if [ "$ROLLBACK_SUCCESS" = true ] && [ "$FINAL_STATUS" = "Complete" ]; then
   echo "✅ Rollback Attempt Successful!"
