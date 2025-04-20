@@ -25,5 +25,6 @@
     "data_dir": {
         "agora_dir": "merged_input/agora",
         "merged_data_file": "merged_input/Documents_segments_merged.csv"
-    }
+    },
+    "bucket_name": "datasets-mlops-25"
 }
