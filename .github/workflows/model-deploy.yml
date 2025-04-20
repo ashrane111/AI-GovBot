@@ -205,7 +205,7 @@ jobs:
       - name: Create google_cloud_key.json secret
         run: |
           echo "Creating google_cloud_key.json secret..."
-          echo '${{ secrets.GCP_SA_KEY }}'' > google_cloud_key.json
+          echo '${{ secrets.GCP_SA_KEY }}' > google_cloud_key.json
           echo "google_cloud_key.json secret created."
 
       - name: Create/Update Kubernetes Google Cloud Secret
