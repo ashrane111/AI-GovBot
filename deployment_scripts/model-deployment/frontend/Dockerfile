@@ -13,6 +13,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the frontend source code (relative to build context)
 COPY src/frontend /app/src/frontend
 
+COPY .streamlit /app/.streamlit
+
 # Make port 8501 available (default Streamlit port)
 EXPOSE 8501
 
