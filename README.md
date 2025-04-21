@@ -93,7 +93,17 @@ Deploy the data processing pipeline on a GCP VM with Airflow:
 
 For production deployment, follow the [deployment instructions](#deployment) above.
 
+## Static Links to Deployments
+```
+Model Deployment - http://35.229.66.170/
+ ```
+```
+Data pipeline - http://34.73.215.163:8080/
 
+username - airflow2
+
+password - airflow2
+```
 ## Cost Analysis
 <p align="center">
   <img src="assets/images/Total_Cost_Analysis.jpg" alt="Total Cost" width="500"/>
