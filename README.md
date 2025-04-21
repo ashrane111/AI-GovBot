@@ -130,7 +130,7 @@ This project utilizes APIs like GPT-4o-mini for its LLM Calls. The following ana
 
 * **Total OpenAI Cost Incurred:** \$0.74
 
-Since we are using GPT-4o-mini, the cost is less. The total calls madhe during this period was 1337.
+Since we are using GPT-4o-mini, the cost is less. The total calls made during this period was 1337.
 
 
 <p align="center">
