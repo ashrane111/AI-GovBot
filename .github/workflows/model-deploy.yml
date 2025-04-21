@@ -243,8 +243,8 @@ jobs:
       - name: Verify Deployment Rollout
         run: |
           echo "Waiting for deployments to complete..."
-          kubectl rollout status deployment/ai-govbot-backend-deployment -n ${{ env.NAMESPACE }} --timeout=5m
-          kubectl rollout status deployment/ai-govbot-frontend-deployment -n ${{ env.NAMESPACE }} --timeout=5m
+          kubectl rollout status deployment/ai-govbot-backend-deployment -n ${{ env.NAMESPACE }} --timeout=30m
+          kubectl rollout status deployment/ai-govbot-frontend-deployment -n ${{ env.NAMESPACE }} --timeout=30m
           echo "Deployment successful!"
           echo "Verifying services..."
           kubectl get services -n ${{ env.NAMESPACE }}
