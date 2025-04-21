@@ -75,11 +75,9 @@ jobs:
         run: gcloud auth configure-docker us-east1-docker.pkg.dev --project=${{ vars.PROJECT_ID}}
 
       # --- Implement latest -> v1 -> v2 Tag Rotation ---
-      - name: Rotate Backend Image Tags (latest->v1, v1->v2)
-        # Continue even if some tags don't exist (e.g., first/second runs)
+      - name: Rotate Backtend Image Tags (latest->v1, v1->v2)
         continue-on-error: true
         run: |
-
           IMAGE_BASE="${{ env.BACKEND_IMAGE_NAME_NO_TAG }}"
           echo "Rotating tags for ${IMAGE_BASE}"
 
@@ -110,7 +108,7 @@ jobs:
           else
              echo "No existing latest tag found."
           fi
-          echo "Backend tag rotation complete."
+          echo "Backtend tag rotation complete."
 
 
       - name: Rotate Frontend Image Tags (latest->v1, v1->v2)
@@ -234,6 +232,12 @@ jobs:
           kubectl apply -f ${{ env.FRONTEND_DEPLOYMENT_FILE }} -n ${{ env.NAMESPACE }}
           echo "Applying Frontend Service: ${{ env.FRONTEND_SERVICE_FILE }}"
           kubectl apply -f ${{ env.FRONTEND_SERVICE_FILE }} -n ${{ env.NAMESPACE }}
+          
+          echo "Restarting backend deployment..."
+          kubectl rollout restart deployment ai-govbot-backend-deployment -n ${{ env.NAMESPACE }}
+
+          echo "Restarting frontend deployment..."
+          kubectl rollout restart deployment ai-govbot-frontend-deployment -n ${{ env.NAMESPACE }}
 
       # --- Verify Deployment Rollout ---
       - name: Verify Deployment Rollout

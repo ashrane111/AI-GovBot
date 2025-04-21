@@ -151,6 +151,7 @@ docker buildx build \
 
 echo "Building and pushing multi-arch frontend image to ${FRONTEND_IMAGE_NAME_LATEST}..."
 docker buildx build \
+  --no-cache \
   --platform linux/amd64,linux/arm64 \
   -t ${FRONTEND_IMAGE_NAME_LATEST} \
   -f ${FRONTEND_DOCKERFILE} \
@@ -258,6 +259,13 @@ kubectl apply -f "${FRONTEND_DEPLOYMENT_FILE}" -n "${NAMESPACE}"
 
 echo "Applying Frontend Service: ${FRONTEND_SERVICE_FILE}..."
 kubectl apply -f "${FRONTEND_SERVICE_FILE}" -n "${NAMESPACE}"
+
+# Restart deployments to ensure they pick up the latest configuration and images
+echo "Restarting backend deployment..."
+kubectl rollout restart deployment ai-govbot-backend-deployment -n "${NAMESPACE}"
+
+echo "Restarting frontend deployment..."
+kubectl rollout restart deployment ai-govbot-frontend-deployment -n "${NAMESPACE}"
 
 # --- Completion ---
 echo "----------------------------------------"
