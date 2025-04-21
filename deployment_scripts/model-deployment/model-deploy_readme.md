@@ -52,7 +52,8 @@ chmod +x model-deploy.sh
 ```  
 3.  **Execute Script:** Run the script:
 ```bash
-./model-deploy.sh
+cd ../..
+./deployment_scripts/model-deployment/model-deploy.sh
 ```
 (if asked to type Y for anything, please do so)
 
